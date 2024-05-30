@@ -1,7 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, ActivityIndicator, Image } from "react-native"
 
-const Button = ({ text, bgColor, TextStyle, BtnStyle, loading }) => {
+
+const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImage, Image }) => {
     const style = StyleSheet.create({
         button: {
             width: "100%",
@@ -9,7 +10,7 @@ const Button = ({ text, bgColor, TextStyle, BtnStyle, loading }) => {
             alignItems: "center",
             justifyContent: "center",
             borderRadius: 10,
-            height:55,
+            height: 55,
             ...BtnStyle
         },
         btnText: {
@@ -20,15 +21,17 @@ const Button = ({ text, bgColor, TextStyle, BtnStyle, loading }) => {
         }
     })
     return (
-        <TouchableOpacity disabled={loading} style={style.button}>
-            {loading ?
-                <ActivityIndicator style={style.btnText} color="white" />
-                :
-                <Text style={style.btnText}>{text}</Text>
-            }
-
-        </TouchableOpacity>
+        <>
+            <TouchableOpacity onPress={onPress} disabled={loading} style={style.button}>
+                {loading ?
+                    <ActivityIndicator style={style.btnText} color="white" />
+                    :
+                    <Text style={style.btnText}>{title}</Text>
+                }
+            </TouchableOpacity>
+            {/* <Image source={require('../../assets/icons/postImage.jpg')} style={style.ActuallPost} /> */}
+        </>
     )
 }
 
-export default React.memo(Button);
+export default ButtonC;

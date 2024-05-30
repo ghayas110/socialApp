@@ -1,52 +1,53 @@
 import React from 'react';
-import {Image, StyleSheet,View} from 'react-native'
+import {ImageBackground, StyleSheet, View ,Dimensions,Image} from 'react-native'
 import TextC from '../text/text';
 
-const Post =()=>{
+
+const Post = () => {
+    const width = Dimensions.get('window').width;
     const style = StyleSheet.create({
-        PostHeader:{
-            flexDirection:'row',
-            paddingVertical:12,
-            justifyContent:'space-between',
-            paddingHorizontal:12
+        PostHeader: {
+            flexDirection: 'row',
+            paddingVertical: 12,
+            justifyContent: 'space-between',
+            paddingHorizontal: 12,
+            width:width
         },
-        PostProfileImage:{
-            height:40,
-            width:40,
-            borderRadius:32,
-            backgroundColor:'blue',
-            marginRight:8,  
+        PostProfileImage: {
+            height: 40,
+            width: 40,
+            borderRadius: 32,
+            backgroundColor: 'blue',
+            marginRight: 8,
+            overflow:'hidden',
         },
-        PostProfileImageBox:{
-            flexDirection:"row",
-            alignItems:'center',
+        PostProfileImageBox: {
+            flexDirection: "row",
+            alignItems: 'center',
         },
-        PostActionDot:{
-            flexDirection:"row",
-            alignItems:'center',
+        PostActionDot: {
+            flexDirection: "row",
+            alignItems: 'center',
         },
-        ActuallPost:{
-            height:350,
-            width:"100%",
-            backgroundColor:'white',
+        ActuallPost: {
+            height:500,
+            width: width,
+            // height:'auto'
         }
     })
-
-    return(
-        <View>
+    return (
+        <>
             <View style={style.PostHeader}>
                 <View style={style.PostProfileImageBox}>
-                    <View style={style.PostProfileImage}></View>
-                    <TextC text={"Taha Tahir"} font={'Poppins-SemiBold'}/>
+                    <ImageBackground source={require('../../assets/icons/profile.jpg')} style={style.PostProfileImage} resizeMode="cover"></ImageBackground>
+                    <TextC text={"Taha Tahir"} font={'Poppins-SemiBold'} />
                 </View>
                 <View style={style.PostActionDot}>
-                    
+                    <Image source={require('../../assets/icons/Shape.svg')}/>
                 </View>
             </View>
-            <View style={style.ActuallPost}>
-                <Image style={{height:'100%',width:'100%'}} source={require('../../assets/icons/postImage.jpg')}/>
-            </View>
-        </View>
+            <Image source={require('../../assets/icons/postImage.jpg')} style={style.ActuallPost}/>
+        </>
     )
 }
 
