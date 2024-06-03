@@ -22,7 +22,6 @@ const MainNavigation = () => {
   return (
     <NavigationContainer>
       {isLoggedIn ?
-
         <Tab.Navigator >
           <Tab.Screen name="Home" component={HomeScreen} options={{
             tabBarIcon: ({ color, size, focused }) => (

@@ -109,7 +109,4 @@ const Login = () => {
   )
 }
 
-export default Login
-
-{/* <Button text={"Log in"} bgColor={"#3797EF"} loading={false} /> */ }
-{/* <Button text={"Switch account"} bgColor={"transparent"} TextStyle={{ color: "#3797EF" }} loading={false} /> */ }
+export default Login;
