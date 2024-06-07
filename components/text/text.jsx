@@ -9,14 +9,14 @@ const TextC =({text,size,font,style})=>{
     const scheme = useColorScheme();
     const styles = StyleSheet.create({
         text:{
-            ...(scheme === 'dark' ? { color: DarkTheme.colors.text } : { color: DefaultTheme.colors.text }),
+            ...(scheme === 'dark' ? { color: DarkTheme.colors.text } : { color: "#05348E"}),
             fontFamily:font,
             fontSize:size,
             ...style
         }
       })
     return(
-        <Text style={styles.text}>{text}</Text>
+        <Text style={styles.text} >{text}</Text>
     )
 }
 

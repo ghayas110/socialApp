@@ -1,18 +1,18 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, ImageBackground } from 'react-native'
 import React, { useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native';
 const SplashScreen = () => {
   const navigation = useNavigation()
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('SignUp')
+      navigation.navigate('PasswordChanged')
     }, 1000);
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
-      <Image source={require('../images/logo.jpeg')} style={{ width: 200, height: 220, resizeMode: 'contain' }} />
-    </View>
+    <ImageBackground source={require('../assets/fonts/splashScreenBack.png')} style={styles.container}>
+      
+    </ImageBackground>
   );
 };
 

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,Image } from 'react-native'
+import { StyleSheet, Dimensions, View, Image, Touchable } from 'react-native'
 import React, { useEffect } from 'react'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -9,15 +9,25 @@ import AddPost from '../pages/AddPost';
 import ReelScreen from '../pages/ReelScreen';
 import ProfileScreen from '../pages/ProfileScreen';
 import SignUp from '../pages/SignUp';
+import CheckIn from '../pages/CheckIn';
+import CheckInDetail from '../pages/CheckInDetail';
+import ResetPassword from '../pages/ResetPassword';
+import PasswordChanged from '../pages/PasswordChanged';
 import Login from '../pages/Login';
 import SplashScreen from '../pages/SplashScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import MainHeader from '../components/mainHeader';
+import { DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { useColorScheme } from 'react-native';
 
 
 const MainNavigation = () => {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(true);
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
+  const scheme = useColorScheme();
+
 
   return (
     <NavigationContainer>
@@ -27,9 +37,14 @@ const MainNavigation = () => {
             tabBarIcon: ({ color, size, focused }) => (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Image source={!focused ? require('../images/homedark.png') : require('../images/homeselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
-
               </View>
             ),
+            headerTitle: () => (
+              <MainHeader />
+            ),
+            headerStyle: {
+              ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: DefaultTheme.colors.background}),
+            }
           }} />
           <Tab.Screen name="Search" component={SearchScreen} options={{
 
@@ -54,7 +69,6 @@ const MainNavigation = () => {
           }} />
           <Tab.Screen name="Profile" component={ProfileScreen} options={{
             tabBarIcon: ({ color, size, focused }) => (
-
               <Image source={!focused ? require('../images/avatardark.png') : require('../images/avatarselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
             ),
           }} />
@@ -69,6 +83,10 @@ const MainNavigation = () => {
             {(props) => <Login {...props} onLogin={() => setIsLoggedIn(true)} />}
           </Stack.Screen>
           <Stack.Screen name="SignUp" component={SignUp} />
+          <Stack.Screen name="CheckIn" component={CheckIn} />
+          <Stack.Screen name="CheckInDetail" component={CheckInDetail} />
+          <Stack.Screen name="ResetPassword" component={ResetPassword} />
+          <Stack.Screen name="PasswordChanged" component={PasswordChanged} />
 
         </Stack.Navigator>
       }

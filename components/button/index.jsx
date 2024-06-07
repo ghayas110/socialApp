@@ -2,27 +2,26 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, ActivityIndicator, Image } from "react-native"
 
 
-const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImage, Image }) => {
+const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImage, Image, onpress2}) => {
     const style = StyleSheet.create({
         button: {
-            width: "100%",
             backgroundColor: bgColor,
             alignItems: "center",
             justifyContent: "center",
-            borderRadius: 10,
-            height: 55,
-            ...BtnStyle
+            borderRadius: 30,
+            height: 48,
+            ...BtnStyle,
+            width:181,  
         },
         btnText: {
-            fontFamily: 'Poppins-SemiBold',
-            lineHeight: 23,
-            fontSize: 16,
+            fontFamily: 'Montserrat-Bold',
+            fontSize: 13,
             ...TextStyle
         }
     })
     return (
         <>
-            <TouchableOpacity onPress={onPress} disabled={loading} style={style.button}>
+            <TouchableOpacity onPress={onPress} disabled={loading} style={style.button} onPressIn={onpress2}>
                 {loading ?
                     <ActivityIndicator style={style.btnText} color="white" />
                     :

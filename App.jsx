@@ -14,7 +14,6 @@ const App = () => {
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetProvider>
-          <StatusBar backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background} barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'} />
           <MainNavigation />
         </BottomSheetProvider>
       </GestureHandlerRootView>

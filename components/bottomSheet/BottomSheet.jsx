@@ -1,14 +1,17 @@
 import React, { createContext, useContext, useRef, useState, useCallback, useMemo } from 'react';
 import BottomSheet from '@gorhom/bottom-sheet';
+import { useColorScheme, View } from 'react-native';
+import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 
 const BottomSheetContext = createContext();
 
 export const BottomSheetProvider = ({ children }) => {
   const bottomSheetRef = useRef(null);
-  const [snapPoints, setSnapPoints] = useState(['100%', '50%']);
+  const [snapPoints, setSnapPoints] = useState(['100%', '70%']);
   const [content, setContent] = useState(null);
+  const scheme = useColorScheme();
 
-  const openBottomSheet = useCallback((newContent, newSnapPoints = ['100%', '50%']) => {
+  const openBottomSheet = useCallback((newContent, newSnapPoints = ['100%', '70%']) => {
     setContent(newContent);
     setSnapPoints(newSnapPoints);
     bottomSheetRef.current?.expand();
@@ -26,16 +29,20 @@ export const BottomSheetProvider = ({ children }) => {
   return (
     <BottomSheetContext.Provider value={contextValue}>
       {children}
+
       <BottomSheet
-        handleStyle={{height:50,borderTopLeftRadius:20,borderTopRightRadius:20}}
+        handleStyle={{ height: 50, borderTopLeftRadius: 15, borderTopRightRadius: 15, backgroundColor: scheme == "dark" ? DarkTheme.colors.background : DefaultTheme.colors.background }}
+        handleIndicatorStyle={{ backgroundColor: scheme == "dark" ? DefaultTheme.colors.background : DarkTheme.colors.background }}
         ref={bottomSheetRef}
-        // handleComponent={}
+        backgroundStyle={{ backgroundColor: scheme == "dark" ? DarkTheme.colors.background : DefaultTheme.colors.background }}
         index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose={true}
         onClose={() => setContent(null)}
       >
-        {content}
+        <>
+          {content}
+        </>
       </BottomSheet>
     </BottomSheetContext.Provider>
   );
