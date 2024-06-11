@@ -5,8 +5,8 @@ const width = Dimensions.get('window').width;
 
 const MainHeader = () => {
     return (
-        <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: "space-between", height: 60, width: width - 30 }}>
-            <Image source={require('../../assets/icons/Logo.png')} style={{ objectFit: 'contain', width: 160, height: 22 }} />
+        <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: "space-between", height: 60, width: width - 30}}>
+            <Image source={require('../../assets/icons/Logo.png')} style={{ objectFit: 'contain', width: 130, height: 22 }} />
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
 
                 <View style={styles.locationHeader}>

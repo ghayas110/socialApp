@@ -35,6 +35,7 @@ const Post = ({ userName, profileImage, id, likeCount, commnetCount, description
         PostProfileImageBox: {
             flexDirection: "column",
             alignItems: 'flex-start',
+            justifyContent:'center'
         },
         PostActionDot: {
             flexDirection: "row",
@@ -232,7 +233,7 @@ const Post = ({ userName, profileImage, id, likeCount, commnetCount, description
             <View style={style.PostHeader}>
                 <ImageBackground source={profileImage} style={style.PostProfileImage} resizeMode="cover"></ImageBackground>
                 <View style={style.PostProfileImageBox}>
-                    <TextC size={15} text={userName} font={'Montserrat-Bold'} />
+                    <TextC size={13} text={userName} font={'Montserrat-Bold'} />
                     <TextC size={12} text={userLocation} font={'Montserrat-Medium'} />
                 </View>
             </View>
