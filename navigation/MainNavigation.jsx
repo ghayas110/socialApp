@@ -83,9 +83,9 @@ const MainNavigation = () => {
 
           <Tab.Screen name="CreatePost" component={CreatePost} options={{
             tabBarIcon: ({ color, size, focused }) => (
-
               <Image source={!focused ? require('../images/addblack.png') : require('../images/addselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
             ),
+            tabBarStyle: { display: 'none' },
             tabBarShowLabel: false,
             headerTitle: () => (
               <MainHeader />
