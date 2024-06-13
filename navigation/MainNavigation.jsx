@@ -68,13 +68,8 @@ const MainNavigation = () => {
                 <Image source={!focused ? require('../images/searchdark.png') : require('../images/searchselect.png')} style={{ width: 25, height: 25, objectFit: 'contain' }} />
               </View>
             ),
+            headerShown:false,
             tabBarShowLabel: false,
-            headerTitle: () => (
-              <EventHeader />
-            ),
-            headerStyle: {
-              ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: "white" }),
-            }
           }} />
 
 

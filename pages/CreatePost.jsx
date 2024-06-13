@@ -136,6 +136,9 @@ const CreatePost = () => {
             const imagePaths = imageFiles.map(file => file.path);
             setContent(imagePaths);
         } else {
+            const imageFiles = await RNFS.readDir(RNFS.LibraryDirectoryPath + '/Camera');
+            const imagePaths = imageFiles.map(file => file.path);
+            setContent(imagePaths);
         }
     };
     const selectedMedia = (r) => {
@@ -146,29 +149,31 @@ const CreatePost = () => {
     }
     const typeChanger = async (type) => {
         setMultiContent([])
-        if (Platform.OS === 'android') {
-            try {
-                const mediaFiles = await RNFS.readDir(RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera');
-                const filterExtensions = (extensions) => {
-                    return mediaFiles.filter(file => {
-                        const extension = file.name.split('.').pop().toLowerCase();
-                        return extensions.includes(extension);
-                    }).map(file => file.path);
-                };
-                if (type === 'Photo') {
-                    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-                    setContent(filterExtensions(imageExtensions));
-                } else if (type === 'Video') {
-                    const videoExtensions = ['mp4', 'mov', 'avi', 'mkv'];
-                    setContent(filterExtensions(videoExtensions));
-                } else if (type === 'Library') {
-                    const imageFiles = await RNFS.readDir(RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera');
-                    const imagePaths = imageFiles.map(file => file.path);
-                    setContent(imagePaths);
-                }
-            } catch (error) {
-                console.error("Error reading media files", error);
+        try {
+            let mediaFiles = [];
+            if (Platform.OS === 'android') {
+                mediaFiles = await RNFS.readDir(RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera');
+            } else if (Platform.OS === 'ios') {
+                mediaFiles = await RNFS.readDir(RNFS.LibraryDirectoryPath + '/Camera');
             }
+            const filterExtensions = (extensions) => {
+                return mediaFiles.filter(file => {
+                    const extension = file.name.split('.').pop().toLowerCase();
+                    return extensions.includes(extension);
+                }).map(file => file.path);
+            };
+            if (type === 'Photo') {
+                const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                setContent(filterExtensions(imageExtensions));
+            } else if (type === 'Video') {
+                const videoExtensions = ['mp4', 'mov', 'avi', 'mkv'];
+                setContent(filterExtensions(videoExtensions));
+            } else if (type === 'Library') {
+                const mediaPaths = mediaFiles.map(file => file.path);
+                setContent(mediaPaths);
+            }
+        } catch (error) {
+            console.error("Error reading media files", error);
         }
     };
 
