@@ -25,7 +25,7 @@ import { useColorScheme } from 'react-native';
 import StackNavigation from './StackNavigation';
 
 const MainNavigation = () => {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(true);
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const scheme = useColorScheme();
