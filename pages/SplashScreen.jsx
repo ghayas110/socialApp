@@ -5,7 +5,7 @@ const SplashScreen = () => {
   const navigation = useNavigation()
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('PasswordChanged')
+      navigation.navigate('Login')
     }, 1000);
   }, [navigation]);
 
