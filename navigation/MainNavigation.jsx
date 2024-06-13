@@ -18,6 +18,7 @@ import SplashScreen from '../pages/SplashScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import MainHeader from '../components/mainHeader';
+import CreatePostHeader from '../components/mainHeader/createPostHeader'
 import EventHeader from '../components/mainHeader/event';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
@@ -88,7 +89,7 @@ const MainNavigation = () => {
             tabBarStyle: { display: 'none' },
             tabBarShowLabel: false,
             headerTitle: () => (
-              <MainHeader />
+              <CreatePostHeader />
             ),
             headerStyle: {
               ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: "white" }),
