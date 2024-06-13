@@ -77,5 +77,15 @@
 		<string>Inter-SemiBold.ttf</string>
 		<string>Inter-Thin.ttf</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need your permission to access the photo library</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need your permission to access the camera</string>
+	<key>NSDocumentPickerUsageDescription</key>
+	<string>We need your permission to access the document picker</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
 </dict>
 </plist>
