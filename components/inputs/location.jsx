@@ -18,7 +18,7 @@ const TextInputC = ({ placeholder }) => {
     })
     return (
         <>
-            <GooglePlacesAutocomplete
+            {/* <GooglePlacesAutocomplete
                 query={{ key: 'AIzaSyBPuxObCHikaWfPjyCZj-ge9BAo0HCVTBQ' }}
                 placeholder="Type a place"
                 onPress={(data, details = null) => console.log(data, details)}
@@ -30,8 +30,8 @@ const TextInputC = ({ placeholder }) => {
                         <Text>No results were found</Text>
                     </View>
                 )}
-            />
-            {/* <TextInput style={styles.Input} placeholder={placeholder} placeholderTextColor={"#666666"} /> */}
+            /> */}
+            <TextInput style={styles.Input} placeholder={placeholder} placeholderTextColor={"#666666"} />
         </>
     )
 }

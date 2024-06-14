@@ -6,7 +6,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import TextC from '../components/text/text';
 import TextInputC from '../components/inputs/text';
 import LocationInput from '../components/inputs/location';
-
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 
 
 
@@ -49,11 +49,27 @@ const AddEvent = () => {
             borderRadius: 20,
             alignItems: 'center',
             justifyContent: 'center',
+        },
+        calenderCustomHeader: {
+            height: 60,
+            width: '100%',
+            backgroundColor: "white",
+            position: "absolute",
+            zIndex: 1,
+            borderRadius: 10,
+            shadowColor: '#171717',
+            shadowOffset: { width: -2, height: 4 },
+            shadowOpacity: 0.2,
+            shadowRadius: 3,
+            borderColor:'black',
+            borderWidth: 1,
         }
     })
 
+    const [selected, setSelected] = useState('');
 
 
+    console.log(selected)
     return (
         <SafeAreaView>
             <StatusBar backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : 'white'} barStyle={scheme === 'dark' ? "light-content" : 'dark-content'} />
@@ -69,12 +85,47 @@ const AddEvent = () => {
                     <TouchableOpacity style={styles.NextBtn}><TextC size={12} text={'Next'} font={'Montserrat-SemiBold'} /></TouchableOpacity>
                 </View>
             </View>
-            {/* <ScrollView style={{ flexGrow: 1, padding: 20, ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: 'white' }), }}> */}
+            <ScrollView style={{ flexGrow: 1, padding: 20, ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: 'white' }), }}>
                 <TextInputC placeholder={'Event title'} />
-                <View style={{ paddingTop: 15 }}>
+                <View style={{ paddingVertical: 15 }}>
                     <LocationInput />
                 </View>
-            {/* </ScrollView> */}
+                <View style={{ paddingHorizontal: 20 }}>
+                    <TextC text={"Select Date"} font={'Montserrat-Bold'} />
+                </View>
+                <View style={{ position: 'relative', paddingTop: 17 }}>
+                    <View style={styles.calenderCustomHeader}>
+
+                    </View>
+
+                    <Calendar
+                        style={{ padding: 0, margin: 0, borderRadius: 25, overflow: 'hidden', }}
+                        onDayPress={day => {
+                            setSelected(day.dateString);
+                        }}
+                        markedDates={{
+                            [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: "red", }
+                        }}
+                        // customHeader={() =>
+                        //     <View style={{height:50,width:'100%',backgroundColor:'white',borderRadius:20,position:'absolute'}}>
+
+                        //     </View>
+                        // }
+                        theme={{
+                            selectedDayBackgroundColor: "#05348E",
+                            selectedDayTextColor: "white",
+                            textDayFontFamily: 'Montserrat-Medium',
+                            textMonthFontFamily: 'Montserrat-Medium',
+                            textDayHeaderFontFamily: 'Montserrat-Bold',
+                            todayTextColor: "#05348E",
+                            dayTextColor: "#05348E",
+                            textDisabledColor: "white",
+                            calendarBackground: "#A8B8D8",
+                            textSectionTitleColor: "#05348E",
+                        }}
+                    />
+                </View>
+            </ScrollView>
         </SafeAreaView>
     )
 }
