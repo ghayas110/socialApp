@@ -9,7 +9,6 @@ import { BottomSheetProvider } from './components/bottomSheet/BottomSheet';
 
 
 const App = () => {
-  const scheme = useColorScheme();
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>

@@ -201,7 +201,6 @@ const CreatePost = () => {
     };
 
 
-    console.log(RNFS,'contetn')
     return (
         <>
             <View style={styles.FirstImagePreview}>

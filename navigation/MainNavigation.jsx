@@ -22,16 +22,15 @@ import CreatePostHeader from '../components/mainHeader/createPostHeader'
 import EventHeader from '../components/mainHeader/event';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
-import StackNavigation from './StackNavigation';
+import { ProfileStackNavigation,EventStackNavigation } from './StackNavigation';
+
 
 const MainNavigation = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(true);
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const scheme = useColorScheme();
-
-
-  return (
+  return (  
     <NavigationContainer>
       {isLoggedIn ?
         <Tab.Navigator
@@ -62,7 +61,7 @@ const MainNavigation = () => {
 
 
 
-          <Tab.Screen name="Event" component={StackNavigation} options={{
+          <Tab.Screen name="Event" component={EventStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Image source={!focused ? require('../images/searchdark.png') : require('../images/searchselect.png')} style={{ width: 25, height: 25, objectFit: 'contain' }} />
@@ -70,6 +69,7 @@ const MainNavigation = () => {
             ),
             headerShown:false,
             tabBarShowLabel: false,
+            // tabBarStyle: { display: route.name=="EventCreated"?'none':""},
           }} />
 
 
@@ -109,14 +109,12 @@ const MainNavigation = () => {
 
 
 
-          <Tab.Screen name="Profile" component={ProfileScreen} options={{
+          <Tab.Screen name="Profile" component={ProfileStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <Image source={!focused ? require('../images/avatardark.png') : require('../images/avatarselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
             ),
+            headerShown: false,
             tabBarShowLabel: false,
-            headerTitle: () => (
-              <MainHeader />
-            ),
             headerStyle: {
               ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: "white" }),
             }
