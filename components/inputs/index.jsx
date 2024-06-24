@@ -4,7 +4,7 @@ import Feather from 'react-native-vector-icons/Feather'
 
 
 
-const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label }) => {
+const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label,error }) => {
     const style = StyleSheet.create({
         Input: {
             borderWidth: 0,
@@ -16,7 +16,9 @@ const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label }) =>
             lineHeight: 23,
             fontSize: 14,
             height: 48,
-            color: 'black'
+            color: 'black',
+            borderWidth:1,
+            ...(error === undefined ? { borderColor: 'white' } : { borderColor: 'red' })
         },
         labelS: {
             color: "white",

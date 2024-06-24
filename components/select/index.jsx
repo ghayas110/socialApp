@@ -4,23 +4,8 @@ import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
-const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label }) => {
-    const emojisWithIcons = [
-        { title: 'happy', icon: 'emoticon-happy-outline' },
-        { title: 'cool', icon: 'emoticon-cool-outline' },
-        { title: 'lol', icon: 'emoticon-lol-outline' },
-        { title: 'sad', icon: 'emoticon-sad-outline' },
-        { title: 'cry', icon: 'emoticon-cry-outline' },
-        { title: 'angry', icon: 'emoticon-angry-outline' },
-        { title: 'confused', icon: 'emoticon-confused-outline' },
-        { title: 'excited', icon: 'emoticon-excited-outline' },
-        { title: 'kiss', icon: 'emoticon-kiss-outline' },
-        { title: 'devil', icon: 'emoticon-devil-outline' },
-        { title: 'dead', icon: 'emoticon-dead-outline' },
-        { title: 'wink', icon: 'emoticon-wink-outline' },
-        { title: 'sick', icon: 'emoticon-sick-outline' },
-        { title: 'frown', icon: 'emoticon-frown-outline' },
-    ];
+const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label,data,error }) => {
+    
 
     const styleObj = StyleSheet.create({
         labelS: {
@@ -38,18 +23,19 @@ const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label }) =
             justifyContent: 'center',
             alignItems: 'center',
             paddingHorizontal: 15,
-            fontFamily:'Montserrat-Regular',
+            fontFamily: 'Montserrat-Regular',
+            borderWidth:1,
+            ...(error === undefined ? { borderColor: 'white' } : { borderColor: 'red' })
         },
         dropdownButtonTxtStyle: {
             flex: 1,
             fontSize: 14,
             fontWeight: '500',
-            color:'black',
-            fontFamily:'Montserrat-Regular'
+            fontFamily: 'Montserrat-Regular'
         },
         dropdownButtonArrowStyle: {
             fontSize: 28,
-            color:'#666666'
+            color: '#666666'
         },
         dropdownButtonIconStyle: {
             fontSize: 28,
@@ -72,7 +58,7 @@ const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label }) =
             fontSize: 14,
             fontWeight: '500',
             color: '#151E26',
-            fontFamily:'Montserrat-Regular'
+            fontFamily: 'Montserrat-Regular'
         },
         dropdownItemIconStyle: {
             fontSize: 28,
@@ -86,17 +72,21 @@ const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label }) =
                 <View style={{ paddingHorizontal: 15 }}>
                     <Text style={styleObj.labelS}>{label}</Text>
                 </View>
-                <View style={{ position: 'relative' }}>
+                <View>
                     <SelectDropdown
-                        data={emojisWithIcons}
-                        onSelect={(selectedItem, index) => {
-                            console.log(selectedItem, index);
+                        data={data}
+                        dropdownOverlayColor="rgba(0, 0, 0,0.7)"
+                        onSelect={(selectedItem) => {
+                            onChangeText(label== "Airline"?selectedItem.id:selectedItem.title)
                         }}
                         renderButton={(selectedItem, isOpened) => {
                             return (
                                 <View style={styleObj.dropdownButtonStyle}>
-                                    <Text style={styleObj.dropdownButtonTxtStyle}>
-                                        {(selectedItem && selectedItem.title) || 'Select your mood'}
+                                    <Text style={{
+                                        ...styleObj.dropdownButtonTxtStyle,
+                                        color: selectedItem ? 'black' : '#DADADA'
+                                    }}>
+                                        {(selectedItem && selectedItem.title) || placeholder}
                                     </Text>
                                     <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styleObj.dropdownButtonArrowStyle} />
                                 </View>

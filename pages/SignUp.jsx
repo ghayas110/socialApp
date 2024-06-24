@@ -6,22 +6,27 @@ import * as yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AntDedign from "react-native-vector-icons/AntDesign"
-import Entypo from 'react-native-vector-icons/Entypo'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { CheckBox } from '@rneui/themed';
-import Animated, { useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
+import SelectC from '../components/select';
+import * as UserRegisterAction from "../store/actions/UserRegister/index";
+import { connect } from "react-redux";
 
 
-
-const SignUp = () => {
+const SignUp = ({ insertUser, RegisterUserReducer }) => {
   const navigation = useNavigation()
-  const width = useSharedValue(0);
   const schema = yup.object().shape({
     userName: yup
       .string()
       .required('User name is required'),
+    airline: yup
+      .number()
+      .required('Air line is required'),
+    position: yup
+      .string()
+      .required('Position is required'),
     email: yup
       .string()
       .required('Email is required')
@@ -44,6 +49,8 @@ const SignUp = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       userName: '',
+      airline: '',
+      position: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -80,7 +87,8 @@ const SignUp = () => {
       height: 50,
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'flex-end',
+      paddingHorizontal: 20,
     },
     socialLoginBtn: {
       height: 48,
@@ -95,11 +103,9 @@ const SignUp = () => {
     bottomSheetContent: {
       height: 50,
       width: "100%",
-      position: 'absolute',
-      top: Dimensions.get('window').height - 50,
       flexDirection: "row",
-      alignItems: 'flex-start',
-      justifyContent: 'center'
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     bottomSheetContentTextOne: {
       fontSize: 13,
@@ -114,45 +120,43 @@ const SignUp = () => {
       color: '#69BE25',
     }
   })
-  const onSubmit = data => {
-    console.log(data);
-    alert('Form submitted successfully!');
+  const onSubmit = async (data) => {
+    // const Responce = await insertUser({
+    //   user_name: data?.userName,
+    //   email: data?.email,
+    //   password: data?.password,
+    //   user_type: data?.position,
+    //   airline: data?.airline
+    // })
+    // if(Responce == 'Signup successfull'){
+    // }
+    navigation.navigate('Otp')
+    // else{
+
+    // }
   };
-  const CloseError = () => {
-    width.value = withTiming(0)
-  }
+  const Positions = [
+    { title: 'FLIGHT ATTENDANT', icon: 'emoticon-happy-outline' },
+    { title: 'PILOT', icon: 'emoticon-cool-outline' },
+    { title: 'TECHNICIAN', icon: 'emoticon-lol-outline' },
+  ];
+  const Flights = [
+    { title: 'Pakistan Internationa airport', id: 1 },
+    { title: 'Qatar Airlines', id: 2 },
+    { title: 'Dubai internation', id: 3 },
+  ];
+
+
+  console.log(RegisterUserReducer?.data, 'ookkk')
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <StatusBar backgroundColor={'#05348E'} />
-        <View style={{ padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ paddingTop: 20, paddingBottom: 10, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <TouchableOpacity>
-            <AntDedign name='arrowleft' size={32} color={'#69BE25'} />
+            <AntDedign name='left' size={22} color={'#69BE25'} />
           </TouchableOpacity>
-          <View style={styles.errorArea}>
-            <Animated.View
-              style={{
-                ...(Object.keys(errors).length == 0 ? { width: width.value = withTiming(0) } : { backgroundColor: width.value = withSpring(250) }),
-                width,
-                height: 35,
-                backgroundColor: 'white',
-                borderRadius: 30,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity onPress={CloseError}>
-                <Entypo name='circle-with-cross' color={'#ff4f4f'} size={25} style={{ paddingHorizontal: 5 }} />
-              </TouchableOpacity>
-              <Text style={{ color: 'black', fontSize: 12, fontFamily: "Montserrat-Regular" }}>
-                {errors?.userName?.message ? errors?.userName?.message :
-                  errors?.email?.message ? errors?.email?.message :
-                    errors?.password?.message ? errors?.password?.message :
-                      errors?.confirmPassword?.message ? errors?.confirmPassword?.message :
-                        errors?.termsOfService?.message ? errors?.termsOfService?.message : ""}</Text>
-            </Animated.View>
-
-
-          </View>
         </View>
         <View style={styles.titleWrapper}>
           <Text style={styles.titleTextFirst}>Let's, <Text style={styles.titleTextSecond}>get</Text></Text>
@@ -168,6 +172,30 @@ const SignUp = () => {
               <InputC label={"User name"} error={errors?.userName?.message} value={value} onChangeText={onChange} placeholder={"User name"} secureTextEntry={false} />
             )}
             name="userName"
+          />
+        </View>
+        <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, value } }) => (
+              <SelectC label={"Airline"} data={Flights} placeholder={'Select airline'} error={errors?.airline?.message} value={value} onChangeText={onChange} secureTextEntry={false} />
+            )}
+            name="airline"
+          />
+        </View>
+        <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, value } }) => (
+              <SelectC label={"Position"} data={Positions} placeholder={'Select position'} error={errors?.position?.message} value={value} onChangeText={onChange} secureTextEntry={false} />
+            )}
+            name="position"
           />
         </View>
         <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
@@ -217,7 +245,7 @@ const SignUp = () => {
                 <CheckBox
                   title="I accept the terms and privacy policy"
                   containerStyle={{ backgroundColor: "transparent" }}
-                  textStyle={{ fontFamily: "Montserrat-Regular", color: 'white', fontSize: 12 }}
+                  textStyle={{ fontFamily: "Montserrat-Regular", color: errors?.termsOfService?.message == undefined ? 'white' : 'red', fontSize: 12 }}
                   checked={value}
                   checkedColor='white'
                   onPress={() => onChange(!value)}
@@ -228,18 +256,7 @@ const SignUp = () => {
           />
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 5 }}>
-          <ButtonC title="Sign Up" bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={handleSubmit(onSubmit)} />
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 15 }}>
-          <TouchableOpacity style={styles.socialLoginBtn}>
-            <FontAwesome name='facebook' size={22} color={'black'} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialLoginBtn}>
-            <AntDedign name='google' size={22} color={'black'} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialLoginBtn}>
-            <AntDedign name='apple1' size={22} color={'black'} />
-          </TouchableOpacity>
+          <ButtonC title="Sign Up" bgColor={'#69BE25'} loading={RegisterUserReducer?.loading} TextStyle={{ color: '#002245' }} onPress={()=>navigation.navigate('Otp')} />
         </View>
         <View style={styles.bottomSheetContent}>
           <Text style={styles.bottomSheetContentTextOne}>Already have an account? </Text><TouchableOpacity onPress={() => navigation.navigate('Login')}><Text style={styles.bottomSheetContentTextTwo}>Log in</Text></TouchableOpacity>
@@ -250,4 +267,7 @@ const SignUp = () => {
   )
 }
 
-export default SignUp
+function mapStateToProps({ RegisterUserReducer }) {
+  return { RegisterUserReducer };
+}
+export default connect(mapStateToProps, UserRegisterAction)(SignUp);

@@ -6,6 +6,8 @@ import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetProvider } from './components/bottomSheet/BottomSheet';
+import store from './store/index';
+import { Provider } from 'react-redux';
 
 
 const App = () => {
@@ -13,7 +15,9 @@ const App = () => {
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetProvider>
-          <MainNavigation />
+          <Provider store={store}>
+            <MainNavigation />
+          </Provider>
         </BottomSheetProvider>
       </GestureHandlerRootView>
     </>
