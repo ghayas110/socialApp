@@ -26,7 +26,7 @@ import { ProfileStackNavigation,EventStackNavigation } from './StackNavigation';
 
 
 const MainNavigation = () => {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(true);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const scheme = useColorScheme();

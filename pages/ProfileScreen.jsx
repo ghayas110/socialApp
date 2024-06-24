@@ -1,4 +1,4 @@
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import TextC from '../components/text/text'
 import Entypo from 'react-native-vector-icons/Entypo'
@@ -55,6 +55,34 @@ const ProfileScreen = () => {
     },
     ProfileTitleDescription:{
       paddingHorizontal:20
+    },
+    ProfileSettingBtn:{
+      flexDirection:'row',
+      alignItems:'center',
+      justifyContent:'space-between',
+      width:'100%',
+      paddingHorizontal:20,
+      paddingTop:15
+    },
+    SetttingBtn:{
+      backgroundColor:'#05348E',
+      width:'32%',
+      flexDirection:'row',
+      alignItems:'center',
+      justifyContent:'center',
+      paddingVertical:8,
+      borderRadius:20
+
+    },
+    SetttingBtnText:{
+      color:"white",
+      fontFamily:'Montserrat-Medium',
+      fontSize:12,
+    },
+    CollapseSlider:{
+      flexDirection:'row',
+      alignItems:'center',
+      borderTopColor:''
     }
   })
   return (
@@ -97,7 +125,17 @@ const ProfileScreen = () => {
 
         <View style={styles.ProfileTitleDescription}>
           <TextC font={"Montserrat-SemiBold"} text={"David R."} size={16} />
-          <TextC style={{paddinTop:10}} font={"Montserrat-Medium"} text={"🌍 World Explorer | 📸 Visual Storyteller✈️ Traveling the globe, one adventure at a time"} size={13} />
+          <TextC style={{marginTop:8}} font={"Montserrat-Medium"} text={"🌍 World Explorer | 📸 Visual Storyteller✈️ Traveling the globe, one adventure at a time"} size={13} />
+        </View>
+
+        <View style={styles.ProfileSettingBtn}>
+          <TouchableOpacity style={styles.SetttingBtn}><Text style={styles.SetttingBtnText}>Edit Profile</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.SetttingBtn}><Text style={styles.SetttingBtnText}>Search</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.SetttingBtn}><Text style={styles.SetttingBtnText}>Setting</Text></TouchableOpacity>
+        </View>
+
+        <View style={styles.CollapseSlider}>
+
         </View>
       </ScrollView>
     </SafeAreaView>
