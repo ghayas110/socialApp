@@ -12,7 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 
 
-const OtpScreen = ({ verifyOtp, OtpVerificationReducer }) => {
+const OtpScreen = ({ verifyOtp, OtpVerificationReducer, }) => {
   const navigation = useNavigation()
   const [opt, setOtp] = useState("")
   const [emailState, setEmailState] = useState("")
@@ -53,8 +53,10 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer }) => {
         otp: opt
       })
       if (verifyOtpLoad.message == "User Verified") {
-        setOtp("")
+        await AsyncStorage.removeItem('Token');
+        await AsyncStorage.setItem('Token', verifyOtpLoad?.data?.access_token);
         navigation.navigate('CheckIn')
+        setOtp("")
       }
       else if(verifyOtpLoad.message == "Invalid OTP"){
         Toast.show({

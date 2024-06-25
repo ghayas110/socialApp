@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { StyleSheet, TextInput, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, TextInput, Text, View, ActivityIndicator } from "react-native";
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { global } from "../constant";
 
 
-const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label,data,error }) => {
-    
-
+const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label, data, error }) => {
     const styleObj = StyleSheet.create({
         labelS: {
             color: "white",
@@ -15,16 +14,16 @@ const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label,data
             paddingBottom: 4,
         },
         dropdownButtonStyle: {
-            width: "100%",
-            height: 48,
+            width: global.inputWidth,
+            height: global.inputHeight,
             backgroundColor: '#FFFFFF',
             borderRadius: 30,
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
-            paddingHorizontal: 15,
+            paddingHorizontal: global.inputPaddingH,
             fontFamily: 'Montserrat-Regular',
-            borderWidth:1,
+            borderWidth: 1,
             ...(error === undefined ? { borderColor: 'white' } : { borderColor: 'red' })
         },
         dropdownButtonTxtStyle: {
@@ -34,7 +33,7 @@ const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label,data
             fontFamily: 'Montserrat-Regular'
         },
         dropdownButtonArrowStyle: {
-            fontSize: 28,
+            fontSize: 22,
             color: '#666666'
         },
         dropdownButtonIconStyle: {
@@ -77,14 +76,14 @@ const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label,data
                         data={data}
                         dropdownOverlayColor="rgba(0, 0, 0,0.7)"
                         onSelect={(selectedItem) => {
-                            onChangeText(label== "Airline"?selectedItem.id:selectedItem.title)
+                            onChangeText(label == "Air line" ? selectedItem.airline_id : selectedItem.title)
                         }}
                         renderButton={(selectedItem, isOpened) => {
                             return (
                                 <View style={styleObj.dropdownButtonStyle}>
                                     <Text style={{
                                         ...styleObj.dropdownButtonTxtStyle,
-                                        color: selectedItem ? 'black' : '#DADADA'
+                                        color: selectedItem ? 'black' : global.placeholderColor
                                     }}>
                                         {(selectedItem && selectedItem.title) || placeholder}
                                     </Text>
@@ -94,9 +93,11 @@ const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label,data
                         }}
                         renderItem={(item, index, isSelected) => {
                             return (
-                                <View style={{ ...styleObj.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                                    <Text style={styleObj.dropdownItemTxtStyle}>{item.title}</Text>
-                                </View>
+                                <>
+                                    <View style={{ ...styleObj.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                                        <Text style={styleObj.dropdownItemTxtStyle}>{item.title}</Text>
+                                    </View>
+                                </>
                             );
                         }}
                         showsVerticalScrollIndicator={false}

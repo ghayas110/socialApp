@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, StatusBar, View, Text,Dimensions } from 'react-native'
+import { SafeAreaView, StyleSheet, StatusBar, View, Text, Dimensions } from 'react-native'
 import React from 'react'
 import ButtonC from '../components/button/index';
 import AntDedign from "react-native-vector-icons/AntDesign"
@@ -6,7 +6,7 @@ import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
 
-const LogIn = () => {
+const CheckIn = ({onLogin}) => {
   const navigation = useNavigation()
   const styles = StyleSheet.create({
     container: {
@@ -41,26 +41,31 @@ const LogIn = () => {
       width: "100%",
       position: 'absolute',
       top: Dimensions.get('window').height - 60,
-      flexDirection:"row",
-      alignItems:'flex-start',
-      justifyContent:'center',
-      textAlign:'center',
-      paddingHorizontal:30
+      flexDirection: "row",
+      alignItems: 'flex-start',
+      justifyContent: 'center',
+      textAlign: 'center',
+      paddingHorizontal: 30
     },
-    bottomSheetContentTextOne:{
-      fontSize:13,
-      fontFamily:'Montserrat-Regular',
-      flexDirection:'row',
-      alignItems:'center',
-      textAlign:'center',
-      color:'white'
+    bottomSheetContentTextOne: {
+      fontSize: 13,
+      fontFamily: 'Montserrat-Regular',
+      flexDirection: 'row',
+      alignItems: 'center',
+      textAlign: 'center',
+      color: 'white'
     },
-    bottomSheetContentTextTwo:{
-      fontSize:13,
-      fontFamily:'Montserrat-Regular',
-      color:'#69BE25',
+    bottomSheetContentTextTwo: {
+      fontSize: 13,
+      fontFamily: 'Montserrat-Regular',
+      color: '#69BE25',
     }
   })
+
+  const homeWithoutCheckIn = () => {
+    onLogin()
+  }
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -77,15 +82,14 @@ const LogIn = () => {
         </View>
         <View style={{ paddingHorizontal: 20, paddingVertical: 70, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <Text style={styles.CheckInHeading}>Would you like to check in ?</Text>
-          <View style={{paddingVertical:20}}>
+          <View style={{ paddingVertical: 20 }}>
             <ButtonC title="Yes" bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={() => navigation.navigate('CheckInDetail')} />
           </View>
-          <ButtonC title="No" bgColor={'#002245'} TextStyle={{ color: 'white' }} onPress={() => navigation.navigate('CheckInDetail')} />
+          <ButtonC title="No" bgColor={'#002245'} TextStyle={{ color: 'white' }} onPress={() => homeWithoutCheckIn()} />
         </View>
 
-
         <View style={styles.bottomSheetContent}>
-            <Text style={styles.bottomSheetContentTextOne}>Your CheckIn preference can be changed at any time in Settings.</Text>
+          <Text style={styles.bottomSheetContentTextOne}>Your CheckIn preference can be changed at any time in Settings.</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -93,4 +97,4 @@ const LogIn = () => {
   )
 }
 
-export default LogIn
+export default CheckIn

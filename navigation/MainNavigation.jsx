@@ -31,23 +31,23 @@ const MainNavigation = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const scheme = useColorScheme();
-
   useEffect(() => {
-    const VerifyToken = async () => {
-      try {
-        const value = await AsyncStorage.getItem('Token');
-        console.log(value)
-        if (value !== null) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
-      } catch (e) {
-        setIsLoggedIn(false);
-      }
-    }
     VerifyToken()
   }, [])
+
+  const VerifyToken = async () => {
+    try {
+      const value = await AsyncStorage.getItem('Token');
+      console.log(value)
+      if (value !== null) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    } catch (e) {
+      setIsLoggedIn(false);
+    }
+  }
   return (
     <NavigationContainer>
       {isLoggedIn ?
@@ -126,10 +126,14 @@ const MainNavigation = () => {
           <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="Login" >
             {(props) => <Login {...props} onLogin={() => setIsLoggedIn(true)} />}
           </Stack.Screen>
+          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="CheckIn" >
+            {(props) => <CheckIn {...props} onLogin={() => setIsLoggedIn(true)} />}
+          </Stack.Screen>
+          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="CheckInDetail" >
+            {(props) => <CheckInDetail {...props} onLogin={() => setIsLoggedIn(true)} />}
+          </Stack.Screen>
           <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="SignUp" component={SignUp} />
           <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="Otp" component={Otp} />
-          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="CheckIn" component={CheckIn} />
-          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="CheckInDetail" component={CheckInDetail} />
           <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="ResetPassword" component={ResetPassword} />
           <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="PasswordChanged" component={PasswordChanged} />
 

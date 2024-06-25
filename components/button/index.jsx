@@ -1,5 +1,7 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, ActivityIndicator, Image } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, ActivityIndicator, Dimensions } from "react-native"
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 
 const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImage, Image, onpress2}) => {
@@ -9,9 +11,9 @@ const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImag
             alignItems: "center",
             justifyContent: "center",
             borderRadius: 30,
-            height: 48,
+            height: windowHeight * 0.07,
             ...BtnStyle,
-            width:181,  
+            width:windowWidth * 0.5,  
         },
         btnText: {
             fontFamily: 'Montserrat-Bold',

@@ -102,7 +102,7 @@ const SignUp = () => {
       fontFamily: 'Montserrat-Italic',
       flexDirection: 'row',
       alignItems: 'center',
-      color:'white'
+      color: 'white'
     },
   })
   const onSubmit = data => {

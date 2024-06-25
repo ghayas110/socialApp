@@ -1,27 +1,28 @@
 import React, { useState } from "react";
-import { StyleSheet, TextInput, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, TextInput, Text, View, TouchableOpacity,Dimensions } from "react-native";
 import Feather from 'react-native-vector-icons/Feather'
+import { global } from "../constant";
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 
 const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label,error }) => {
     const style = StyleSheet.create({
         Input: {
-            borderWidth: 0,
-            borderRadius: 30,
-            paddingHorizontal: 15,
-            backgroundColor: '#FFFFFF',
-            width: '100%',
-            fontFamily: 'Montserrat-Regular',
-            lineHeight: 23,
             fontSize: 14,
-            height: 48,
-            color: 'black',
+            paddingHorizontal: global.inputPaddingH,
+            backgroundColor: '#FFFFFF',
+            width: global.inputWidth,
+            fontFamily: 'Montserrat-Regular',
+            height: global.inputHeight,
+            color: global.black,
+            borderRadius: 30,
             borderWidth:1,
-            ...(error === undefined ? { borderColor: 'white' } : { borderColor: 'red' })
+            ...(error === undefined ? { borderColor: global.white } : { borderColor: 'red' })
         },
         labelS: {
-            color: "white",
+            color: global.white,
             fontFamily: "Montserrat-Regular",
             fontSize: 13,
             paddingBottom: 4,
@@ -41,9 +42,9 @@ const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label,error
                     <Text style={style.labelS}>{label}</Text>
                 </View>
                 <View style={{ position: 'relative' }}>
-                    <TextInput value={value} onChangeText={onChangeText} style={style.Input} placeholder={placeholder} secureTextEntry={secureTextEntry == true ? isSecure : secureTextEntry} placeholderTextColor="#DADADA" />
+                    <TextInput value={value} onChangeText={onChangeText} style={style.Input} placeholder={placeholder} secureTextEntry={secureTextEntry == true ? isSecure : secureTextEntry} placeholderTextColor={global.placeholderColor} />
                     {secureTextEntry == true ?
-                        <TouchableOpacity onPress={() => setIsSecure(!isSecure)} style={{ position: 'absolute', height: 48, width: 48, right: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                        <TouchableOpacity onPress={() => setIsSecure(!isSecure)} style={{ position: 'absolute', height: windowHeight * 0.07, width: windowWidth * 0.10, right: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                             <Feather name={isSecure ? "eye-off" : "eye"} size={13} color={'black'} />
                         </TouchableOpacity>
                         : ""

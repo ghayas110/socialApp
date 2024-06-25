@@ -1,5 +1,5 @@
-import { SafeAreaView, StyleSheet, StatusBar, View, Dimensions, Text } from 'react-native'
-import React from 'react'
+import { SafeAreaView, StyleSheet, StatusBar, View, Modal, Text, Pressable, Dimensions } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import InputC from '../components/inputs/index';
 import ButtonC from '../components/button/index';
 import * as yup from 'yup';
@@ -14,11 +14,22 @@ import * as UserRegisterAction from "../store/actions/UserRegister/index";
 import { connect } from "react-redux";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import TextC from '../components/text/text';
+import baseUrl from '../store/config.json'
 
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const SignUp = ({ insertUser, RegisterUserReducer }) => {
   const navigation = useNavigation()
+  const [modalVisible, setModalVisible] = useState(false);
+  const [flight, setFlight] = useState([])
+
+  useEffect(() => {
+    getAirlines()
+  }, [])
+
   const schema = yup.object().shape({
     userName: yup
       .string()
@@ -121,6 +132,34 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
       fontSize: 13,
       fontFamily: 'Montserrat-Regular',
       color: '#69BE25',
+    },
+    centeredView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)'
+    },
+    modalView: {
+      width: windowWidth * 0.7,
+      height: windowHeight * 0.5,
+      backgroundColor: '#7891C2',
+      borderRadius: 20,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+      paddingHorizontal: 20,
+      paddingVertical: 20,
+    },
+    modalTextHeading: {
+      fontFamily: 'Montserrat-Bold',
+      fontSize: 13,
+      color: 'white',
     }
   })
   const onSubmit = async (data) => {
@@ -137,16 +176,16 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
       if (Responce == 'Signup successfull') {
         navigation.navigate('Otp')
       }
-      else if (Responce == 'Email already exists'){
+      else if (Responce == 'Email already exists') {
         Toast.show({
           type: 'error',
           text1: 'Email already exist',
           text2: 'Please change the email address.',
-          text1Style:{
-            fontFamily:'Montserrat-Regular'
+          text1Style: {
+            fontFamily: 'Montserrat-Regular'
           },
-          text2Style:{
-            fontFamily:'Montserrat-Bold'
+          text2Style: {
+            fontFamily: 'Montserrat-Bold'
           },
         });
       }
@@ -159,11 +198,29 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
     { title: 'PILOT', icon: 'emoticon-cool-outline' },
     { title: 'TECHNICIAN', icon: 'emoticon-lol-outline' },
   ];
-  const Flights = [
-    { title: 'Pakistan Internationa airport', id: 1 },
-    { title: 'Qatar Airlines', id: 2 },
-    { title: 'Dubai internation', id: 3 },
-  ];
+
+  const getAirlines = async () => {
+    try {
+      const response = await fetch(`${baseUrl.baseUrl}/airline/GetAllAirlines`, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': baseUrl.apiKey,
+        },
+      });
+      const res = await response.json()
+      setFlight(res?.data)
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+
+
+
+ 
+
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -173,6 +230,69 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
           <TouchableOpacity>
             <AntDedign name='left' size={22} color={'#69BE25'} />
           </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <AntDedign name='infocirlceo' size={22} color={'#69BE25'} />
+          </TouchableOpacity>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(!modalVisible);
+            }}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <View style={{ paddingBottom: 15, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <AntDedign name='infocirlceo' size={16} color={'white'} />
+                    <TextC size={18} text={"Form Info"} style={{ color: 'white', marginLeft: 5 }} font={"Montserrat-Bold"} />
+                  </View>
+                  <TouchableOpacity onPress={() => setModalVisible(false)}>
+                    <AntDedign name='close' size={22} color={'white'} />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={{ paddingBottom: 15 }}>
+                  <TextC text={"User name"} style={{ color: 'white' }} font={"Montserrat-Bold"} />
+                  <TextC size={12} text={"user name is required."} style={{ color: 'white' }} font={"Montserrat-Regular"} />
+                </View>
+
+                <View style={{ paddingBottom: 15 }}>
+                  <TextC text={"Air line"} style={{ color: 'white' }} font={"Montserrat-Bold"} />
+                  <TextC size={12} text={"air line is required."} style={{ color: 'white' }} font={"Montserrat-Regular"} />
+                </View>
+
+                <View style={{ paddingBottom: 15 }}>
+                  <TextC text={"Position"} style={{ color: 'white' }} font={"Montserrat-Bold"} />
+                  <TextC size={12} text={"position is required."} style={{ color: 'white' }} font={"Montserrat-Regular"} />
+                </View>
+
+                <View style={{ paddingBottom: 15 }}>
+                  <TextC text={"Email"} style={{ color: 'white' }} font={"Montserrat-Bold"} />
+                  <TextC size={12} text={"email is required."} style={{ color: 'white' }} font={"Montserrat-Regular"} />
+                </View>
+
+                <View style={{ paddingBottom: 15 }}>
+                  <TextC text={"Email"} style={{ color: 'white' }} font={"Montserrat-Bold"} />
+                  <TextC size={12} text={"Email is required."} style={{ color: 'white' }} font={"Montserrat-Regular"} />
+                </View>
+
+                <View style={{ paddingBottom: 15 }}>
+                  <TextC text={"Password"} style={{ color: 'white' }} font={"Montserrat-Bold"} />
+                  <TextC size={12} text={"Password must be 8+ characters."} style={{ color: 'white' }} font={"Montserrat-Regular"} />
+                </View>
+
+                <View style={{ paddingBottom: 15 }}>
+                  <TextC text={"Terms & privacy"} style={{ color: 'white' }} font={"Montserrat-Bold"} />
+                  <TextC size={12} text={"Accept terms & privacy policy."} style={{ color: 'white' }} font={"Montserrat-Regular"} />
+                </View>
+
+
+              </View>
+            </View>
+          </Modal>
         </View>
         <View style={styles.titleWrapper}>
           <Text style={styles.titleTextFirst}>Let's, <Text style={styles.titleTextSecond}>get</Text></Text>
@@ -197,7 +317,7 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
               required: true,
             }}
             render={({ field: { onChange, value } }) => (
-              <SelectC label={"Airline"} data={Flights} placeholder={'Select airline'} error={errors?.airline?.message} value={value} onChangeText={onChange} secureTextEntry={false} />
+              <SelectC label={"Air line"} data={flight} placeholder={'Select airline'} error={errors?.airline?.message} value={value} onChangeText={onChange} secureTextEntry={false} />
             )}
             name="airline"
           />
@@ -259,9 +379,11 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
             render={({ field: { onChange, value } }) => (
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                 <CheckBox
+                  // containerStyle={{backgroundColor:'red'}}
                   title="I accept the terms and privacy policy"
                   containerStyle={{ backgroundColor: "transparent" }}
-                  textStyle={{ fontFamily: "Montserrat-Regular", color: errors?.termsOfService?.message == undefined ? 'white' : 'red', fontSize: 12 }}
+                  fontFamily={'Montserrat-Bold'}
+                  textStyle={{ color: errors?.termsOfService?.message == undefined ? 'white' : 'red', fontSize: 12 }}
                   checked={value}
                   checkedColor='white'
                   onPress={() => onChange(!value)}
