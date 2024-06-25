@@ -8,11 +8,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import AntDedign from "react-native-vector-icons/AntDesign"
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { CheckBox } from '@rneui/themed';
-import { useSharedValue } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import SelectC from '../components/select';
 import * as UserRegisterAction from "../store/actions/UserRegister/index";
 import { connect } from "react-redux";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
+
 
 
 const SignUp = ({ insertUser, RegisterUserReducer }) => {
@@ -45,6 +47,7 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
     control,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -121,19 +124,35 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
     }
   })
   const onSubmit = async (data) => {
-    // const Responce = await insertUser({
-    //   user_name: data?.userName,
-    //   email: data?.email,
-    //   password: data?.password,
-    //   user_type: data?.position,
-    //   airline: data?.airline
-    // })
-    // if(Responce == 'Signup successfull'){
-    // }
-    navigation.navigate('Otp')
-    // else{
-
-    // }
+    try {
+      await AsyncStorage.removeItem('email');
+      await AsyncStorage.setItem('email', data.email);
+      const Responce = await insertUser({
+        user_name: data?.userName,
+        email: data?.email,
+        password: data?.password,
+        user_type: data?.position,
+        airline: data?.airline
+      })
+      if (Responce == 'Signup successfull') {
+        navigation.navigate('Otp')
+      }
+      else if (Responce == 'Email already exists'){
+        Toast.show({
+          type: 'error',
+          text1: 'Email already exist',
+          text2: 'Please change the email address.',
+          text1Style:{
+            fontFamily:'Montserrat-Regular'
+          },
+          text2Style:{
+            fontFamily:'Montserrat-Bold'
+          },
+        });
+      }
+    } catch (e) {
+      console.log(e)
+    }
   };
   const Positions = [
     { title: 'FLIGHT ATTENDANT', icon: 'emoticon-happy-outline' },
@@ -146,14 +165,11 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
     { title: 'Dubai internation', id: 3 },
   ];
 
-
-  console.log(RegisterUserReducer?.data, 'ookkk')
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <StatusBar backgroundColor={'#05348E'} />
-        <View style={{ paddingTop: 20, paddingBottom: 10, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ paddingTop: 40, paddingBottom: 10, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <TouchableOpacity>
             <AntDedign name='left' size={22} color={'#69BE25'} />
           </TouchableOpacity>
@@ -256,7 +272,7 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
           />
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 5 }}>
-          <ButtonC title="Sign Up" bgColor={'#69BE25'} loading={RegisterUserReducer?.loading} TextStyle={{ color: '#002245' }} onPress={()=>navigation.navigate('Otp')} />
+          <ButtonC title="Sign Up" bgColor={'#69BE25'} loading={RegisterUserReducer?.loading} TextStyle={{ color: '#002245' }} onPress={handleSubmit(onSubmit)} />
         </View>
         <View style={styles.bottomSheetContent}>
           <Text style={styles.bottomSheetContentTextOne}>Already have an account? </Text><TouchableOpacity onPress={() => navigation.navigate('Login')}><Text style={styles.bottomSheetContentTextTwo}>Log in</Text></TouchableOpacity>

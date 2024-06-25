@@ -7,14 +7,15 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AntDedign from "react-native-vector-icons/AntDesign"
 import Entypo from 'react-native-vector-icons/Entypo'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { CheckBox } from '@rneui/themed';
 import Animated, { useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
+import * as LoginUserAction from "../store/actions/UserLogin/index";
+import { connect } from "react-redux";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
-
-const LogIn = () => {
+const LogIn = ({ onLogin, LoginReducer, loginUser }) => {
   const navigation = useNavigation()
   const width = useSharedValue(0);
   const schema = yup.object().shape({
@@ -110,9 +111,33 @@ const LogIn = () => {
       fontSize: 12
     }
   })
-  const onSubmit = data => {
-    console.log(data);
-    alert('Form submitted successfully!');
+
+
+
+  const onSubmit = async (data) => {
+    const LoginStart = await loginUser({
+      email: data.email,
+      password: data.password
+    })
+    console.log(LoginStart)
+    if (LoginStart?.message == "Login successful") {
+      await AsyncStorage.removeItem('Token');
+      await AsyncStorage.setItem('Token', LoginStart.access_token);
+      onLogin()
+    }
+    else if(LoginStart?.message == "Invalid Email or Password"){
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid Email or Password',
+        text2: 'Please change the email and password and try again',
+        text1Style:{
+          fontFamily:'Montserrat-Regular'
+        },
+        text2Style:{
+          fontFamily:'Montserrat-Bold'
+        },
+      });
+    }
   };
   const CloseError = () => {
     width.value = withTiming(0)
@@ -121,31 +146,10 @@ const LogIn = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <StatusBar backgroundColor={'#05348E'} />
-        <View style={{ padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ paddingTop: 40, paddingBottom: 10, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <TouchableOpacity>
-            <AntDedign name='arrowleft' size={32} color={'#69BE25'} />
+            <AntDedign name='left' size={22} color={'#69BE25'} />
           </TouchableOpacity>
-          <View style={styles.errorArea}>
-            <Animated.View
-              style={{
-                ...(Object.keys(errors).length == 0 ? { width: width.value = withTiming(0) } : { backgroundColor: width.value = withSpring(250) }),
-                width,
-                height: 35,
-                backgroundColor: 'white',
-                borderRadius: 30,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity onPress={CloseError}>
-                <Entypo name='circle-with-cross' color={'#ff4f4f'} size={25} style={{ paddingHorizontal: 5 }} />
-              </TouchableOpacity>
-              <Text style={{ color: 'black', fontSize: 12, fontFamily: "Montserrat-Regular" }}>
-                {errors?.email?.message ? errors?.email?.message :
-                  errors?.password?.message ? errors?.password?.message : ""}</Text>
-            </Animated.View>
-
-
-          </View>
         </View>
         <View style={styles.titleWrapper}>
           <Text style={styles.titleTextFirst}>Hey,</Text>
@@ -188,29 +192,20 @@ const LogIn = () => {
 
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 5 }}>
-          <ButtonC title="Sign In" bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={() => navigation.navigate('CheckIn')} />
+          <ButtonC title="Sign In" loading={LoginReducer?.loading} bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={handleSubmit(onSubmit)} />
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 15 }}>
           <Text style={styles.bottomSheetContentTextOne}>Don’t have an account? </Text><TouchableOpacity onPress={() => navigation.navigate('SignUp')}><Text style={styles.bottomSheetContentTextTwo}>Sign up</Text></TouchableOpacity>
         </View>
 
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 0 }}>
-          <TouchableOpacity style={styles.socialLoginBtn}>
-            <FontAwesome name='facebook' size={22} color={'black'} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialLoginBtn}>
-            <AntDedign name='google' size={22} color={'black'} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialLoginBtn}>
-            <AntDedign name='apple1' size={22} color={'black'} />
-          </TouchableOpacity>
-        </View>
       </ScrollView>
     </SafeAreaView>
 
   )
 }
 
-export default LogIn
+function mapStateToProps({ LoginReducer }) {
+  return { LoginReducer };
+}
+export default connect(mapStateToProps, LoginUserAction)(LogIn);

@@ -31,6 +31,23 @@ const MainNavigation = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const scheme = useColorScheme();
+
+  useEffect(() => {
+    const VerifyToken = async () => {
+      try {
+        const value = await AsyncStorage.getItem('Token');
+        console.log(value)
+        if (value !== null) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (e) {
+        setIsLoggedIn(false);
+      }
+    }
+    VerifyToken()
+  }, [])
   return (
     <NavigationContainer>
       {isLoggedIn ?

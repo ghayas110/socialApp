@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetProvider } from './components/bottomSheet/BottomSheet';
 import store from './store/index';
 import { Provider } from 'react-redux';
+import Toast from 'react-native-toast-message';
 
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
         <BottomSheetProvider>
           <Provider store={store}>
             <MainNavigation />
+            <Toast />
           </Provider>
         </BottomSheetProvider>
       </GestureHandlerRootView>

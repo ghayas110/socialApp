@@ -1,18 +1,17 @@
 import baseUrl from '../../config.json'
 import {
-    TASK_REGISTER_START,
-    TASK_REGISTER_COMPLETE,
-    TASK_REGISTER_END,
+    TASK_OTP_VERIFICATION_START,
+    TASK_OTP_VERIFICATION_END,
 } from '../types'
 
 
-export const insertUser = (body) => async (dispatch) => {
+export const verifyOtp = (body) => async (dispatch) => {
     try {
         dispatch({
-            type: TASK_REGISTER_START,
+            type: TASK_OTP_VERIFICATION_START,
             loading: true,
         });
-        const response = await fetch(`${baseUrl.baseUrl}/users/signup`, {
+        const response = await fetch(`${baseUrl.baseUrl}/users/verify-otp`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -22,14 +21,14 @@ export const insertUser = (body) => async (dispatch) => {
         });
         const res = await response.json()
         dispatch({
-            type: TASK_REGISTER_COMPLETE,
+            type: TASK_OTP_VERIFICATION_END,
             loading: false,
         });
-        return res.message
+        return res
     }
     catch (error) {
         dispatch({
-            type: TASK_REGISTER_END,
+            type: TASK_OTP_VERIFICATION_END,
             loading: false,
         });
         console.log(error)

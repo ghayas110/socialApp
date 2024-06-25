@@ -6,7 +6,6 @@ import {
 
 
 const initState = {
-    data: "",
     loading: false,
 }
 
@@ -16,19 +15,16 @@ const registerUserReducer = (state = initState, action) => {
             return {
                 ...state,
                 loading: action.loading,
-                data: action.payload,
             };
         case TASK_REGISTER_COMPLETE:
             return {
                 ...state,
                 loading: action.loading,
-                data: action.payload,
             };
         case TASK_REGISTER_END:
             return {
                 ...state,
                 loading: action.loading,
-                data: action.payload,
             };
         default:
             return state;
