@@ -26,7 +26,6 @@ const LogIn = ({ onLogin, LoginReducer, loginUser }) => {
     password: yup
       .string()
       .required('Password is required')
-      .min(8, 'Password must be 8+ characters.'),
   });
   const {
     control,
@@ -192,7 +191,7 @@ const LogIn = ({ onLogin, LoginReducer, loginUser }) => {
 
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 5 }}>
-          <ButtonC title="Sign In" loading={LoginReducer?.loading} bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={handleSubmit(onSubmit)} />
+          <ButtonC title="Sign In" disabled={LoginReducer?.loading} loading={LoginReducer?.loading} bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={handleSubmit(onSubmit)} />
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 15 }}>

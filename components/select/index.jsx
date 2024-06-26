@@ -73,22 +73,37 @@ const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label, dat
                 </View>
                 <View>
                     <SelectDropdown
+                        disableAutoScroll={true}
                         data={data}
                         dropdownOverlayColor="rgba(0, 0, 0,0.7)"
                         onSelect={(selectedItem) => {
+                            console.log(selectedItem)
                             onChangeText(label == "Air line" ? selectedItem.airline_id : selectedItem.title)
                         }}
+                        disabled={data?.length < 0 || data == undefined || data == null ? true : false}
+                        search={true}
                         renderButton={(selectedItem, isOpened) => {
                             return (
-                                <View style={styleObj.dropdownButtonStyle}>
-                                    <Text style={{
-                                        ...styleObj.dropdownButtonTxtStyle,
-                                        color: selectedItem ? 'black' : global.placeholderColor
-                                    }}>
-                                        {(selectedItem && selectedItem.title) || placeholder}
-                                    </Text>
-                                    <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styleObj.dropdownButtonArrowStyle} />
-                                </View>
+                                <>
+
+                                    <View style={styleObj.dropdownButtonStyle}>
+                                        {data?.length < 0 || data == undefined || data == null ?
+                                            <ActivityIndicator color={'black'} />
+                                            :
+                                            <>
+                                                <Text style={{
+                                                    ...styleObj.dropdownButtonTxtStyle,
+                                                    color: selectedItem ? 'black' : global.placeholderColor
+                                                }}>
+                                                    {(selectedItem && selectedItem.title) || placeholder}
+                                                </Text>
+                                                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styleObj.dropdownButtonArrowStyle} />
+                                            </>
+                                        }
+
+                                    </View>
+                                </>
+
                             );
                         }}
                         renderItem={(item, index, isSelected) => {

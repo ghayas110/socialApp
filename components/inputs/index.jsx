@@ -7,7 +7,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label,error }) => {
+const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label,error,type,max}) => {
     const style = StyleSheet.create({
         Input: {
             fontSize: 14,
@@ -42,7 +42,7 @@ const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label,error
                     <Text style={style.labelS}>{label}</Text>
                 </View>
                 <View style={{ position: 'relative' }}>
-                    <TextInput value={value} onChangeText={onChangeText} style={style.Input} placeholder={placeholder} secureTextEntry={secureTextEntry == true ? isSecure : secureTextEntry} placeholderTextColor={global.placeholderColor} />
+                    <TextInput maxLength={max} keyboardType={type} value={value} onChangeText={onChangeText} style={style.Input} placeholder={placeholder} secureTextEntry={secureTextEntry == true ? isSecure : secureTextEntry} placeholderTextColor={global.placeholderColor} />
                     {secureTextEntry == true ?
                         <TouchableOpacity onPress={() => setIsSecure(!isSecure)} style={{ position: 'absolute', height: windowHeight * 0.07, width: windowWidth * 0.10, right: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                             <Feather name={isSecure ? "eye-off" : "eye"} size={13} color={'black'} />

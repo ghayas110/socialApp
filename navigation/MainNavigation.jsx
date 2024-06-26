@@ -24,7 +24,7 @@ import EventHeader from '../components/mainHeader/event';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { ProfileStackNavigation, EventStackNavigation } from './StackNavigation';
-
+import LoginSwitcher from '../pages/LoginSwitcher';
 
 const MainNavigation = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
@@ -122,20 +122,22 @@ const MainNavigation = () => {
         <Stack.Navigator screenOptions={{
           headerShown: false
         }}>
-          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="SplashScreen" component={SplashScreen} />
-          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="Login" >
+          <Stack.Screen options={{ navigationBarHidden: true }} name="SplashScreen" component={SplashScreen} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="LoginSwitcher" component={LoginSwitcher} />
+          
+          <Stack.Screen options={{ navigationBarHidden: true }} name="Login" >
             {(props) => <Login {...props} onLogin={() => setIsLoggedIn(true)} />}
           </Stack.Screen>
-          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="CheckIn" >
+          <Stack.Screen options={{ navigationBarHidden: true }} name="CheckIn" >
             {(props) => <CheckIn {...props} onLogin={() => setIsLoggedIn(true)} />}
           </Stack.Screen>
-          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="CheckInDetail" >
+          <Stack.Screen options={{ navigationBarHidden: true }} name="CheckInDetail" >
             {(props) => <CheckInDetail {...props} onLogin={() => setIsLoggedIn(true)} />}
           </Stack.Screen>
-          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="SignUp" component={SignUp} />
-          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="Otp" component={Otp} />
-          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="ResetPassword" component={ResetPassword} />
-          <Stack.Screen options={{ navigationBarColor: '#05348E' }} name="PasswordChanged" component={PasswordChanged} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="SignUp" component={SignUp} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="Otp" component={Otp} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="ResetPassword" component={ResetPassword} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="PasswordChanged" component={PasswordChanged} />
 
         </Stack.Navigator>
       }

@@ -15,19 +15,19 @@ import { connect } from "react-redux";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import TextC from '../components/text/text';
-import baseUrl from '../store/config.json'
 
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const SignUp = ({ insertUser, RegisterUserReducer }) => {
+const SignUp = ({ insertUser, RegisterUserReducer,getAllAirline }) => {
   const navigation = useNavigation()
   const [modalVisible, setModalVisible] = useState(false);
-  const [flight, setFlight] = useState([])
+  const [allAirLine, setAllAirLine] = useState()
+
 
   useEffect(() => {
-    getAirlines()
+    LoadAirLine()
   }, [])
 
   const schema = yup.object().shape({
@@ -199,27 +199,10 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
     { title: 'TECHNICIAN', icon: 'emoticon-lol-outline' },
   ];
 
-  const getAirlines = async () => {
-    try {
-      const response = await fetch(`${baseUrl.baseUrl}/airline/GetAllAirlines`, {
-        method: "GET",
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': baseUrl.apiKey,
-        },
-      });
-      const res = await response.json()
-      setFlight(res?.data)
-    }
-    catch (error) {
-      console.log(error)
-    }
+  const LoadAirLine = async () => {
+    const loadAllAirLineDetail = await getAllAirline()
+    setAllAirLine(loadAllAirLineDetail?.data)
   }
-
-
-
- 
-
 
 
   return (
@@ -305,7 +288,7 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
               required: true,
             }}
             render={({ field: { onChange, value } }) => (
-              <InputC label={"User name"} error={errors?.userName?.message} value={value} onChangeText={onChange} placeholder={"User name"} secureTextEntry={false} />
+              <InputC label={"User name"} max={20} error={errors?.userName?.message} value={value} onChangeText={onChange} placeholder={"User name"} secureTextEntry={false} />
             )}
             name="userName"
           />
@@ -317,7 +300,7 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
               required: true,
             }}
             render={({ field: { onChange, value } }) => (
-              <SelectC label={"Air line"} data={flight} placeholder={'Select airline'} error={errors?.airline?.message} value={value} onChangeText={onChange} secureTextEntry={false} />
+              <SelectC label={"Air line"} data={allAirLine} placeholder={'Select airline'} error={errors?.airline?.message} value={value} onChangeText={onChange} secureTextEntry={false} />
             )}
             name="airline"
           />
@@ -394,7 +377,7 @@ const SignUp = ({ insertUser, RegisterUserReducer }) => {
           />
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 5 }}>
-          <ButtonC title="Sign Up" bgColor={'#69BE25'} loading={RegisterUserReducer?.loading} TextStyle={{ color: '#002245' }} onPress={handleSubmit(onSubmit)} />
+          <ButtonC title="Sign Up" bgColor={'#69BE25'} disabled={RegisterUserReducer?.loading} loading={RegisterUserReducer?.loading} TextStyle={{ color: '#002245' }} onPress={handleSubmit(onSubmit)} />
         </View>
         <View style={styles.bottomSheetContent}>
           <Text style={styles.bottomSheetContentTextOne}>Already have an account? </Text><TouchableOpacity onPress={() => navigation.navigate('Login')}><Text style={styles.bottomSheetContentTextTwo}>Log in</Text></TouchableOpacity>

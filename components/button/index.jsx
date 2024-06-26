@@ -4,7 +4,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImage, Image, onpress2}) => {
+const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImage, disabled, onpress2}) => {
     const style = StyleSheet.create({
         button: {
             backgroundColor: bgColor,
@@ -23,7 +23,7 @@ const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImag
     })
     return (
         <>
-            <TouchableOpacity onPress={onPress} disabled={loading} style={style.button} onPressIn={onpress2}>
+            <TouchableOpacity onPress={onPress} disabled={disabled} style={style.button} onPressIn={onpress2}>
                 {loading ?
                     <ActivityIndicator style={style.btnText} color="white" />
                     :

@@ -34,3 +34,22 @@ export const verifyOtp = (body) => async (dispatch) => {
         console.log(error)
     }
 }
+
+
+export const ResendOtp = (body) => async (dispatch) => {
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/users/resend-otp`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+            },
+            body: JSON.stringify(body)
+        });
+        const res = await response.json()
+        return res
+    }
+    catch (error) {
+        console.log(error)
+    }
+}

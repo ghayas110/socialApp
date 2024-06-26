@@ -1,12 +1,27 @@
 import { SafeAreaView, StyleSheet, StatusBar, View, Text, Dimensions } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ButtonC from '../components/button/index';
 import AntDedign from "react-native-vector-icons/AntDesign"
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const CheckIn = ({onLogin}) => {
+
+
+const windowWidth = Dimensions.get('window').width;
+
+const CheckIn = ({ onLogin }) => {
+  const [userName, setUserName] = useState()
+  useEffect(() => {
+    LoadName()
+  })
+
+
+  const LoadName = async () => {
+    const value = await AsyncStorage.getItem('UserName');
+    setUserName(value)
+  }
   const navigation = useNavigation()
   const styles = StyleSheet.create({
     container: {
@@ -27,7 +42,8 @@ const CheckIn = ({onLogin}) => {
       fontFamily: 'Montserrat-ExtraBold',
       fontSize: 42,
       color: '#69BE25',
-      lineHeight: 50
+      lineHeight: 50,
+      width:windowWidth * 0.7
     },
     CheckInHeading: {
       fontFamily: 'Montserrat-SemiBold',
@@ -78,7 +94,7 @@ const CheckIn = ({onLogin}) => {
         </View>
         <View style={styles.titleWrapper}>
           <Text style={styles.titleTextFirst}>Welcome,</Text>
-          <Text style={styles.titleTextSecond}>Anthony T.</Text>
+          <Text style={styles.titleTextSecond} size={14} ellipsizeMode={"tail"} numberOfLines={1}>{userName}</Text>
         </View>
         <View style={{ paddingHorizontal: 20, paddingVertical: 70, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <Text style={styles.CheckInHeading}>Would you like to check in ?</Text>
