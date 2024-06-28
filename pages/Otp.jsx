@@ -9,7 +9,7 @@ import { OtpInput } from "react-native-otp-entry";
 import * as VrifyOtpAction from "../store/actions/VerifyOtp/index";
 import { connect } from "react-redux";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Toast from 'react-native-toast-message';
+import { ResposiveSize } from '../components/constant';
 
 const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
   const optInput = useRef()
@@ -21,6 +21,10 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
   const [seconds, setSeconds] = useState(60);
   const [isActive, setIsActive] = useState(false);
   const [loader, setLoader] = useState(false);
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
+
+
 
   useEffect(() => {
     let interval = null;
@@ -46,22 +50,6 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
     emailreciver()
   }, [])
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#05348E'
-    },
-    wrapper: {
-      paddingHorizontal: 20,
-      paddingTop: 120
-    },
-    OtpHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    }
-  })
-
   const onSubmit = async () => {
     const email = await AsyncStorage.getItem('email');
     if (opt.length == 5) {
@@ -69,6 +57,7 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
         email: email,
         otp: opt
       })
+      console.log(verifyOtpLoad)
       if (verifyOtpLoad.message == "User Verified") {
         await AsyncStorage.removeItem('Token');
         await AsyncStorage.removeItem('UserName');
@@ -104,17 +93,7 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
     else if (resendOtp.message == "You have exceeded the maximum number of OTP requests per hour. Please try again later") {
       optInput.current.clear()
       setLoader(false)
-      Toast.show({
-        type: 'error',
-        text1: 'Maximum limit exceeded',
-        text2: 'Exceeded the maximum number of OTP requests per hour.',
-        text1Style: {
-          fontFamily: 'Montserrat-Regular'
-        },
-        text2Style: {
-          fontFamily: 'Montserrat-Bold'
-        },
-      });
+      // Toast.show("Exceeded the maximum number of OTP requests per hour.")
     }
     else {
       setLoader(false)
@@ -123,71 +102,109 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
   };
 
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#05348E'
+    },
+    bodyWrapper: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      paddingHorizontal: ResposiveSize(15)
+    },
+    header: {
+      paddingTop: windowHeight * 0.06,
+      width: windowWidth - ResposiveSize(30),
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    },
+    contentWrapper: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingTop: windowHeight * 0.1
+    },
+    centerContentWrapper: {
+      paddingVertical: windowHeight * 0.03
+    },
+    inputWrapper: {
+      paddingHorizontal: ResposiveSize(20)
+    },
+    loginBtnWrapper: {
+      paddingTop: windowHeight * 0.03,
+    },
+    gobackBtn: {
+      width: windowWidth * 0.08,
+      height: windowHeight * 0.04,
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      justifyContent: 'center',
+    },
+  })
 
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <StatusBar backgroundColor={'#05348E'} />
-        <View style={styles.wrapper}>
-          <View style={styles.OtpHeader}>
-            <TouchableOpacity>
-              <AntDedign name='left' size={18} color={'#69BE25'} />
-            </TouchableOpacity>
-            <TextC text={"Enter code"} size={22} style={{ color: "#69BE25" }} font={'Montserrat-Bold'} />
-            <View style={{ width: 22 }}></View>
-          </View>
-          <View style={{ paddingHorizontal: 20, paddingTop: 30, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <TextC text={"We’ve sent an Email with an activation"} size={16} style={{ color: "white", textAlign: 'center' }} font={'Montserrat-Regular'} />
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TextC text={"code to your account"} size={16} style={{ color: "white", textAlign: 'center' }} font={'Montserrat-Regular'} />
-              <TextC text={emailState} size={16} style={{ color: "#69BE25", textAlign: 'center', marginLeft: 4, width: 140 }} font={'Montserrat-Bold'} ellipsizeMode={"tail"} numberOfLines={1} />
+        <View style={styles.bodyWrapper}>
+          <View style={styles.contentWrapper}>
+            <View style={styles.header}>
+              <Pressable style={styles.gobackBtn} onPress={navigation.goBack}>
+                <AntDedign name='left' size={ResposiveSize(20)} color={'#69BE25'} />
+              </Pressable>
+              <TextC text={"Enter code"} size={ResposiveSize(22)} style={{ color: "#69BE25" }} font={'Montserrat-Bold'} />
+              <View style={{ width: ResposiveSize(20) }}></View>
+            </View>
+            <View style={styles.centerContentWrapper}>
+              <TextC text={"We’ve sent an Email with an activation"} size={ResposiveSize(12)} style={{ color: "white", textAlign: 'center' }} font={'Montserrat-Regular'} />
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TextC text={"code to your account"} size={ResposiveSize(12)} style={{ color: "white", textAlign: 'center' }} font={'Montserrat-Regular'} />
+                <TextC text={emailState} size={ResposiveSize(12)} style={{ color: "#69BE25", textAlign: 'center', marginLeft: ResposiveSize(4), width: ResposiveSize(100) }} font={'Montserrat-Bold'} ellipsizeMode={"tail"} numberOfLines={1} />
+              </View>
             </View>
           </View>
-
-
-          <View style={{ paddingHorizontal: 10, paddingTop: 30 }}>
+          <View style={styles.inputWrapper}>
             <OtpInput ref={optInput} focusColor={'#69BE25'}
               inputsContainerStyle={{
-                color: '#69BE25'
+                color: '#69BE25',
               }}
-              theme={{ pinCodeContainerStyle: { backgroundColor: 'white', borderWidth: 1, borderColor: otpError ? 'red' : '#69BE25', width: 55 } }}
+              theme={{
+                pinCodeTextStyle: { fontSize: ResposiveSize(29), fontFamily: 'Montserrat-Medium', color: 'black' },
+                pinCodeContainerStyle: { backgroundColor: 'white', borderWidth: 1, borderColor: otpError ? 'red' : '#69BE25', width: ResposiveSize(45), height: ResposiveSize(55) },
+              }}
               numberOfDigits={5} onTextChange={(text) => {
                 setOtpError(false)
                 setOtp(text)
                 setWrongOtp(false)
               }} />
           </View>
-        </View>
+          {wrongOtop &&
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: ResposiveSize(20), paddingTop: ResposiveSize(30) }}>
+              <TextC text={"Wrong code, please try again"} size={ResposiveSize(15)} style={{ color: "#69BE25", textAlign: 'center', marginLeft: ResposiveSize(4) }} font={'Montserrat-Regular'} />
+            </View>}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: ResposiveSize(20), paddingTop: ResposiveSize(20) }}>
+            {isActive ?
+              <>
+                <TextC text={"Send code again"} size={ResposiveSize(11)} style={{ color: "white", textAlign: 'center' }} font={'Montserrat-Regular'} />
+                <TextC text={`00:${seconds}`} size={ResposiveSize(11)} style={{ color: "#69BE25", textAlign: 'center', marginLeft: 3 }} font={'Montserrat-Bold'} />
+              </> :
+              <>
+                <TextC text={"I didn’t receive a code"} size={ResposiveSize(11)} style={{ color: "white", textAlign: 'center' }} font={'Montserrat-Regular'} />
+                {!loader ?
+                  <TouchableOpacity onPress={ResetOtp} disabled={OtpVerificationReducer?.loading}>
+                    <TextC text={"Resend"} size={ResposiveSize(11)} style={{ color: "#69BE25", textAlign: 'center', marginLeft: 4 }} font={'Montserrat-Bold'} />
+                  </TouchableOpacity> :
+                  <ActivityIndicator size={ResposiveSize(20)} style={{ marginLeft: ResposiveSize(5) }} color={"#69BE25"} />
+                }
+              </>
+            }
 
-
-        {wrongOtop &&
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, paddingTop: 30 }}>
-            <TextC text={"Wrong code, please try again"} size={15} style={{ color: "#69BE25", textAlign: 'center', marginLeft: 4 }} font={'Montserrat-Regular'} />
-          </View>}
-
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, paddingTop: 20 }}>
-
-          {isActive ?
-            <>
-              <TextC text={"Send code again"} size={15} style={{ color: "white", textAlign: 'center' }} font={'Montserrat-Regular'} />
-              <TextC text={`00:${seconds}`} size={15} style={{ color: "#69BE25", textAlign: 'center', marginLeft: 3 }} font={'Montserrat-Bold'} />
-            </> :
-            <>
-              <TextC text={"I didn’t receive a code"} size={15} style={{ color: "white", textAlign: 'center' }} font={'Montserrat-Regular'} />
-              {!loader ?
-                <TouchableOpacity onPress={ResetOtp} disabled={OtpVerificationReducer?.loading}>
-                  <TextC text={"Resend"} size={15} style={{ color: "#69BE25", textAlign: 'center', marginLeft: 4 }} font={'Montserrat-Bold'} />
-                </TouchableOpacity> :
-                <ActivityIndicator style={{ marginLeft: 5 }} color={"#69BE25"} />
-              }
-            </>
-          }
-
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 30 }}>
-          <ButtonC disabled={OtpVerificationReducer?.loading || loader} loading={OtpVerificationReducer?.loading} title="Verify" bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={onSubmit} />
+          </View>
+          <View style={styles.loginBtnWrapper}>
+            <ButtonC title="Verify" disabled={OtpVerificationReducer?.loading || loader} loading={OtpVerificationReducer?.loading} bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={onSubmit} />
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

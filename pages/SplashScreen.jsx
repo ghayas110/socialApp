@@ -1,10 +1,9 @@
 import { StyleSheet, Text, View, Image, ImageBackground, StatusBar, Dimensions, ActivityIndicator } from 'react-native'
 import React, { useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native';
+import { ResposiveSize } from '../components/constant';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
-
 
 
 const SplashScreen = () => {
@@ -19,7 +18,7 @@ const SplashScreen = () => {
       <StatusBar translucent={true} backgroundColor={'transparent'} />
       <ImageBackground source={require('../assets/icons/splashScreenBack.png')} style={styles.container}>
         <Image style={styles.ImageCenter} source={require('../assets/icons/splashLoader.png')} />
-        <ActivityIndicator color={"#9DDE69"} size={39} style={{paddingTop:30}}/>
+        <ActivityIndicator color={"#9DDE69"} size={ResposiveSize(39)} style={{ paddingTop: ResposiveSize(30) }} />
       </ImageBackground>
     </>
 

@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View, Image, ImageBackground, StatusBar, Dimensions, ActivityIndicator } from 'react-native'
-import React, { useEffect } from 'react'
+import { StyleSheet, Text, View, Image, ImageBackground, StatusBar, Dimensions, ActivityIndicator, TouchableOpacity, Pressable } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import TextC from '../components/text/text';
+import { ResposiveSize } from '../components/constant';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
 
 
 
@@ -47,7 +47,7 @@ const LoginSwitcher = () => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      position:'relative',
+      position: 'relative',
     },
     LoginSliderLeft: {
       width: sliderWidth * 0.5,
@@ -65,9 +65,24 @@ const LoginSwitcher = () => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    LoginSliderAbsolute: {
+      width: sliderWidth * 0.5,
+      height: windowHeight * 0.07,
+      backgroundColor: '#69BE25',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'absolute',
+      borderRadius: 50,
     }
   })
 
+
+  const [currentRoute, setCurrentRoute] = useState("Login")
+  const Switcher = (r) => {
+    setCurrentRoute(r)
+  }
 
   return (
     <>
@@ -75,23 +90,33 @@ const LoginSwitcher = () => {
       <ImageBackground source={require('../assets/icons/welcomeBanner.jpg')} style={styles.container}>
         <View style={styles.overLayWrapper}>
           <View style={styles.TextWrapper}>
-            <TextC text={"Social"} font={'Montserrat-ExtraBold'} size={windowWidth * 0.16} style={{ lineHeight: windowWidth * 0.17, color: '#05348E' }} />
-            <TextC text={"Crew"} font={'Montserrat-ExtraBold'} size={windowWidth * 0.16} style={{ lineHeight: windowWidth * 0.16, color: '#05348E' }} />
-            <TextC text={"Team."} font={'Montserrat-ExtraBold'} size={windowWidth * 0.16} style={{ lineHeight: windowWidth * 0.15, color: '#05348E' }} />
+            <TextC text={"Social"} font={'Montserrat-ExtraBold'} size={ResposiveSize(50)} style={{ lineHeight: ResposiveSize(55), color: '#05348E' }} />
+            <TextC text={"Crew"} font={'Montserrat-ExtraBold'} size={ResposiveSize(50)} style={{ lineHeight: ResposiveSize(50), color: '#05348E' }} />
+            <TextC text={"Team."} font={'Montserrat-ExtraBold'} size={ResposiveSize(50)} style={{ lineHeight: ResposiveSize(50), color: '#05348E' }} />
           </View>
 
-
           <View style={styles.ButtonWrapper}>
-            <View style={{ paddingBottom: 30 }} >
-              <TextC text={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} font={'Montserrat-Thin'} size={windowWidth * 0.035} style={{ color: '#FFFFFF', textAlign: 'center', width: windowWidth * 0.7 }} />
+            <View style={{ paddingBottom: ResposiveSize(30) }} >
+              <TextC text={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} font={'Montserrat-Thin'} size={ResposiveSize(11.5)} style={{ color: '#FFFFFF', textAlign: 'center', width: windowWidth * 0.7 }} />
             </View>
             <View style={styles.LoginSlider}>
-              <View style={styles.LoginSliderLeft}>
-                <TextC text={'Login'} style={{ color: 'white' }} font={'Montserrat-Bold'}/>
-              </View>
-              <View style={styles.LoginSliderRight}>
-                <TextC text={'SignUp'} style={{ color: 'white' }} font={'Montserrat-Bold'}/>
-              </View>
+              <TouchableOpacity onPress={() => Switcher('Login')} style={styles.LoginSliderLeft}>
+                <TextC size={ResposiveSize(11)} text={'Login'} style={{ color: 'white' }} font={'Montserrat-Bold'} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => Switcher('SignUp')} style={styles.LoginSliderRight}>
+                <TextC size={ResposiveSize(11)} text={'SignUp'} style={{ color: 'white' }} font={'Montserrat-Bold'} />
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => {
+                if (currentRoute == 'Login') {
+                  navigation.navigate('Login')
+                }
+                else {
+                  navigation.navigate('SignUp')
+                }
+              }} style={{ ...styles.LoginSliderAbsolute, ...(currentRoute === 'Login' ? { left: 0 } : { right: 0 }) }}>
+                <TextC size={ResposiveSize(11)} text={currentRoute} font={'Montserrat-Bold'} />
+              </TouchableOpacity>
             </View>
           </View>
         </View>

@@ -4,7 +4,6 @@ import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 
 
-
 const TextC = ({ text, size, font, style, isTime, ...props }) => {
     const scheme = useColorScheme();
     const styles = StyleSheet.create({

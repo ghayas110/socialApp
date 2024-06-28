@@ -2,74 +2,74 @@ import React, { useState } from "react";
 import { StyleSheet, TextInput, Text, View, ActivityIndicator } from "react-native";
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { global } from "../constant";
-
+import { ResposiveSize, global } from "../constant";
+import TextC from "../text/text";
 
 const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label, data, error }) => {
     const styleObj = StyleSheet.create({
         labelS: {
             color: "white",
             fontFamily: "Montserrat-Regular",
-            fontSize: 13,
-            paddingBottom: 4,
+            fontSize: ResposiveSize(11),
+            paddingBottom: ResposiveSize(4),
         },
         dropdownButtonStyle: {
             width: global.inputWidth,
             height: global.inputHeight,
             backgroundColor: '#FFFFFF',
-            borderRadius: 30,
+            borderRadius: ResposiveSize(30),
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
             paddingHorizontal: global.inputPaddingH,
             fontFamily: 'Montserrat-Regular',
-            borderWidth: 1,
+            borderWidth: ResposiveSize(1),
             ...(error === undefined ? { borderColor: 'white' } : { borderColor: 'red' })
         },
         dropdownButtonTxtStyle: {
             flex: 1,
-            fontSize: 14,
+            fontSize:ResposiveSize(11),
             fontWeight: '500',
             fontFamily: 'Montserrat-Regular'
         },
         dropdownButtonArrowStyle: {
-            fontSize: 22,
+            fontSize: ResposiveSize(22),
             color: '#666666'
         },
         dropdownButtonIconStyle: {
-            fontSize: 28,
-            marginRight: 8,
+            fontSize: ResposiveSize(22),
+            marginRight: ResposiveSize(8),
         },
         dropdownMenuStyle: {
             backgroundColor: '#E9ECEF',
-            borderRadius: 8,
+            borderRadius: ResposiveSize(8),
         },
         dropdownItemStyle: {
             width: '100%',
             flexDirection: 'row',
-            paddingHorizontal: 12,
+            paddingHorizontal: ResposiveSize(12),
             justifyContent: 'center',
             alignItems: 'center',
-            paddingVertical: 8,
+            paddingVertical: ResposiveSize(8),
         },
         dropdownItemTxtStyle: {
             flex: 1,
-            fontSize: 14,
+            fontSize: ResposiveSize(11),
             fontWeight: '500',
             color: '#151E26',
             fontFamily: 'Montserrat-Regular'
         },
         dropdownItemIconStyle: {
-            fontSize: 28,
-            marginRight: 8,
+            fontSize: ResposiveSize(22),
+            marginRight: ResposiveSize(8),
         },
     })
 
     return (
         <>
             <View>
-                <View style={{ paddingHorizontal: 15 }}>
-                    <Text style={styleObj.labelS}>{label}</Text>
+                <View style={{ paddingHorizontal: ResposiveSize(12) }}>
+                    <TextC text={label} size={ResposiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResposiveSize(4) }} />
                 </View>
                 <View>
                     <SelectDropdown
@@ -77,8 +77,13 @@ const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label, dat
                         data={data}
                         dropdownOverlayColor="rgba(0, 0, 0,0.7)"
                         onSelect={(selectedItem) => {
-                            console.log(selectedItem)
                             onChangeText(label == "Air line" ? selectedItem.airline_id : selectedItem.title)
+                        }}
+                        searchInputTxtStyle={{
+                            fontSize: ResposiveSize(11)
+                        }}
+                        searchInputStyle={{
+                            height: ResposiveSize(30)
                         }}
                         disabled={data?.length < 0 || data == undefined || data == null ? true : false}
                         search={true}
@@ -88,7 +93,7 @@ const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label, dat
 
                                     <View style={styleObj.dropdownButtonStyle}>
                                         {data?.length < 0 || data == undefined || data == null ?
-                                            <ActivityIndicator color={'black'} />
+                                            <ActivityIndicator size={ResposiveSize(20)} color={'black'} />
                                             :
                                             <>
                                                 <Text style={{

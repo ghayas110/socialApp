@@ -8,8 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetProvider } from './components/bottomSheet/BottomSheet';
 import store from './store/index';
 import { Provider } from 'react-redux';
-import Toast from 'react-native-toast-message';
-
+import { ToastProvider } from './components/Toast/ToastContext';
 
 const App = () => {
   return (
@@ -17,8 +16,9 @@ const App = () => {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetProvider>
           <Provider store={store}>
-            <MainNavigation />
-            <Toast />
+            <ToastProvider>
+              <MainNavigation />
+            </ToastProvider>
           </Provider>
         </BottomSheetProvider>
       </GestureHandlerRootView>
