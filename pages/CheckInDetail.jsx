@@ -12,11 +12,9 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ResposiveSize, global } from '../components/constant';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TextC from '../components/text/text';
+import { useToast } from '../components/Toast/ToastContext';
 
 
-
-
-const windowWidth = Dimensions.get('window').width;
 
 
 const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllStates, getAllCities, onLogin }) => {
@@ -34,6 +32,7 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
 
+  const { showToast } = useToast();
 
   useEffect(() => {
     LoadName()
@@ -86,13 +85,19 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
   }
 
   const SelectStateToast = () => {
-    // Toast.show("Please select State and try again")
+    showToast({
+      title:"Please select State",
+      message:"Please select State and try again.",
+      iconColor:"#339a77",
+      iconName:"infocirlceo",
+      bg:"#e6f5ef"
+    })
   }
 
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#05348E'
+      backgroundColor: global.primaryColor
     },
     bodyWrapper: {
       flexDirection: 'column',
@@ -116,7 +121,7 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
     titleTextSecond: {
       fontFamily: 'Montserrat-ExtraBold',
       fontSize: ResposiveSize(45),
-      color: '#69BE25',
+      color: global.secondaryColor,
       width: windowWidth * 0.6,
       lineHeight: ResposiveSize(50)
     },
@@ -143,7 +148,7 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
     dropdownButtonStyle: {
       width: global.inputWidth,
       height: global.inputHeight,
-      backgroundColor: '#FFFFFF',
+      backgroundColor: global.white,
       borderRadius: ResposiveSize(30),
       flexDirection: 'row',
       justifyContent: 'center',
@@ -156,7 +161,8 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
       flex: 1,
       fontSize: ResposiveSize(11),
       fontWeight: '500',
-      fontFamily: 'Montserrat-Regular'
+      fontFamily: 'Montserrat-Regular',
+      color:'black'
     },
     dropdownButtonArrowStyle: {
       fontSize: ResposiveSize(22),
@@ -193,12 +199,12 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <StatusBar backgroundColor={'#05348E'} />
+        <StatusBar backgroundColor={global.primaryColor} />
 
         <View style={styles.bodyWrapper}>
           <View style={styles.header}>
             <Pressable style={styles.gobackBtn} onPress={navigation.goBack}>
-              <AntDedign name='left' size={ResposiveSize(20)} color={'#69BE25'} />
+              <AntDedign name='left' size={ResposiveSize(20)} color={global.secondaryColor} />
             </Pressable>
           </View>
           <View style={styles.titleWrapper}>
@@ -399,7 +405,7 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
 
 
           <View style={styles.loginBtnWrapper}>
-            <ButtonC title="Continue" disabled={CheckInReducer?.loading} loading={CheckInReducer?.loading} bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={onSubmit} />
+            <ButtonC title="Continue" disabled={CheckInReducer?.loading} loading={CheckInReducer?.loading} bgColor={global.secondaryColor} TextStyle={{ color: global.primaryColorDark }} onPress={onSubmit} />
           </View>
 
 

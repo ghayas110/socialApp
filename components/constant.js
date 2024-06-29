@@ -7,6 +7,7 @@ const scale = windowWidth / 320;
 const ResposiveSize = (size) => Math.round(size * scale);
 const global = {
     primaryColor: '#05348E',
+    primaryColorDark:"#002245",
     secondaryColor: "#69BE25",
     black: 'black',
     white: 'white',

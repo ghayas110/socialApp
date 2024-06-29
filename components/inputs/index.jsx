@@ -13,7 +13,7 @@ const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label, erro
         Input: {
             fontSize: ResposiveSize(12),
             paddingHorizontal: global.inputPaddingH,
-            backgroundColor: '#FFFFFF',
+            backgroundColor:'#FFFFFF',
             width: global.inputWidth,
             fontFamily: 'Montserrat-Regular',
             height: global.inputHeight,
@@ -38,7 +38,7 @@ const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label, erro
                     <TextC text={label} size={ResposiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResposiveSize(4) }} />
                 </View>
                 <View style={{ position: 'relative' }}>
-                    <TextInput maxLength={max} keyboardType={type} value={value} onChangeText={onChangeText} style={style.Input} placeholder={placeholder} secureTextEntry={secureTextEntry == true ? isSecure : secureTextEntry} placeholderTextColor={global.placeholderColor} />
+                    <TextInput maxLength={max} theme={{fonts: { fontFamily: "Montserrat-Regular" }}} keyboardType={type} value={value} onChangeText={onChangeText} style={style.Input} placeholder={placeholder} secureTextEntry={secureTextEntry == true ? isSecure : secureTextEntry} placeholderTextColor={global.placeholderColor} />
                     {secureTextEntry == true ?
                         <TouchableOpacity onPress={() => setIsSecure(!isSecure)} style={{ position: 'absolute', height: windowHeight * 0.07, width: windowWidth * 0.10, right: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                             <Feather name={isSecure ? "eye-off" : "eye"} size={ResposiveSize(12)} color={'black'} />

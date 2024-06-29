@@ -12,18 +12,14 @@ import * as LoginUserAction from "../store/actions/UserLogin/index";
 import { connect } from "react-redux";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TextC from '../components/text/text';
-import { ResposiveSize } from '../components/constant';
-import { Button } from 'react-native-elements';
+import { ResposiveSize,global} from '../components/constant';
 import { useToast } from '../components/Toast/ToastContext';
-
 
 const LogIn = ({ onLogin, LoginReducer, loginUser }) => {
   const navigation = useNavigation()
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const { showToast } = useToast();
-
-
 
   const schema = yup.object().shape({
     email: yup
@@ -49,7 +45,7 @@ const LogIn = ({ onLogin, LoginReducer, loginUser }) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#05348E'
+      backgroundColor:global.primaryColor
     },
     bodyWrapper: {
       flexDirection: 'column',
@@ -77,16 +73,15 @@ const LogIn = ({ onLogin, LoginReducer, loginUser }) => {
     titleTextFirst: {
       fontFamily: 'Montserrat-ExtraBold',
       fontSize: ResposiveSize(45),
-      color: 'white',
+      color: global.white,
       lineHeight: ResposiveSize(45)
     },
     titleTextSecond: {
       fontFamily: 'Montserrat-ExtraBold',
       fontSize: ResposiveSize(45),
-      color: '#69BE25',
+      color: global.secondaryColor,
       lineHeight: ResposiveSize(45)
     },
-
     secondInputWrapper: {
       paddingTop: windowHeight * 0.02
     },
@@ -107,7 +102,6 @@ const LogIn = ({ onLogin, LoginReducer, loginUser }) => {
       paddingTop: windowHeight * 0.015,
     },
   })
-
   const onSubmit = async (data) => {
     const LoginStart = await loginUser({
       email: data.email,
@@ -120,18 +114,24 @@ const LogIn = ({ onLogin, LoginReducer, loginUser }) => {
       onLogin()
     }
     else if (LoginStart?.message == "Invalid Email or Password") {
-      showToast('Check your email and password, try again', "Invalid Email or Password", "red", "mail", "#fff2f2")
+      showToast({
+        message:"Check your email and password, try again",
+        title:"Invalid Email or Password",
+        iconColor:"red",
+        iconName:"mail",
+        bg:"#fff2f2"
+      })
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <StatusBar backgroundColor={'#05348E'} />
+        <StatusBar backgroundColor={global.primaryColor} />
         <View style={styles.bodyWrapper}>
           <View style={styles.header}>
             <Pressable style={styles.gobackBtn} onPress={navigation.goBack}>
-              <AntDedign name='left' size={ResposiveSize(20)} color={'#69BE25'} />
+              <AntDedign name='left' size={ResposiveSize(20)} color={global.secondaryColor} />
             </Pressable>
           </View>
           <View style={styles.titleWrapper}>
@@ -168,21 +168,20 @@ const LogIn = ({ onLogin, LoginReducer, loginUser }) => {
 
           <View style={styles.forgotPasswordWrapper}>
             <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
-              <TextC text={'Forgot password?'} style={{ color: 'white' }} size={ResposiveSize(11)} font={"Montserrat-Regular"} />
+              <TextC text={'Forgot password?'} style={{ color: global.white }} size={ResposiveSize(11)} font={"Montserrat-Regular"} />
             </TouchableOpacity>
           </View>
 
           <View style={styles.loginBtnWrapper}>
-            <ButtonC title="Login" disabled={LoginReducer?.loading} loading={LoginReducer?.loading} bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={handleSubmit(onSubmit)} />
+            <ButtonC title="Login" disabled={LoginReducer?.loading} loading={LoginReducer?.loading} bgColor={global.secondaryColor} TextStyle={{ color:global.primaryColorDark }} onPress={handleSubmit(onSubmit)} />
           </View>
 
           <View style={styles.haveAccoundWrapper}>
-            <TextC text={'Don’t have an account?'} style={{ color: 'white' }} size={ResposiveSize(11)} font={"Montserrat-Regular"} /><TouchableOpacity onPress={() => navigation.navigate('SignUp')}><TextC text={'Sign up'} style={{ color: '#69BE25', marginLeft: 5 }} size={ResposiveSize(11)} font={"Montserrat-Regular"} /></TouchableOpacity>
+            <TextC text={'Don’t have an account?'} style={{ color: global.white }} size={ResposiveSize(11)} font={"Montserrat-Regular"} /><TouchableOpacity onPress={() => navigation.navigate('SignUp')}><TextC text={'Sign up'} style={{ color: global.secondaryColor, marginLeft: 5 }} size={ResposiveSize(11)} font={"Montserrat-Regular"} /></TouchableOpacity>
           </View>
         </View>
       </ScrollView>
     </SafeAreaView>
-
   )
 }
 

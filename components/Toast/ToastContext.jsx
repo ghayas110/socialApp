@@ -7,19 +7,14 @@ export const useToast = () => useContext(ToastContext);
 
 export const ToastProvider = ({ children }) => {
     const [toastVisible, setToastVisible] = useState(false);
-    const [toast, setToast] = useState({ title: '', message: '', iconColor: '', iconName: '', bg: '' });
-
-    const showToast = (message, title, iconColor, iconName, bg) => {
+    const [toast, setToast] = useState({ title: '', message: '', iconColor: '', iconName: '', bg: '', visible: false });
+    const showToast = ({ message, title, iconColor, iconName, bg }) => {
         setToastVisible(true);
-        setToast({ title, message, visible: true, iconColor, iconName, bg });
-        setTimeout(() => {
-            setToastVisible(false)
-            setToast({ title: '', message: '', visible: false, iconColor: '', iconName: '', bg: '' });
-        }, 3000);
+        setToast({ title: title, message: message, visible: true, iconColor: iconColor, iconName: iconName, bg: bg });
     };
     const handleDismiss = () => {
         setToastVisible(false);
-      }
+    }
     return (
         <ToastContext.Provider value={{ showToast }}>
             {children}
