@@ -12,8 +12,8 @@ const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImag
             justifyContent: "center",
             borderRadius: ResposiveSize(30),
             height: windowHeight * 0.07,
-            ...BtnStyle,
             width:windowWidth * 0.5,  
+            ...BtnStyle,
         },
         btnText: {
             fontFamily: 'Montserrat-Bold',

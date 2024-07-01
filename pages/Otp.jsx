@@ -53,6 +53,8 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
     emailreciver()
   }, [])
 
+
+  
   const onSubmit = async () => {
     const email = await AsyncStorage.getItem('email');
     if (opt.length == 5) {

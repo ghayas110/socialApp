@@ -13,9 +13,8 @@ const EventStackNavigation = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen options={{
-        headerTitle: () => (
-          <EventHeader />
-        ),
+        headerShown: false,
+        navigationBarHidden:  true
       }} name="EventScreen" component={EventScreen} />
       <Stack.Screen options={{ headerShown: false, }} name="AddEvent" component={AddEvent} />
     </Stack.Navigator>

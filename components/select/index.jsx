@@ -28,7 +28,7 @@ const SelectC = ({ secureTextEntry, placeholder, value, onChangeText, label, dat
         },
         dropdownButtonTxtStyle: {
             flex: 1,
-            fontSize:ResposiveSize(11),
+            fontSize:ResposiveSize(12),
             fontWeight: '500',
             fontFamily: 'Montserrat-Regular'
         },

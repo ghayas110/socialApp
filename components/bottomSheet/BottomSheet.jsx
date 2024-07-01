@@ -7,11 +7,11 @@ const BottomSheetContext = createContext();
 
 export const BottomSheetProvider = ({ children }) => {
   const bottomSheetRef = useRef(null);
-  const [snapPoints, setSnapPoints] = useState(['100%', '70%']);
+  const [snapPoints, setSnapPoints] = useState(['15%']);
   const [content, setContent] = useState(null);
   const scheme = useColorScheme();
 
-  const openBottomSheet = useCallback((newContent, newSnapPoints = ['100%', '70%']) => {
+  const openBottomSheet = useCallback((newContent, newSnapPoints = ['15%']) => {
     setContent(newContent);
     setSnapPoints(newSnapPoints);
     bottomSheetRef.current?.expand();

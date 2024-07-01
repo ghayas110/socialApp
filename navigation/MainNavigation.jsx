@@ -25,6 +25,9 @@ import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { ProfileStackNavigation, EventStackNavigation } from './StackNavigation';
 import LoginSwitcher from '../pages/LoginSwitcher';
+import { ResposiveSize, global } from '../components/constant';
+import SignUpSecondStep from '../pages/SignUpSecondStep';
+
 
 const MainNavigation = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
@@ -34,7 +37,6 @@ const MainNavigation = () => {
   useEffect(() => {
     VerifyToken()
   }, [])
-
   const VerifyToken = async () => {
     try {
       const value = await AsyncStorage.getItem('Token');
@@ -48,19 +50,32 @@ const MainNavigation = () => {
       setIsLoggedIn(false);
     }
   }
+
+  const styles = StyleSheet.create({
+    centerTab: {
+      height: ResposiveSize(55),
+      width: ResposiveSize(55),
+      borderRadius: 70,
+      backgroundColor: global.primaryColor,
+      marginBottom: ResposiveSize(25),
+      flexDirection:'column',
+      alignItems:'center',
+      justifyContent:'center'
+    }
+  });
   return (
     <NavigationContainer>
       {isLoggedIn ?
         <Tab.Navigator
           screenOptions={{
-            tabBarStyle: { backgroundColor: '#69BE25', borderTopLeftRadius: 20, borderTopRightRadius: 20 },
+            tabBarStyle: { backgroundColor: '#69BE25', borderTopLeftRadius: ResposiveSize(20), borderTopRightRadius: ResposiveSize(20) },
           }}>
           <Tab.Screen name="Home" component={HomeScreen}
             options={{
               navigationBarColor: '#69BE25',
               tabBarIcon: ({ color, size, focused }) => (
                 <View style={{ alignItems: "center", justifyContent: "center" }}>
-                  <Image source={!focused ? require('../images/homedark.png') : require('../images/homeselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
+                  <Image source={!focused ? require('../assets/icons/homeTab/tabHomeLight.png') : require('../assets/icons/homeTab/tabHomeFill.png')} style={{ width: ResposiveSize(25), height: ResposiveSize(20), objectFit: 'contain' }} />
                 </View>
               ),
               tabBarShowLabel: false,
@@ -72,19 +87,27 @@ const MainNavigation = () => {
               },
             }}
           />
+
+
           <Tab.Screen name="Event" component={EventStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
-                <Image source={!focused ? require('../images/searchdark.png') : require('../images/searchselect.png')} style={{ width: 25, height: 25, objectFit: 'contain' }} />
+                <Image source={!focused ? require('../assets/icons/homeTab/tabEventLight.png') : require('../assets/icons/homeTab/tabEventFill.png')} style={{ width: ResposiveSize(25), height: ResposiveSize(20), objectFit: 'contain' }} />
               </View>
             ),
             headerShown: false,
             tabBarShowLabel: false,
             // tabBarStyle: { display: route.name=="EventCreated"?'none':""},
           }} />
+
+
+
+
           <Tab.Screen name="CreatePost" component={CreatePost} options={{
             tabBarIcon: ({ color, size, focused }) => (
-              <Image source={!focused ? require('../images/addblack.png') : require('../images/addselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
+              <View style={styles.centerTab}>
+                <Image source={require('../assets/icons/homeTab/centerTab.png')} style={{ width: ResposiveSize(25), height: ResposiveSize(20), objectFit: 'contain' }} />
+              </View>
             ),
             tabBarStyle: { display: 'none' },
             tabBarShowLabel: false,
@@ -97,7 +120,7 @@ const MainNavigation = () => {
           }} />
           <Tab.Screen name="Reel" component={ReelScreen} options={{
             tabBarIcon: ({ color, size, focused }) => (
-              <Image source={!focused ? require('../images/reeldark.png') : require('../images/reelselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
+              <Image source={!focused ? require('../assets/icons/homeTab/tabChatLight.png') : require('../assets/icons/homeTab/tabChatFill.png')} style={{ width: ResposiveSize(25), height: ResposiveSize(20), objectFit: 'contain' }} />
             ),
             tabBarShowLabel: false,
             headerTitle: () => (
@@ -109,7 +132,7 @@ const MainNavigation = () => {
           }} />
           <Tab.Screen name="Profile" component={ProfileStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
-              <Image source={!focused ? require('../images/avatardark.png') : require('../images/avatarselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
+              <Image source={!focused ? require('../assets/icons/homeTab/tabProfile.png') : require('../assets/icons/homeTab/tabProfile.png')} style={{ width: ResposiveSize(25), height: ResposiveSize(20), objectFit: 'contain' }} />
             ),
             headerShown: false,
             tabBarShowLabel: false,
@@ -124,7 +147,7 @@ const MainNavigation = () => {
         }}>
           <Stack.Screen options={{ navigationBarHidden: true }} name="SplashScreen" component={SplashScreen} />
           <Stack.Screen options={{ navigationBarHidden: true }} name="LoginSwitcher" component={LoginSwitcher} />
-          
+
           <Stack.Screen options={{ navigationBarHidden: true }} name="Login" >
             {(props) => <Login {...props} onLogin={() => setIsLoggedIn(true)} />}
           </Stack.Screen>
@@ -135,6 +158,7 @@ const MainNavigation = () => {
             {(props) => <CheckInDetail {...props} onLogin={() => setIsLoggedIn(true)} />}
           </Stack.Screen>
           <Stack.Screen options={{ navigationBarHidden: true }} name="SignUp" component={SignUp} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="SignUpSecond" component={SignUpSecondStep} />
           <Stack.Screen options={{ navigationBarHidden: true }} name="Otp" component={Otp} />
           <Stack.Screen options={{ navigationBarHidden: true }} name="ResetPassword" component={ResetPassword} />
           <Stack.Screen options={{ navigationBarHidden: true }} name="PasswordChanged" component={PasswordChanged} />

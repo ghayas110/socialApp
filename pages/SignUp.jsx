@@ -61,41 +61,17 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      userName: '',
-      airline: '',
-      position: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      termsOfService: false,
+      userName: 'ok',
+      airline: 'okokkk',
+      position: 'okokkk',
+      email: 'ok@ok.com',
+      password: 'qwerty1234',
+      confirmPassword: 'qwerty1234',
+      termsOfService: true,
     },
   });
-  const onSubmit = async (data) => {
-    try {
-      await AsyncStorage.removeItem('email');
-      await AsyncStorage.setItem('email', data.email);
-      const Responce = await insertUser({
-        user_name: data?.userName,
-        email: data?.email,
-        password: data?.password,
-        user_type: data?.position,
-        airline: data?.airline
-      })
-      if (Responce == 'Signup successfull') {
-        navigation.navigate('Otp')
-      }
-      else if (Responce == 'Email already exists') {
-        showToast({
-          title: "Email already exists",
-          message: "Email already exists.Please try again.",
-          iconColor: "red",
-          iconName: "mail",
-          bg: "#fff2f2"
-        })
-      }
-    } catch (e) {
-      console.log(e)
-    }
+  const onSubmit = (data) => {
+    navigation.navigate('SignUpSecond')
   };
   const Positions = [
     { title: 'FLIGHT ATTENDANT', icon: 'emoticon-happy-outline' },
@@ -106,7 +82,6 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
     const loadAllAirLineDetail = await getAllAirline()
     setAllAirLine(loadAllAirLineDetail?.data)
   }
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -358,7 +333,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
             />
           </View>
           <View style={styles.submitBtnWrapper}>
-            <ButtonC title="Sign Up" bgColor={global.secondaryColor} disabled={RegisterUserReducer?.loading} loading={RegisterUserReducer?.loading} TextStyle={{ color: global.primaryColorDark }} onPress={handleSubmit(onSubmit)} />
+            <ButtonC title="Contiue" bgColor={global.secondaryColor} disabled={RegisterUserReducer?.loading} loading={RegisterUserReducer?.loading} TextStyle={{ color: global.primaryColorDark }} onPress={handleSubmit(onSubmit)} />
           </View>
 
           <View style={styles.haveAccoundWrapper}>
