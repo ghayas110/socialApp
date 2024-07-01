@@ -1,203 +1,417 @@
-import { SafeAreaView, StyleSheet, StatusBar, View, Dimensions, Text } from 'react-native'
-import React from 'react'
-import SelectC from '../components/select/index';
+import { SafeAreaView, StyleSheet, StatusBar, View, ActivityIndicator, Text, Dimensions, Pressable } from 'react-native'
+import React, { useEffect, useState, useRef } from 'react'
 import ButtonC from '../components/button/index';
 import InputC from '../components/inputs/index';
-import * as yup from 'yup';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import AntDedign from "react-native-vector-icons/AntDesign"
-import Entypo from 'react-native-vector-icons/Entypo'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { CheckBox } from '@rneui/themed';
-import Animated, { useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
+import * as CountryAction from "../store/actions/Country/index";
+import { connect } from "react-redux";
+import SelectDropdown from 'react-native-select-dropdown'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ResposiveSize, global } from '../components/constant';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import TextC from '../components/text/text';
+import { useToast } from '../components/Toast/ToastContext';
 
 
 
-const SignUp = () => {
+
+const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllStates, getAllCities, onLogin }) => {
   const navigation = useNavigation()
-  const width = useSharedValue(0);
-  const schema = yup.object().shape({
-    email: yup
-      .string()
-      .required('Email is required')
-      .email('Invalid email'),
-    password: yup
-      .string()
-      .required('Password is required')
-      .min(8, 'Password must be 8+ characters.'),
-    confirmPassword: yup
-      .string()
-      .required('Confirm password is required')
-      .oneOf([yup.ref('password'), null], 'Passwords must match'),
-    termsOfService: yup.boolean().oneOf([true], 'Accept terms & privacy policy.').required().default(false)
-  });
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      email: '',
-      password: '',
-      confirmPassword: '',
-      termsOfService: false,
-    },
-  });
+  const stateDropdown = useRef()
+  const [allCountriesData, setAllCountriesData] = useState()
+  const [allStateData, setAllStateData] = useState()
+  const [allCityData, setAllCityData] = useState()
+  const [showError, setShowError] = useState(false)
+  const [currentCountry, setCurrentCountry] = useState("United States")
+  const [currentState, setCurrentState] = useState("")
+  const [currentCity, setCurrentCity] = useState(null)
+  const [layoverTime, setLayoverTime] = useState(null)
+  const [userName, setUserName] = useState()
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
+
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    LoadName()
+  })
+  const LoadName = async () => {
+    const value = await AsyncStorage.getItem('UserName');
+    setUserName(value)
+  }
+  useEffect(() => {
+    LoadCountry()
+  }, [])
+  useEffect(() => {
+    LoadState()
+  }, [currentCountry])
+  useEffect(() => {
+    LoadCity()
+  }, [currentState])
+  const LoadCountry = async () => {
+    const loadAllCountriesDetail = await getAllCountries()
+    setAllCountriesData(loadAllCountriesDetail)
+  }
+  const LoadState = async () => {
+    const loadAllStateDetail = await getAllStates({
+      country: currentCountry
+    })
+    setAllStateData(loadAllStateDetail)
+  }
+  const LoadCity = async () => {
+    const loadAllCityDetail = await getAllCities({
+      country: currentCountry,
+      state: currentState
+    })
+    setAllCityData(loadAllCityDetail)
+  }
+  const onSubmit = async () => {
+    if (currentCountry && currentState && currentCity && layoverTime) {
+      const checkInLoad = await CheckInInApp({
+        country: currentCountry,
+        state: currentState,
+        city: currentCity,
+        layover_time: layoverTime
+      })
+      if (checkInLoad.message == "Check-in created successfully") {
+        onLogin();
+      }
+    }
+    else {
+      setShowError(true)
+    }
+  }
+
+  const SelectStateToast = () => {
+    showToast({
+      title:"Please select State",
+      message:"Please select State and try again.",
+      iconColor:"#339a77",
+      iconName:"infocirlceo",
+      bg:"#e6f5ef"
+    })
+  }
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#05348E'
+      backgroundColor: global.primaryColor
+    },
+    bodyWrapper: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      paddingHorizontal: ResposiveSize(15)
+    },
+    header: {
+      paddingTop: windowHeight * 0.06,
+      width: windowWidth - ResposiveSize(30)
     },
     titleWrapper: {
-      paddingHorizontal: 20,
+      width: windowWidth - ResposiveSize(30),
+      paddingVertical: windowHeight * 0.05
     },
     titleTextFirst: {
       fontFamily: 'Montserrat-ExtraBold',
-      fontSize: 42,
+      fontSize: ResposiveSize(45),
       color: 'white',
-      lineHeight: 50
+      lineHeight: ResposiveSize(45)
     },
     titleTextSecond: {
       fontFamily: 'Montserrat-ExtraBold',
-      fontSize: 42,
-      color: '#69BE25',
-      lineHeight: 50
+      fontSize: ResposiveSize(45),
+      color: global.secondaryColor,
+      width: windowWidth * 0.6,
+      lineHeight: ResposiveSize(50)
     },
-    privacyText: {
+    inputWrapper: {
+      width: windowWidth - ResposiveSize(30)
+    },
+    secondInputWrapper: {
+      paddingTop: windowHeight * 0.02
+    },
+    loginBtnWrapper: {
+      paddingTop: windowHeight * 0.03,
+    },
+    haveAccoundWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingTop: windowHeight * 0.03,
+    },
+    labelS: {
+      color: "white",
+      fontFamily: "Montserrat-Regular",
+      fontSize: ResposiveSize(11),
+      paddingBottom: ResposiveSize(4),
+    },
+    dropdownButtonStyle: {
+      width: global.inputWidth,
+      height: global.inputHeight,
+      backgroundColor: global.white,
+      borderRadius: ResposiveSize(30),
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: global.inputPaddingH,
       fontFamily: 'Montserrat-Regular',
-      fontSize: 13,
-      color: 'white',
+      borderWidth: ResposiveSize(1),
     },
-    errorArea: {
+    dropdownButtonTxtStyle: {
+      flex: 1,
+      fontSize: ResposiveSize(11),
+      fontWeight: '500',
+      fontFamily: 'Montserrat-Regular',
+      color:'black'
+    },
+    dropdownButtonArrowStyle: {
+      fontSize: ResposiveSize(22),
+      color: '#666666'
+    },
+    dropdownButtonIconStyle: {
+      fontSize: ResposiveSize(22),
+      marginRight: ResposiveSize(8),
+    },
+    dropdownMenuStyle: {
+      backgroundColor: '#E9ECEF',
+      borderRadius: ResposiveSize(8),
+    },
+    dropdownItemStyle: {
       width: '100%',
-      height: 50,
       flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    socialLoginBtn: {
-      height: 48,
-      width: 48,
-      backgroundColor: 'white',
-      borderRadius: 50,
-      alignItems: 'center',
+      paddingHorizontal: ResposiveSize(12),
       justifyContent: 'center',
-      flexDirection: 'column',
-      marginHorizontal: 3
-    },
-    bottomSheetContent: {
-      width: "100%",
-      flexDirection: "row",
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-      paddingHorizontal: 22,
-      paddingVertical: 20
-    },
-    bottomSheetContentTextOne: {
-      fontSize: 12,
-      fontFamily: 'Montserrat-Italic',
-      flexDirection: 'row',
       alignItems: 'center',
-      color:'white'
+      paddingVertical: ResposiveSize(8),
+    },
+    dropdownItemTxtStyle: {
+      flex: 1,
+      fontSize: ResposiveSize(11),
+      fontWeight: '500',
+      color: '#151E26',
+      fontFamily: 'Montserrat-Regular'
+    },
+    dropdownItemIconStyle: {
+      fontSize: ResposiveSize(22),
+      marginRight: ResposiveSize(8),
     },
   })
-  const onSubmit = data => {
-    console.log(data);
-    alert('Form submitted successfully!');
-  };
-  const CloseError = () => {
-    width.value = withTiming(0)
-  }
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <StatusBar backgroundColor={'#05348E'} />
-        <View style={{ padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <TouchableOpacity>
-            <AntDedign name='arrowleft' size={32} color={'#69BE25'} />
-          </TouchableOpacity>
-          <View style={styles.errorArea}>
-            <Animated.View
-              style={{
-                ...(Object.keys(errors).length == 0 ? { width: width.value = withTiming(0) } : { backgroundColor: width.value = withSpring(250) }),
-                width,
-                height: 35,
-                backgroundColor: 'white',
-                borderRadius: 30,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity onPress={CloseError}>
-                <Entypo name='circle-with-cross' color={'#ff4f4f'} size={25} style={{ paddingHorizontal: 5 }} />
-              </TouchableOpacity>
-              <Text style={{ color: 'black', fontSize: 12, fontFamily: "Montserrat-Regular" }}>
-                {errors?.email?.message ? errors?.email?.message :
-                  errors?.password?.message ? errors?.password?.message :
-                    errors?.confirmPassword?.message ? errors?.confirmPassword?.message :
-                      errors?.termsOfService?.message ? errors?.termsOfService?.message : ""}</Text>
-            </Animated.View>
+        <StatusBar backgroundColor={global.primaryColor} />
+
+        <View style={styles.bodyWrapper}>
+          <View style={styles.header}>
+            <Pressable style={styles.gobackBtn} onPress={navigation.goBack}>
+              <AntDedign name='left' size={ResposiveSize(20)} color={global.secondaryColor} />
+            </Pressable>
           </View>
-        </View>
-        <View style={styles.titleWrapper}>
-          <Text style={styles.titleTextFirst}>Welcome,</Text>
-          <Text style={styles.titleTextSecond}>Anthony T.</Text>
-        </View>
+          <View style={styles.titleWrapper}>
+            <Text style={styles.titleTextFirst}>Welcome,</Text>
+            <Text style={styles.titleTextSecond} ellipsizeMode={"tail"} numberOfLines={1}>{userName}</Text>
+          </View>
 
 
+          <View style={styles.inputWrapper}>
+            <View style={{ paddingHorizontal: ResposiveSize(12) }}>
+              <TextC text={"Country"} size={ResposiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResposiveSize(4) }} />
+            </View>
+            <View>
+              <SelectDropdown
+                defaultValue={"United States"}
+                disableAutoScroll={true}
+                data={allCountriesData}
+                dropdownOverlayColor="rgba(0, 0, 0,0.7)"
+                onSelect={(selectedItem) => {
+                  stateDropdown.current.reset()
+                  setCurrentCountry(selectedItem.name)
+                }}
+                searchInputTxtStyle={{
+                  fontSize: ResposiveSize(11)
+                }}
+                searchInputStyle={{
+                  height: ResposiveSize(30)
+                }}
+                disabled={allCountriesData?.length < 0 || allCountriesData == undefined || allCountriesData == null ? true : false}
+                search={true}
+                renderButton={(selectedItem, isOpened) => {
+                  return (
+                    <>
+
+                      <View style={{ ...styles.dropdownButtonStyle, borderColor: showError == false || currentCountry !== null && currentCountry !== undefined && currentCountry !== "" ? "white" : "red" }}>
+                        {allCountriesData?.length < 0 || allCountriesData == undefined || allCountriesData == null ?
+                          <ActivityIndicator color={'black'} />
+                          :
+                          <>
+                            <Text style={{
+                              ...styles.dropdownButtonTxtStyle,
+                              color: selectedItem ? 'black' : global.placeholderColor
+                            }}>
+                              {(selectedItem && selectedItem.name) || "United States"}
+                            </Text>
+                            <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                          </>
+                        }
+
+                      </View>
+                    </>
+
+                  );
+                }}
+                renderItem={(item, index, isSelected) => {
+                  return (
+                    <>
+                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                        <Text style={styles.dropdownItemTxtStyle}>{item?.name}</Text>
+                      </View>
+                    </>
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={styles.dropdownMenuStyle}
+              />
+            </View>
+            <View style={styles.secondInputWrapper}>
+              <View style={{ paddingHorizontal: ResposiveSize(12) }}>
+                <TextC text={"State"} size={ResposiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResposiveSize(4) }} />
+              </View>
+              <View>
+                <SelectDropdown
+                  ref={stateDropdown}
+                  disableAutoScroll={true}
+                  data={allStateData}
+                  dropdownOverlayColor="rgba(0, 0, 0,0.7)"
+                  onSelect={(selectedItem) => {
+                    setCurrentState(selectedItem.name)
+                  }}
+                  searchInputTxtStyle={{
+                    fontSize: ResposiveSize(11)
+                  }}
+                  searchInputStyle={{
+                    height: ResposiveSize(30)
+                  }}
+                  disabled={allStateData?.length < 0 || allStateData == undefined || allStateData == null ? true : false}
+                  search={true}
+                  renderButton={(selectedItem, isOpened) => {
+                    return (
+                      <>
+
+                        <View style={{ ...styles.dropdownButtonStyle, borderColor: showError == false || currentState !== null && currentState !== undefined && currentState !== "" ? "white" : "red" }}>
+                          {allStateData?.length < 0 || allStateData == undefined || allStateData == null ?
+                            <ActivityIndicator color={'black'} />
+                            :
+                            <>
+                              <Text style={{
+                                ...styles.dropdownButtonTxtStyle,
+                                color: selectedItem ? 'black' : global.placeholderColor
+                              }}>
+                                {(selectedItem && selectedItem.name) || "Select State"}
+                              </Text>
+                              <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                            </>
+                          }
+
+                        </View>
+                      </>
+
+                    );
+                  }}
+                  renderItem={(item, index, isSelected) => {
+                    return (
+                      <>
+                        <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                          <Text style={styles.dropdownItemTxtStyle}>{item?.name}</Text>
+                        </View>
+                      </>
+                    );
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={styles.dropdownMenuStyle}
+                />
+              </View>
+            </View>
+            <View style={styles.secondInputWrapper}>
+              <View style={{ paddingHorizontal: ResposiveSize(12) }}>
+                <TextC text={"City"} size={ResposiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResposiveSize(4) }} />
+              </View>
+              <View>
+                {currentState == "" ?
+                  <TouchableOpacity onPress={SelectStateToast} style={{ ...styles.dropdownButtonStyle, borderColor: showError == false || currentCity !== null && currentCity !== undefined && currentCity !== "" ? "white" : "red" }}>
+                    <Text style={{ ...styles.dropdownButtonTxtStyle }}>
+                      {"Select City"}
+                    </Text>
+                  </TouchableOpacity>
+                  :
+                  <SelectDropdown
+                    disableAutoScroll={true}
+                    data={allCityData}
+                    dropdownOverlayColor="rgba(0, 0, 0,0.7)"
+                    onSelect={(selectedItem) => {
+                      setCurrentCity(selectedItem)
+                    }}
+                    disabled={allCityData?.length < 0 || allCityData == undefined || allCityData == null ? true : false}
+                    search={true}
+                    searchInputTxtStyle={{
+                      fontSize: ResposiveSize(11)
+                    }}
+                    searchInputStyle={{
+                      height: ResposiveSize(30)
+                    }}
+                    renderButton={(selectedItem, isOpened) => {
+                      return (
+                        <>
+
+                          <View style={{ ...styles.dropdownButtonStyle, borderColor: showError == false || currentCity !== null && currentCity !== undefined && currentCity !== "" ? "white" : "red" }}>
+                            {allCityData?.length < 0 || allCityData == undefined || allCityData == null ?
+                              <ActivityIndicator color={'black'} />
+                              :
+                              <>
+                                <Text style={{
+                                  ...styles.dropdownButtonTxtStyle,
+                                  color: selectedItem ? 'black' : global.placeholderColor
+                                }}>
+                                  {(selectedItem) || "Select City"}
+                                </Text>
+                                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                              </>
+                            }
+
+                          </View>
+                        </>
+
+                      );
+                    }}
+                    renderItem={(item, index, isSelected) => {
+                      return (
+                        <>
+                          <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                            <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+                          </View>
+                        </>
+                      );
+                    }}
+                    showsVerticalScrollIndicator={false}
+                    dropdownStyle={styles.dropdownMenuStyle}
+                  />
+                }
+
+              </View>
+            </View>
+            <View style={styles.secondInputWrapper}>
+              <InputC error={showError == false || layoverTime !== null && layoverTime !== undefined && layoverTime !== "" ? undefined : true} onChangeText={setLayoverTime} max={3} type={"number-pad"} label={'How long is your layover ?'} placeholder={"25h"} />
+            </View>
+          </View>
 
 
-        <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({ field: { onChange, value } }) => (
-              <SelectC label={"Country"} error={errors?.email?.message} value={value} onChangeText={onChange} placeholder={"Your email"} secureTextEntry={false} />
-            )}
-            name="email"
-          />
-        </View>
+          <View style={styles.loginBtnWrapper}>
+            <ButtonC title="Continue" disabled={CheckInReducer?.loading} loading={CheckInReducer?.loading} bgColor={global.secondaryColor} TextStyle={{ color: global.primaryColorDark }} onPress={onSubmit} />
+          </View>
 
 
-        <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({ field: { onChange, value } }) => (
-              <SelectC label={"City"} error={errors?.email?.message} value={value} onChangeText={onChange} placeholder={"Your email"} secureTextEntry={false} />
-            )}
-            name="email"
-          />
-        </View>
-
-        <View style={{ paddingHorizontal: 20, paddingTop: 10, }}>
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({ field: { onChange, value } }) => (
-              <InputC label={'How long is your layover ?'} error={errors?.confirmPassword?.message} value={value} onChangeText={onChange} placeholder={"25h"} secureTextEntry={false} />
-            )}
-            name="confirmPassword"
-          />
-        </View>
-
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingBottom: 15, paddingTop: 30 }}>
-          <ButtonC title="Continue" bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={handleSubmit(onSubmit)} />
-        </View>
-
-
-        <View style={styles.bottomSheetContent}>
-          <Text style={styles.bottomSheetContentTextOne}>Disclaimer: This app will not show exact locations but just the city you are currently laying over in. </Text>
+          <View style={styles.haveAccoundWrapper}>
+            <TextC text={'Disclaimer: This app will not show exact locations but just the city you are currently laying over in.'} style={{ color: 'white', textAlign: 'left' }} size={ResposiveSize(11)} font={"Montserrat-ExtraLight"} />
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -205,4 +419,8 @@ const SignUp = () => {
   )
 }
 
-export default SignUp
+
+function mapStateToProps({ CountryReducer, StatesReducer, CityReducer, CheckInReducer }) {
+  return { CountryReducer, StatesReducer, CityReducer, CheckInReducer };
+}
+export default connect(mapStateToProps, CountryAction)(CheckInDetail);

@@ -9,6 +9,7 @@ import CreatePost from '../pages/CreatePost';
 import ReelScreen from '../pages/ReelScreen';
 import ProfileScreen from '../pages/ProfileScreen';
 import SignUp from '../pages/SignUp';
+import Otp from '../pages/Otp';
 import CheckIn from '../pages/CheckIn';
 import CheckInDetail from '../pages/CheckInDetail';
 import ResetPassword from '../pages/ResetPassword';
@@ -22,26 +23,41 @@ import CreatePostHeader from '../components/mainHeader/createPostHeader'
 import EventHeader from '../components/mainHeader/event';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
-import { ProfileStackNavigation,EventStackNavigation } from './StackNavigation';
-
+import { ProfileStackNavigation, EventStackNavigation } from './StackNavigation';
+import LoginSwitcher from '../pages/LoginSwitcher';
 
 const MainNavigation = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(true);
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const scheme = useColorScheme();
-  return (  
+  useEffect(() => {
+    VerifyToken()
+  }, [])
+
+  const VerifyToken = async () => {
+    try {
+      const value = await AsyncStorage.getItem('Token');
+      console.log(value)
+      if (value !== null) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    } catch (e) {
+      setIsLoggedIn(false);
+    }
+  }
+  return (
     <NavigationContainer>
       {isLoggedIn ?
         <Tab.Navigator
           screenOptions={{
             tabBarStyle: { backgroundColor: '#69BE25', borderTopLeftRadius: 20, borderTopRightRadius: 20 },
           }}>
-
-
-
           <Tab.Screen name="Home" component={HomeScreen}
             options={{
+              navigationBarColor: '#69BE25',
               tabBarIcon: ({ color, size, focused }) => (
                 <View style={{ alignItems: "center", justifyContent: "center" }}>
                   <Image source={!focused ? require('../images/homedark.png') : require('../images/homeselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
@@ -53,30 +69,19 @@ const MainNavigation = () => {
               ),
               headerStyle: {
                 ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: "white" }),
-              }
+              },
             }}
           />
-
-
-
-
-
           <Tab.Screen name="Event" component={EventStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Image source={!focused ? require('../images/searchdark.png') : require('../images/searchselect.png')} style={{ width: 25, height: 25, objectFit: 'contain' }} />
               </View>
             ),
-            headerShown:false,
+            headerShown: false,
             tabBarShowLabel: false,
             // tabBarStyle: { display: route.name=="EventCreated"?'none':""},
           }} />
-
-
-
-
-
-
           <Tab.Screen name="CreatePost" component={CreatePost} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <Image source={!focused ? require('../images/addblack.png') : require('../images/addselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
@@ -90,10 +95,6 @@ const MainNavigation = () => {
               ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: "white" }),
             }
           }} />
-
-
-
-
           <Tab.Screen name="Reel" component={ReelScreen} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <Image source={!focused ? require('../images/reeldark.png') : require('../images/reelselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
@@ -106,9 +107,6 @@ const MainNavigation = () => {
               ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: "white" }),
             }
           }} />
-
-
-
           <Tab.Screen name="Profile" component={ProfileStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <Image source={!focused ? require('../images/avatardark.png') : require('../images/avatarselect.png')} style={{ width: 25, height: 20, objectFit: 'contain' }} />
@@ -119,21 +117,27 @@ const MainNavigation = () => {
               ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: "white" }),
             }
           }} />
-
         </Tab.Navigator>
         :
         <Stack.Navigator screenOptions={{
           headerShown: false
         }}>
-          <Stack.Screen name="SplashScreen" component={SplashScreen} />
-          <Stack.Screen name="Login" >
+          <Stack.Screen options={{ navigationBarHidden: true }} name="SplashScreen" component={SplashScreen} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="LoginSwitcher" component={LoginSwitcher} />
+          
+          <Stack.Screen options={{ navigationBarHidden: true }} name="Login" >
             {(props) => <Login {...props} onLogin={() => setIsLoggedIn(true)} />}
           </Stack.Screen>
-          <Stack.Screen name="SignUp" component={SignUp} />
-          <Stack.Screen name="CheckIn" component={CheckIn} />
-          <Stack.Screen name="CheckInDetail" component={CheckInDetail} />
-          <Stack.Screen name="ResetPassword" component={ResetPassword} />
-          <Stack.Screen name="PasswordChanged" component={PasswordChanged} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="CheckIn" >
+            {(props) => <CheckIn {...props} onLogin={() => setIsLoggedIn(true)} />}
+          </Stack.Screen>
+          <Stack.Screen options={{ navigationBarHidden: true }} name="CheckInDetail" >
+            {(props) => <CheckInDetail {...props} onLogin={() => setIsLoggedIn(true)} />}
+          </Stack.Screen>
+          <Stack.Screen options={{ navigationBarHidden: true }} name="SignUp" component={SignUp} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="Otp" component={Otp} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="ResetPassword" component={ResetPassword} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="PasswordChanged" component={PasswordChanged} />
 
         </Stack.Navigator>
       }

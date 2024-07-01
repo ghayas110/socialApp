@@ -4,7 +4,6 @@ import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 
 
-
 const TextC = ({ text, size, font, style, isTime, ...props }) => {
     const scheme = useColorScheme();
     const styles = StyleSheet.create({
@@ -20,7 +19,7 @@ const TextC = ({ text, size, font, style, isTime, ...props }) => {
             {isTime ?
                 <Text {...props} style={styles.text}>{`${text?.getHours()}:${text?.getMinutes()}`}</Text>
                 :
-                <Text {...props} style={styles.text}>{text.toString()}</Text>}
+                <Text {...props} style={styles.text}>{text}</Text>}
         </>
     )
 }

@@ -1,22 +1,26 @@
-import { SafeAreaView, StyleSheet, StatusBar, View, Dimensions, Text } from 'react-native'
-import React from 'react'
+import { SafeAreaView, StyleSheet, StatusBar, View, Dimensions, Text, Pressable } from 'react-native'
+import React, { useState } from 'react'
 import InputC from '../components/inputs/index';
 import ButtonC from '../components/button/index';
 import * as yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AntDedign from "react-native-vector-icons/AntDesign"
-import Entypo from 'react-native-vector-icons/Entypo'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { CheckBox } from '@rneui/themed';
-import Animated, { useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
+import * as LoginUserAction from "../store/actions/UserLogin/index";
+import { connect } from "react-redux";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import TextC from '../components/text/text';
+import { ResposiveSize,global} from '../components/constant';
+import { useToast } from '../components/Toast/ToastContext';
 
-
-const LogIn = () => {
+const LogIn = ({ onLogin, LoginReducer, loginUser }) => {
   const navigation = useNavigation()
-  const width = useSharedValue(0);
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
+  const { showToast } = useToast();
+
   const schema = yup.object().shape({
     email: yup
       .string()
@@ -25,7 +29,6 @@ const LogIn = () => {
     password: yup
       .string()
       .required('Password is required')
-      .min(8, 'Password must be 8+ characters.'),
   });
   const {
     control,
@@ -42,175 +45,147 @@ const LogIn = () => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#05348E'
+      backgroundColor:global.primaryColor
+    },
+    bodyWrapper: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      paddingHorizontal: ResposiveSize(15)
+    },
+    header: {
+      paddingTop: windowHeight * 0.06,
+      width: windowWidth - ResposiveSize(30)
+    },
+    inputWrapper: {
+      width: windowWidth - ResposiveSize(30)
+    },
+    gobackBtn: {
+      width: windowWidth * 0.08,
+      height: windowHeight * 0.04,
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      justifyContent: 'center',
     },
     titleWrapper: {
-      paddingHorizontal: 20,
-      paddingBottom: 10
+      width: windowWidth - ResposiveSize(30),
+      paddingVertical: windowHeight * 0.05
     },
     titleTextFirst: {
       fontFamily: 'Montserrat-ExtraBold',
-      fontSize: 42,
-      color: 'white',
-      lineHeight: 50
+      fontSize: ResposiveSize(45),
+      color: global.white,
+      lineHeight: ResposiveSize(45)
     },
     titleTextSecond: {
       fontFamily: 'Montserrat-ExtraBold',
-      fontSize: 42,
-      color: '#69BE25',
-      lineHeight: 50
+      fontSize: ResposiveSize(45),
+      color: global.secondaryColor,
+      lineHeight: ResposiveSize(45)
     },
-    privacyText: {
-      fontFamily: 'Montserrat-Regular',
-      fontSize: 13,
-      color: 'white',
+    secondInputWrapper: {
+      paddingTop: windowHeight * 0.02
     },
-    errorArea: {
-      width: '100%',
-      height: 50,
+    forgotPasswordWrapper: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      paddingRight: windowWidth * 0.08,
+      paddingTop: windowHeight * 0.015,
+      width: windowWidth - ResposiveSize(40)
+    },
+    loginBtnWrapper: {
+      paddingTop: windowHeight * 0.03,
+    },
+    haveAccoundWrapper: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center'
+      paddingTop: windowHeight * 0.015,
     },
-    socialLoginBtn: {
-      height: 48,
-      width: 48,
-      backgroundColor: 'white',
-      borderRadius: 50,
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexDirection: 'column',
-      marginHorizontal: 3
-    },
-    bottomSheetContent: {
-      height: 50,
-      width: "100%",
-      position: 'absolute',
-      top: Dimensions.get('window').height - 50,
-      flexDirection: "row",
-      alignItems: 'flex-start',
-      justifyContent: 'center'
-    },
-    bottomSheetContentTextOne: {
-      fontSize: 13,
-      fontFamily: 'Montserrat-Regular',
-      flexDirection: 'row',
-      alignItems: 'center',
-      color: 'white'
-
-    },
-    bottomSheetContentTextTwo: {
-      fontSize: 13,
-      fontFamily: 'Montserrat-Regular',
-      color: '#69BE25',
-    },
-    forgotPassword: {
-      color: 'white',
-      fontFamily: 'Montserrat-Regular',
-      fontSize: 12
-    }
   })
-  const onSubmit = data => {
-    console.log(data);
-    alert('Form submitted successfully!');
+  const onSubmit = async (data) => {
+    const LoginStart = await loginUser({
+      email: data.email,
+      password: data.password
+    })
+    console.log(LoginStart)
+    if (LoginStart?.message == "Login successful") {
+      await AsyncStorage.removeItem('Token');
+      await AsyncStorage.setItem('Token', LoginStart.access_token);
+      onLogin()
+    }
+    else if (LoginStart?.message == "Invalid Email or Password") {
+      showToast({
+        message:"Check your email and password, try again",
+        title:"Invalid Email or Password",
+        iconColor:"red",
+        iconName:"mail",
+        bg:"#fff2f2"
+      })
+    }
   };
-  const CloseError = () => {
-    width.value = withTiming(0)
-  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <StatusBar backgroundColor={'#05348E'} />
-        <View style={{ padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <TouchableOpacity>
-            <AntDedign name='arrowleft' size={32} color={'#69BE25'} />
-          </TouchableOpacity>
-          <View style={styles.errorArea}>
-            <Animated.View
-              style={{
-                ...(Object.keys(errors).length == 0 ? { width: width.value = withTiming(0) } : { backgroundColor: width.value = withSpring(250) }),
-                width,
-                height: 35,
-                backgroundColor: 'white',
-                borderRadius: 30,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity onPress={CloseError}>
-                <Entypo name='circle-with-cross' color={'#ff4f4f'} size={25} style={{ paddingHorizontal: 5 }} />
-              </TouchableOpacity>
-              <Text style={{ color: 'black', fontSize: 12, fontFamily: "Montserrat-Regular" }}>
-                {errors?.email?.message ? errors?.email?.message :
-                  errors?.password?.message ? errors?.password?.message : ""}</Text>
-            </Animated.View>
-
-
+        <StatusBar backgroundColor={global.primaryColor} />
+        <View style={styles.bodyWrapper}>
+          <View style={styles.header}>
+            <Pressable style={styles.gobackBtn} onPress={navigation.goBack}>
+              <AntDedign name='left' size={ResposiveSize(20)} color={global.secondaryColor} />
+            </Pressable>
           </View>
-        </View>
-        <View style={styles.titleWrapper}>
-          <Text style={styles.titleTextFirst}>Hey,</Text>
-          <Text style={styles.titleTextSecond}>Welcome</Text>
-          <Text style={styles.titleTextSecond}>Back</Text>
-        </View>
-        <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({ field: { onChange, value } }) => (
-              <InputC label={"Email address"} error={errors?.email?.message} value={value} onChangeText={onChange} placeholder={"helloworld@gmail.com"} secureTextEntry={false} />
-            )}
-            name="email"
-          />
-        </View>
-        <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({ field: { onChange, value } }) => (
-              <InputC label={"Password"} error={errors?.password?.message} value={value} onChangeText={onChange} placeholder={"Your password"} secureTextEntry={true} />
-            )}
-            name="password"
-          />
-        </View>
+          <View style={styles.titleWrapper}>
+            <Text style={styles.titleTextFirst}>Hey,</Text>
+            <Text style={styles.titleTextSecond}>Welcome</Text>
+            <Text style={styles.titleTextSecond}>Back</Text>
+          </View>
 
-        <View style={{ paddingRight: 40, paddingBottom: 20, flexDirection: 'row', justifyContent: 'flex-end' }}>
-
-          <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
-            <Text style={styles.forgotPassword}>Forgot password?</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.inputWrapper}>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, value } }) => (
+                <InputC label={"Email address"} error={errors?.email?.message} value={value} onChangeText={onChange} placeholder={"helloworld@gmail.com"} secureTextEntry={false} />
+              )}
+              name="email"
+            />
+            <View style={styles.secondInputWrapper}>
+              <Controller
+                control={control}
+                rules={{
+                  required: true,
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <InputC label={"Password"} error={errors?.password?.message} value={value} onChangeText={onChange} placeholder={"Your password"} secureTextEntry={true} />
+                )}
+                name="password"
+              />
+            </View>
+          </View>
 
 
+          <View style={styles.forgotPasswordWrapper}>
+            <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
+              <TextC text={'Forgot password?'} style={{ color: global.white }} size={ResposiveSize(11)} font={"Montserrat-Regular"} />
+            </TouchableOpacity>
+          </View>
 
+          <View style={styles.loginBtnWrapper}>
+            <ButtonC title="Login" disabled={LoginReducer?.loading} loading={LoginReducer?.loading} bgColor={global.secondaryColor} TextStyle={{ color:global.primaryColorDark }} onPress={handleSubmit(onSubmit)} />
+          </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 5 }}>
-          <ButtonC title="Sign In" bgColor={'#69BE25'} TextStyle={{ color: '#002245' }} onPress={() => navigation.navigate('CheckIn')} />
-        </View>
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 15 }}>
-          <Text style={styles.bottomSheetContentTextOne}>Don’t have an account? </Text><TouchableOpacity onPress={() => navigation.navigate('SignUp')}><Text style={styles.bottomSheetContentTextTwo}>Sign up</Text></TouchableOpacity>
-        </View>
-
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 0 }}>
-          <TouchableOpacity style={styles.socialLoginBtn}>
-            <FontAwesome name='facebook' size={22} color={'black'} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialLoginBtn}>
-            <AntDedign name='google' size={22} color={'black'} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialLoginBtn}>
-            <AntDedign name='apple1' size={22} color={'black'} />
-          </TouchableOpacity>
+          <View style={styles.haveAccoundWrapper}>
+            <TextC text={'Don’t have an account?'} style={{ color: global.white }} size={ResposiveSize(11)} font={"Montserrat-Regular"} /><TouchableOpacity onPress={() => navigation.navigate('SignUp')}><TextC text={'Sign up'} style={{ color: global.secondaryColor, marginLeft: 5 }} size={ResposiveSize(11)} font={"Montserrat-Regular"} /></TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
-
   )
 }
 
-export default LogIn
+function mapStateToProps({ LoginReducer }) {
+  return { LoginReducer };
+}
+export default connect(mapStateToProps, LoginUserAction)(LogIn);

@@ -1,34 +1,35 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, ActivityIndicator, Image } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, ActivityIndicator, Dimensions } from "react-native"
+import { ResposiveSize } from "../constant";
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
-
-const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImage, Image, onpress2}) => {
+const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImage, disabled, onpress2}) => {
     const style = StyleSheet.create({
         button: {
             backgroundColor: bgColor,
             alignItems: "center",
             justifyContent: "center",
-            borderRadius: 30,
-            height: 48,
+            borderRadius: ResposiveSize(30),
+            height: windowHeight * 0.07,
             ...BtnStyle,
-            width:181,  
+            width:windowWidth * 0.5,  
         },
         btnText: {
             fontFamily: 'Montserrat-Bold',
-            fontSize: 13,
+            fontSize: ResposiveSize(13),
             ...TextStyle
         }
     })
     return (
         <>
-            <TouchableOpacity onPress={onPress} disabled={loading} style={style.button} onPressIn={onpress2}>
+            <TouchableOpacity onPress={onPress} disabled={disabled} style={style.button} onPressIn={onpress2}>
                 {loading ?
-                    <ActivityIndicator style={style.btnText} color="white" />
+                    <ActivityIndicator style={style.btnText} size={ResposiveSize(20)} color="white" />
                     :
                     <Text style={style.btnText}>{title}</Text>
                 }
             </TouchableOpacity>
-            {/* <Image source={require('../../assets/icons/postImage.jpg')} style={style.ActuallPost} /> */}
         </>
     )
 }
