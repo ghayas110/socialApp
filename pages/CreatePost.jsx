@@ -201,13 +201,15 @@ const CreatePost = () => {
     };
 
 
+    console.log(content,'contetn')
     return (
         <>
             <View style={styles.FirstImagePreview}>
                 {isImage ? (
                     <Image style={styles.FirstImage} source={{ uri: 'file://' + currentPreview }} />
                 ) : (
-                    <Video source={{ uri: 'file://' + currentPreview }} style={styles.backgroundVideo} />
+                   
+                    <Video source={{ uri: 'file://' + currentPreview }} style={styles.backgroundVideo}  controls={true}/>
                 )}
                 <View style={styles.uploadControls}>
                     <TouchableOpacity
@@ -244,7 +246,7 @@ const CreatePost = () => {
                                 }}
                                 style={styles.box}
                             >
-                                <Image source={{ uri: 'file://' + item }} style={{ width: '100%', height: '100%' }} />
+                                <Image source={{ uri: item }} style={{ width: '100%', height: '100%' }} />
                                 {selectMulti && (
                                     <TouchableOpacity style={styles.MultiIndicator}>
                                         {multiContent.length > 0
