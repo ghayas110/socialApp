@@ -136,4 +136,4 @@ const UnSeen = () => {
     );
 }
 
-export default UnSeen;
+export default React.memo(UnSeen)

@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Image, ImageBackground, StatusBar, Dimensions, 
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import TextC from '../components/text/text';
-import { ResposiveSize,global } from '../components/constant';
+import { ResponsiveSize,global } from '../components/constant';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -90,21 +90,21 @@ const LoginSwitcher = () => {
       <ImageBackground source={require('../assets/icons/welcomeBanner.jpg')} style={styles.container}>
         <View style={styles.overLayWrapper}>
           <View style={styles.TextWrapper}>
-            <TextC text={"Social"} font={'Montserrat-ExtraBold'} size={ResposiveSize(50)} style={{ lineHeight: ResposiveSize(55), color: global.primaryColor }} />
-            <TextC text={"Crew"} font={'Montserrat-ExtraBold'} size={ResposiveSize(50)} style={{ lineHeight: ResposiveSize(50), color: global.primaryColor }} />
-            <TextC text={"Team."} font={'Montserrat-ExtraBold'} size={ResposiveSize(50)} style={{ lineHeight: ResposiveSize(50), color: global.primaryColor }} />
+            <TextC text={"Social"} font={'Montserrat-ExtraBold'} size={ResponsiveSize(50)} style={{ lineHeight: ResponsiveSize(55), color: global.primaryColor }} />
+            <TextC text={"Crew"} font={'Montserrat-ExtraBold'} size={ResponsiveSize(50)} style={{ lineHeight: ResponsiveSize(50), color: global.primaryColor }} />
+            <TextC text={"Team."} font={'Montserrat-ExtraBold'} size={ResponsiveSize(50)} style={{ lineHeight: ResponsiveSize(50), color: global.primaryColor }} />
           </View>
 
           <View style={styles.ButtonWrapper}>
-            <View style={{ paddingBottom: ResposiveSize(30) }} >
-              <TextC text={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} font={'Montserrat-Thin'} size={ResposiveSize(11.5)} style={{ color: global.white, textAlign: 'center', width: windowWidth * 0.7 }} />
+            <View style={{ paddingBottom: ResponsiveSize(30) }} >
+              <TextC text={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} font={'Montserrat-Thin'} size={ResponsiveSize(11.5)} style={{ color: global.white, textAlign: 'center', width: windowWidth * 0.7 }} />
             </View>
             <View style={styles.LoginSlider}>
               <TouchableOpacity onPress={() => Switcher('Login')} style={styles.LoginSliderLeft}>
-                <TextC size={ResposiveSize(11)} text={'Login'} style={{ color: global.white }} font={'Montserrat-Bold'} />
+                <TextC size={ResponsiveSize(11)} text={'Login'} style={{ color: global.white }} font={'Montserrat-Bold'} />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => Switcher('SignUp')} style={styles.LoginSliderRight}>
-                <TextC size={ResposiveSize(11)} text={'SignUp'} style={{ color: global.white }} font={'Montserrat-Bold'} />
+                <TextC size={ResponsiveSize(11)} text={'SignUp'} style={{ color: global.white }} font={'Montserrat-Bold'} />
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => {
@@ -115,7 +115,7 @@ const LoginSwitcher = () => {
                   navigation.navigate('SignUp')
                 }
               }} style={{ ...styles.LoginSliderAbsolute, ...(currentRoute === 'Login' ? { left: 0 } : { right: 0 }) }}>
-                <TextC size={ResposiveSize(11)} text={currentRoute} font={'Montserrat-Bold'} />
+                <TextC size={ResponsiveSize(11)} text={currentRoute} font={'Montserrat-Bold'} />
               </TouchableOpacity>
             </View>
           </View>

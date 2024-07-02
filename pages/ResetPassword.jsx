@@ -13,7 +13,7 @@ import { connect } from "react-redux";
 
 
 
-import { ResposiveSize, global } from '../components/constant';
+import { ResponsiveSize, global } from '../components/constant';
 import InputC from '../components/inputs';
 import * as yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
@@ -74,11 +74,11 @@ const OtpScreen = ({ sendEmail, ForgotPasswordReducer }) => {
     bodyWrapper: {
       flexDirection: 'column',
       alignItems: 'center',
-      paddingHorizontal: ResposiveSize(15)
+      paddingHorizontal: ResponsiveSize(15)
     },
     header: {
       paddingTop: windowHeight * 0.06,
-      width: windowWidth - ResposiveSize(30),
+      width: windowWidth - ResponsiveSize(30),
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between'
@@ -94,7 +94,7 @@ const OtpScreen = ({ sendEmail, ForgotPasswordReducer }) => {
       paddingHorizontal: windowHeight * 0.03
     },
     inputWrapper: {
-      paddingHorizontal: ResposiveSize(20)
+      paddingHorizontal: ResponsiveSize(20)
     },
     loginBtnWrapper: {
       paddingTop: windowHeight * 0.03,
@@ -117,15 +117,15 @@ const OtpScreen = ({ sendEmail, ForgotPasswordReducer }) => {
           <View style={styles.contentWrapper}>
             <View style={styles.header}>
               <Pressable style={styles.gobackBtn} onPress={navigation.goBack}>
-                <AntDedign name='left' size={ResposiveSize(20)} color={global.secondaryColor} />
+                <AntDedign name='left' size={ResponsiveSize(20)} color={global.secondaryColor} />
               </Pressable>
-              <TextC text={"Forgot Password"} size={ResposiveSize(22)} style={{ color: global.secondaryColor }} font={'Montserrat-Bold'} />
-              <View style={{ width: ResposiveSize(20) }}></View>
+              <TextC text={"Forgot Password"} size={ResponsiveSize(22)} style={{ color: global.secondaryColor }} font={'Montserrat-Bold'} />
+              <View style={{ width: ResponsiveSize(20) }}></View>
             </View>
 
 
             <View style={styles.centerContentWrapper}>
-              <TextC text={"Enter your email address and we'll send you a link to reset your password."} size={ResposiveSize(12)} style={{ color: global.white, textAlign: 'center' }} font={'Montserrat-Regular'} />
+              <TextC text={"Enter your email address and we'll send you a link to reset your password."} size={ResponsiveSize(12)} style={{ color: global.white, textAlign: 'center' }} font={'Montserrat-Regular'} />
             </View>
           </View>
 

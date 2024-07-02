@@ -14,7 +14,7 @@ import * as UserRegisterAction from "../store/actions/UserRegister/index";
 import { connect } from "react-redux";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TextC from '../components/text/text';
-import { ResposiveSize, global } from '../components/constant';
+import { ResponsiveSize, global } from '../components/constant';
 import { useToast } from '../components/Toast/ToastContext';
 
 
@@ -29,6 +29,10 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
   useEffect(() => {
     LoadAirLine()
   }, [])
+  const LoadAirLine = async () => {
+    const loadAllAirLineDetail = await getAllAirline()
+    setAllAirLine(loadAllAirLineDetail?.data)
+  }
   const schema = yup.object().shape({
     userName: yup
       .string()
@@ -61,27 +65,24 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      userName: 'ok',
-      airline: 'okokkk',
-      position: 'okokkk',
-      email: 'ok@ok.com',
-      password: 'qwerty1234',
-      confirmPassword: 'qwerty1234',
-      termsOfService: true,
+      userName: '',
+      airline: '',
+      position: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      termsOfService: false,
     },
   });
   const onSubmit = (data) => {
-    navigation.navigate('SignUpSecond')
+    navigation.navigate('SignUpSecond',data)
   };
   const Positions = [
     { title: 'FLIGHT ATTENDANT', icon: 'emoticon-happy-outline' },
     { title: 'PILOT', icon: 'emoticon-cool-outline' },
     { title: 'TECHNICIAN', icon: 'emoticon-lol-outline' },
   ];
-  const LoadAirLine = async () => {
-    const loadAllAirLineDetail = await getAllAirline()
-    setAllAirLine(loadAllAirLineDetail?.data)
-  }
+  
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -90,30 +91,30 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
     bodyWrapper: {
       flexDirection: 'column',
       alignItems: 'center',
-      paddingHorizontal: ResposiveSize(15)
+      paddingHorizontal: ResponsiveSize(15)
     },
     header: {
       paddingTop: windowHeight * 0.06,
-      width: windowWidth - ResposiveSize(30),
+      width: windowWidth - ResponsiveSize(30),
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
     },
     titleWrapper: {
-      width: windowWidth - ResposiveSize(30),
+      width: windowWidth - ResponsiveSize(30),
       paddingTop: windowHeight * 0.05
     },
     titleTextFirst: {
       fontFamily: 'Montserrat-ExtraBold',
-      fontSize: ResposiveSize(50),
+      fontSize: ResponsiveSize(50),
       color: global.white,
-      lineHeight: ResposiveSize(50)
+      lineHeight: ResponsiveSize(50)
     },
     titleTextSecond: {
       fontFamily: 'Montserrat-ExtraBold',
-      fontSize: ResposiveSize(50),
+      fontSize: ResponsiveSize(50),
       color: global.secondaryColor,
-      lineHeight: ResposiveSize(50)
+      lineHeight: ResponsiveSize(50)
     },
     secondInputWrapper: {
       paddingTop: windowHeight * 0.02
@@ -133,7 +134,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      paddingVertical: ResposiveSize(8)
+      paddingVertical: ResponsiveSize(8)
     },
     centeredView: {
       flex: 1,
@@ -146,7 +147,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
       width: windowWidth * 0.8,
       height: windowHeight * 0.56,
       backgroundColor: '#7891C2',
-      borderRadius: ResposiveSize(20),
+      borderRadius: ResponsiveSize(20),
       shadowColor: '#000',
       shadowOffset: {
         width: 0,
@@ -155,12 +156,12 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
       shadowOpacity: 0.25,
       shadowRadius: 4,
       elevation: 5,
-      paddingHorizontal: ResposiveSize(20),
-      paddingVertical: ResposiveSize(20),
+      paddingHorizontal: ResponsiveSize(20),
+      paddingVertical: ResponsiveSize(20),
     },
     modalTextHeading: {
       fontFamily: 'Montserrat-Bold',
-      fontSize: ResposiveSize(13),
+      fontSize: ResponsiveSize(13),
       color: global.white,
     }
   })
@@ -171,10 +172,10 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
         <View style={styles.bodyWrapper}>
           <View style={styles.header}>
             <Pressable onPress={navigation.goBack}>
-              <AntDedign name='left' size={ResposiveSize(20)} color={global.secondaryColor} />
+              <AntDedign name='left' size={ResponsiveSize(20)} color={global.secondaryColor} />
             </Pressable>
             <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <AntDedign name='infocirlceo' size={ResposiveSize(20)} color={global.secondaryColor} />
+              <AntDedign name='infocirlceo' size={ResponsiveSize(20)} color={global.secondaryColor} />
             </TouchableOpacity>
             <Modal
               animationType="slide"
@@ -187,49 +188,49 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
               }}>
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
-                  <View style={{ paddingBottom: ResposiveSize(15), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <View style={{ paddingBottom: ResponsiveSize(15), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <AntDedign name='infocirlceo' size={ResposiveSize(12)} color={global.white} />
-                      <TextC size={ResposiveSize(18)} text={"Form Info"} style={{ color: global.white, marginLeft: 5 }} font={"Montserrat-Bold"} />
+                      <AntDedign name='infocirlceo' size={ResponsiveSize(12)} color={global.white} />
+                      <TextC size={ResponsiveSize(18)} text={"Form Info"} style={{ color: global.white, marginLeft: 5 }} font={"Montserrat-Bold"} />
                     </View>
                     <Pressable onPress={() => setModalVisible(!modalVisible)}>
-                      <AntDedign name='close' size={ResposiveSize(22)} color={global.white} />
+                      <AntDedign name='close' size={ResponsiveSize(22)} color={global.white} />
                     </Pressable>
                   </View>
 
-                  <View style={{ paddingBottom: ResposiveSize(15) }}>
-                    <TextC text={"User name"} size={ResposiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
-                    <TextC size={ResposiveSize(12)} text={"user name is required."} style={{ color: global.white }} font={"Montserrat-Regular"} />
+                  <View style={{ paddingBottom: ResponsiveSize(15) }}>
+                    <TextC text={"User name"} size={ResponsiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
+                    <TextC size={ResponsiveSize(12)} text={"user name is required."} style={{ color: global.white }} font={"Montserrat-Regular"} />
                   </View>
 
-                  <View style={{ paddingBottom: ResposiveSize(15) }}>
-                    <TextC text={"Air line"} size={ResposiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
-                    <TextC size={ResposiveSize(12)} text={"air line is required."} style={{ color: global.white }} font={"Montserrat-Regular"} />
+                  <View style={{ paddingBottom: ResponsiveSize(15) }}>
+                    <TextC text={"Air line"} size={ResponsiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
+                    <TextC size={ResponsiveSize(12)} text={"air line is required."} style={{ color: global.white }} font={"Montserrat-Regular"} />
                   </View>
 
-                  <View style={{ paddingBottom: ResposiveSize(15) }}>
-                    <TextC text={"Position"} size={ResposiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
-                    <TextC size={ResposiveSize(12)} text={"position is required."} style={{ color: global.white }} font={"Montserrat-Regular"} />
+                  <View style={{ paddingBottom: ResponsiveSize(15) }}>
+                    <TextC text={"Position"} size={ResponsiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
+                    <TextC size={ResponsiveSize(12)} text={"position is required."} style={{ color: global.white }} font={"Montserrat-Regular"} />
                   </View>
 
-                  <View style={{ paddingBottom: ResposiveSize(15) }}>
-                    <TextC text={"Email"} sty size={ResposiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
-                    <TextC size={ResposiveSize(12)} text={"email is required."} style={{ color: global.white }} font={"Montserrat-Regular"} />
+                  <View style={{ paddingBottom: ResponsiveSize(15) }}>
+                    <TextC text={"Email"} sty size={ResponsiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
+                    <TextC size={ResponsiveSize(12)} text={"email is required."} style={{ color: global.white }} font={"Montserrat-Regular"} />
                   </View>
 
-                  <View style={{ paddingBottom: ResposiveSize(15) }}>
-                    <TextC text={"Email"} sty size={ResposiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
-                    <TextC size={ResposiveSize(12)} text={"Email is required."} style={{ color: global.white }} font={"Montserrat-Regular"} />
+                  <View style={{ paddingBottom: ResponsiveSize(15) }}>
+                    <TextC text={"Email"} sty size={ResponsiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
+                    <TextC size={ResponsiveSize(12)} text={"Email is required."} style={{ color: global.white }} font={"Montserrat-Regular"} />
                   </View>
 
-                  <View style={{ paddingBottom: ResposiveSize(15) }}>
-                    <TextC text={"Password"} size={ResposiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
-                    <TextC size={ResposiveSize(12)} text={"Password must be 8+ characters."} style={{ color: global.white }} font={"Montserrat-Regular"} />
+                  <View style={{ paddingBottom: ResponsiveSize(15) }}>
+                    <TextC text={"Password"} size={ResponsiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
+                    <TextC size={ResponsiveSize(12)} text={"Password must be 8+ characters."} style={{ color: global.white }} font={"Montserrat-Regular"} />
                   </View>
 
-                  <View style={{ paddingBottom: ResposiveSize(15) }}>
-                    <TextC text={"Terms & privacy"} size={ResposiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
-                    <TextC size={ResposiveSize(12)} text={"Accept terms & privacy policy."} style={{ color: global.white }} font={"Montserrat-Regular"} />
+                  <View style={{ paddingBottom: ResponsiveSize(15) }}>
+                    <TextC text={"Terms & privacy"} size={ResponsiveSize(11)} style={{ color: global.white }} font={"Montserrat-Bold"} />
+                    <TextC size={ResponsiveSize(12)} text={"Accept terms & privacy policy."} style={{ color: global.white }} font={"Montserrat-Regular"} />
                   </View>
                 </View>
               </View>
@@ -318,15 +319,15 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
                 required: true,
               }}
               render={({ field: { onChange, value } }) => (
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: ResposiveSize(8) }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: ResponsiveSize(8) }}>
                   <CheckBox
                     containerStyle={{ backgroundColor: "transparent", margin: 0, padding: 0 }}
                     checked={value}
-                    size={ResposiveSize(16)}
+                    size={ResponsiveSize(16)}
                     checkedColor={global.white}
                     onPress={() => onChange(!value)}
                   />
-                  <TextC text={'I accept the terms and privacy policy'} style={{ color: errors?.termsOfService?.message == undefined ? global.white : 'red' }} font={"Montserrat-Light"} size={ResposiveSize(11)} />
+                  <TextC text={'I accept the terms and privacy policy'} style={{ color: errors?.termsOfService?.message == undefined ? global.white : 'red' }} font={"Montserrat-Light"} size={ResponsiveSize(11)} />
                 </View>
               )}
               name="termsOfService"
@@ -337,7 +338,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
           </View>
 
           <View style={styles.haveAccoundWrapper}>
-            <TextC text={'Already have an account?'} style={{ color: global.white }} size={ResposiveSize(11)} font={"Montserrat-Regular"} /><TouchableOpacity onPress={() => navigation.navigate('Login')}><TextC text={'Login'} style={{ color: global.secondaryColor, marginLeft: ResposiveSize(5) }} size={ResposiveSize(11)} font={"Montserrat-Bold"} /></TouchableOpacity>
+            <TextC text={'Already have an account?'} style={{ color: global.white }} size={ResponsiveSize(11)} font={"Montserrat-Regular"} /><TouchableOpacity onPress={() => navigation.navigate('Login')}><TextC text={'Login'} style={{ color: global.secondaryColor, marginLeft: ResponsiveSize(5) }} size={ResponsiveSize(11)} font={"Montserrat-Bold"} /></TouchableOpacity>
           </View>
         </View>
       </ScrollView>

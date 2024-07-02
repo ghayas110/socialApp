@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, ActivityIndicator, Dimensions } from "react-native"
-import { ResposiveSize } from "../constant";
+import { ResponsiveSize } from "../constant";
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -10,14 +10,14 @@ const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImag
             backgroundColor: bgColor,
             alignItems: "center",
             justifyContent: "center",
-            borderRadius: ResposiveSize(30),
+            borderRadius: ResponsiveSize(30),
             height: windowHeight * 0.07,
             width:windowWidth * 0.5,  
             ...BtnStyle,
         },
         btnText: {
             fontFamily: 'Montserrat-Bold',
-            fontSize: ResposiveSize(13),
+            fontSize: ResponsiveSize(13),
             ...TextStyle
         }
     })
@@ -25,7 +25,7 @@ const ButtonC = ({ title, bgColor, TextStyle, BtnStyle, loading, onPress, IsImag
         <>
             <TouchableOpacity onPress={onPress} disabled={disabled} style={style.button} onPressIn={onpress2}>
                 {loading ?
-                    <ActivityIndicator style={style.btnText} size={ResposiveSize(20)} color="white" />
+                    <ActivityIndicator style={style.btnText} size={ResponsiveSize(20)} color="white" />
                     :
                     <Text style={style.btnText}>{title}</Text>
                 }

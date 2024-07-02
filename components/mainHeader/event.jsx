@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity } from "react-native"
 import { useNavigation } from '@react-navigation/native';
-import { ResposiveSize, global } from '../constant';
+import { ResponsiveSize, global } from '../constant';
 
 
 
@@ -17,12 +17,12 @@ const EventHeader = ({backgroundColor}) => {
             alignItems:'center',
             justifyContent:'space-between',
             backgroundColor:backgroundColor,
-            paddingVertical:ResposiveSize(15),
-            paddingHorizontal: ResposiveSize(15),
+            paddingVertical:ResponsiveSize(15),
+            paddingHorizontal: ResponsiveSize(15),
         },
         HeaderLogo:{
-            width: ResposiveSize(130),
-            height: ResposiveSize(22),
+            width: ResponsiveSize(130),
+            height: ResponsiveSize(22),
             resizeMode: 'contain',
         }
     })

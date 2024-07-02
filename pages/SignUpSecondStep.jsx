@@ -11,13 +11,12 @@ import * as UserRegisterAction from "../store/actions/UserRegister/index";
 import { connect } from "react-redux";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TextC from '../components/text/text';
-import { ResposiveSize, global } from '../components/constant';
+import { ResponsiveSize, global } from '../components/constant';
 import { useToast } from '../components/Toast/ToastContext';
 import DatePicker from 'react-native-date-picker';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
 import Feather from 'react-native-vector-icons/Feather'
-import AntDesign from 'react-native-vector-icons/AntDesign'
 import * as Progress from 'react-native-progress';
 
 
@@ -25,7 +24,8 @@ import * as Progress from 'react-native-progress';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
+const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline, route }) => {
+    const { userName, airline, position, email, password } = route.params;
     const { showToast } = useToast();
     const navigation = useNavigation()
     const [dob, setDob] = useState(false)
@@ -33,6 +33,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
     const { openBottomSheet, closeBottomSheet } = useBottomSheet();
     const [documentImage, setDocumentImage] = useState('')
     const [documentName, setDocumentName] = useState('')
+    const [document, setDocument] = useState('')
     const [isImageSave, setIsImageSave] = useState(true)
     const [isImageSaveExist, setIsImageSaveExist] = useState(false)
 
@@ -57,18 +58,26 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
         },
     });
     const onSubmit = async (data) => {
-        console.log(data)
         if (!documentImage == "") {
             try {
                 await AsyncStorage.removeItem('email');
-                await AsyncStorage.setItem('email', data.email);
-                const Responce = await insertUser({
-                    user_name: data?.userName,
-                    email: data?.email,
-                    password: data?.password,
-                    user_type: data?.position,
-                    airline: data?.airline
-                })
+                await AsyncStorage.setItem('email',email);
+                const formData = new FormData();
+                formData.append('user_name', userName);
+                formData.append('email', email);
+                formData.append('password', password);
+                formData.append('user_type', position);
+                formData.append('airline', airline?.toString());
+                formData.append('date_of_birth', data?.dob);
+                formData.append('license_expiry_date', data?.expiryDate);
+                if (document[0]?.uri) {
+                    formData.append('employee_card', {
+                        uri: document[0]?.uri,
+                        name: 'photo.jpg',
+                        type: 'image/jpeg',
+                    });
+                }
+                const Responce = await insertUser(formData)
                 if (Responce == 'Signup successfull') {
                     navigation.navigate('Otp')
                 }
@@ -85,10 +94,10 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
                 console.log(e)
             }
         }
-        else {
-            setIsImageSaveExist(true)
-        }
     };
+
+
+
     const styles = StyleSheet.create({
         container: {
             flex: 1,
@@ -97,30 +106,30 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
         bodyWrapper: {
             flexDirection: 'column',
             alignItems: 'center',
-            paddingHorizontal: ResposiveSize(15)
+            paddingHorizontal: ResponsiveSize(15)
         },
         header: {
             paddingTop: windowHeight * 0.06,
-            width: windowWidth - ResposiveSize(30),
+            width: windowWidth - ResponsiveSize(30),
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
         },
         titleWrapper: {
-            width: windowWidth - ResposiveSize(30),
+            width: windowWidth - ResponsiveSize(30),
             paddingTop: windowHeight * 0.05
         },
         titleTextFirst: {
             fontFamily: 'Montserrat-ExtraBold',
-            fontSize: ResposiveSize(50),
+            fontSize: ResponsiveSize(50),
             color: global.white,
-            lineHeight: ResposiveSize(50)
+            lineHeight: ResponsiveSize(50)
         },
         titleTextSecond: {
             fontFamily: 'Montserrat-ExtraBold',
-            fontSize: ResposiveSize(50),
+            fontSize: ResponsiveSize(50),
             color: global.secondaryColor,
-            lineHeight: ResposiveSize(50)
+            lineHeight: ResponsiveSize(50)
         },
         secondInputWrapper: {
             paddingTop: windowHeight * 0.02
@@ -140,8 +149,8 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            paddingTop: ResposiveSize(15),
-            paddingBottom: ResposiveSize(8)
+            paddingTop: ResponsiveSize(15),
+            paddingBottom: ResponsiveSize(8)
         },
         centeredView: {
             flex: 1,
@@ -154,7 +163,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
             width: windowWidth * 0.8,
             height: windowHeight * 0.56,
             backgroundColor: '#7891C2',
-            borderRadius: ResposiveSize(20),
+            borderRadius: ResponsiveSize(20),
             shadowColor: '#000',
             shadowOffset: {
                 width: 0,
@@ -163,68 +172,68 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
             shadowOpacity: 0.25,
             shadowRadius: 4,
             elevation: 5,
-            paddingHorizontal: ResposiveSize(20),
-            paddingVertical: ResposiveSize(20),
+            paddingHorizontal: ResponsiveSize(20),
+            paddingVertical: ResponsiveSize(20),
         },
         modalTextHeading: {
             fontFamily: 'Montserrat-Bold',
-            fontSize: ResposiveSize(13),
+            fontSize: ResponsiveSize(13),
             color: global.white,
         },
         dateInput: {
-            fontSize: ResposiveSize(12),
+            fontSize: ResponsiveSize(12),
             paddingHorizontal: global.inputPaddingH,
             backgroundColor: '#FFFFFF',
             width: global.inputWidth,
             fontFamily: 'Montserrat-Regular',
             height: global.inputHeight,
             color: global.black,
-            borderRadius: ResposiveSize(30),
-            borderWidth: ResposiveSize(1),
+            borderRadius: ResponsiveSize(30),
+            borderWidth: ResponsiveSize(1),
             flexDirection: 'row',
             alignItems: 'center'
         },
         dateInputSelect: {
-            fontSize: ResposiveSize(12),
+            fontSize: ResponsiveSize(12),
             paddingHorizontal: global.inputPaddingH,
             backgroundColor: '#FFFFFF',
             width: global.inputWidth,
             fontFamily: 'Montserrat-Regular',
-            height: ResposiveSize(180),
+            height: ResponsiveSize(180),
             color: global.black,
-            borderRadius: ResposiveSize(30),
-            borderWidth: ResposiveSize(1),
+            borderRadius: ResponsiveSize(30),
+            borderWidth: ResponsiveSize(1),
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
         },
         dropdownButtonTxtStyle: {
             flex: 1,
-            fontSize: ResposiveSize(12),
+            fontSize: ResponsiveSize(12),
             fontWeight: '500',
             fontFamily: 'Montserrat-Regular'
         },
         dateInputImage: {
             flexDirection: 'row',
             alignItems: 'center',
-            fontSize: ResposiveSize(12),
-            paddingHorizontal: ResposiveSize(5),
+            fontSize: ResponsiveSize(12),
+            paddingHorizontal: ResponsiveSize(5),
             backgroundColor: '#FFFFFF',
             width: global.inputWidth,
             fontFamily: 'Montserrat-Regular',
-            height: ResposiveSize(70),
+            height: ResponsiveSize(70),
             color: global.black,
-            borderRadius: ResposiveSize(30),
+            borderRadius: ResponsiveSize(30),
             borderWidth: 0,
         },
         dateImageUpload: {
-            height: ResposiveSize(60),
-            width: ResposiveSize(70),
+            height: ResponsiveSize(60),
+            width: ResponsiveSize(70),
         },
         ImageLoader: {
             flexDirection: 'column',
             justifyContent: 'center',
-            paddingLeft: ResposiveSize(5)
+            paddingLeft: ResponsiveSize(5)
         }
     })
     const requestCameraPermission = async () => {
@@ -239,12 +248,11 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
             console.warn(err);
         }
     };
-
-
     const openPhotoLibrary = async () => {
         setIsImageSave(true)
         const result = await launchImageLibrary();
         if (result?.assets.length > 0) {
+            setDocument(result.assets)
             setDocumentImage(result?.assets[0]?.uri)
             setDocumentName(result?.assets[0]?.fileName)
             setTimeout(() => {
@@ -257,6 +265,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
         setIsImageSave(true)
         const result = await launchCamera();
         if (result?.assets.length > 0) {
+            setDocument(result.assets)
             setDocumentImage(result?.assets[0]?.uri)
             setDocumentName(result?.assets[0]?.fileName)
             setTimeout(() => {
@@ -268,7 +277,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
     const handleOpenSheet = () => {
         openBottomSheet(
             <>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: ResposiveSize(15) }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: ResponsiveSize(15) }}>
                     <ButtonC onPress={openMobileCamera} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openCamera} title={"Open camera"}></ButtonC>
                     <ButtonC onPress={openPhotoLibrary} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openLibrary} title={"Open library"}></ButtonC>
                 </View>
@@ -276,6 +285,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
             , ["15%"]
         );
     };
+    console.log(new Date())
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -283,7 +293,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
                 <View style={styles.bodyWrapper}>
                     <View style={styles.header}>
                         <Pressable onPress={navigation.goBack}>
-                            <AntDedign name='left' size={ResposiveSize(20)} color={global.secondaryColor} />
+                            <AntDedign name='left' size={ResponsiveSize(20)} color={global.secondaryColor} />
                         </Pressable>
                     </View>
                     <View style={styles.titleWrapper}>
@@ -299,8 +309,8 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
                             render={({ field: { onChange, value } }) => (
                                 <>
                                     <View style={{ flexDirection: 'column' }}>
-                                        <View style={{ paddingHorizontal: ResposiveSize(12) }}>
-                                            <TextC text={"Date of birth"} size={ResposiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResposiveSize(4) }} />
+                                        <View style={{ paddingHorizontal: ResponsiveSize(12) }}>
+                                            <TextC text={"Date of birth"} size={ResponsiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResponsiveSize(4) }} />
                                         </View>
                                         <TouchableOpacity onPress={() => setDob(true)} style={{ ...styles.dateInput, ...(errors?.dob?.message === undefined ? { borderColor: global.white } : { borderColor: 'red' }) }}>
                                             <Text style={styles.dropdownButtonTxtStyle}>
@@ -313,6 +323,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
                                         open={dob}
                                         date={new Date()}
                                         mode="date"
+                                        maximumDate={new Date()}
                                         onConfirm={(date) => {
                                             setDob(false)
                                             onChange(date)
@@ -332,21 +343,21 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
 
                     <View style={styles.secondInputWrapper}>
                         <View style={{ flexDirection: 'column' }}>
-                            <View style={{ paddingHorizontal: ResposiveSize(12) }}>
-                                <TextC text={"Employee card Image"} size={ResposiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResposiveSize(4) }} />
+                            <View style={{ paddingHorizontal: ResponsiveSize(12) }}>
+                                <TextC text={"Employee card Image"} size={ResponsiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResponsiveSize(4) }} />
                             </View>
                             {documentImage == "" ?
-                                <TouchableOpacity onPress={requestCameraPermission} style={styles.dateInputSelect}>
-                                    <Feather name='upload-cloud' size={ResposiveSize(50)} color={global.primaryColor} />
-                                    <TextC text={'Upload employee card Image'} style={{ color: global.primaryColor }} size={ResposiveSize(11)} font={"Montserrat-Regular"} />
+                                <TouchableOpacity onPress={requestCameraPermission} style={{ ...styles.dateInputSelect, ...(isImageSaveExist === false ? { borderColor: global.white } : { borderColor: 'red' }) }}>
+                                    <Feather name='upload-cloud' size={ResponsiveSize(50)} color={global.primaryColor} />
+                                    <TextC text={'Upload employee card Image'} style={{ color: global.primaryColor }} size={ResponsiveSize(11)} font={"Montserrat-Regular"} />
                                 </TouchableOpacity>
                                 :
                                 <TouchableOpacity onPress={requestCameraPermission} style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <View style={styles.dateInputImage}>
-                                        <ImageBackground src={documentImage} borderRadius={ResposiveSize(25)} style={styles.dateImageUpload}></ImageBackground>
+                                        <ImageBackground src={documentImage} borderRadius={ResponsiveSize(25)} style={styles.dateImageUpload}></ImageBackground>
                                         <View style={styles.ImageLoader}>
-                                            <TextC text={documentName} style={{ color: global.secondaryColor, paddingBottom: ResposiveSize(5), width: 180 }} font={'Montserrat-Medium'} ellipsizeMode={"tail"} numberOfLines={1} />
-                                            <Progress.Bar progress={10} color={global.secondaryColor} animated={true} indeterminate={isImageSave} indeterminateAnimationDuration={1000} width={ResposiveSize(180)} />
+                                            <TextC text={documentName} style={{ color: global.secondaryColor, paddingBottom: ResponsiveSize(5), width: ResponsiveSize(180) }} font={'Montserrat-Medium'} ellipsizeMode={"tail"} numberOfLines={1} />
+                                            <Progress.Bar progress={10} color={global.secondaryColor} animated={true} indeterminate={isImageSave} indeterminateAnimationDuration={1000} width={ResponsiveSize(180)} />
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -365,8 +376,8 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
                                 render={({ field: { onChange, value } }) => (
                                     <>
                                         <View style={{ flexDirection: 'column' }}>
-                                            <View style={{ paddingHorizontal: ResposiveSize(12) }}>
-                                                <TextC text={"Expiry Date"} size={ResposiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResposiveSize(4) }} />
+                                            <View style={{ paddingHorizontal: ResponsiveSize(12) }}>
+                                                <TextC text={"Expiry Date"} size={ResponsiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResponsiveSize(4) }} />
                                             </View>
                                             <TouchableOpacity onPress={() => setExpiry(true)} style={{ ...styles.dateInput, ...(errors?.expiryDate?.message === undefined ? { borderColor: global.white } : { borderColor: 'red' }) }}>
                                                 <Text style={styles.dropdownButtonTxtStyle}>
@@ -379,6 +390,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
                                             open={expiry}
                                             date={new Date()}
                                             mode="date"
+                                            minimumDate={new Date()}
                                             onConfirm={(date) => {
                                                 console.log(date, 'expiry Date')
                                                 setExpiry(false)
@@ -393,11 +405,14 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
                                 name="expiryDate"
                             />
                         </View>}
+
+
+
                     <View style={styles.submitBtnWrapper}>
-                        <ButtonC title="Sign Up" bgColor={global.secondaryColor} disabled={RegisterUserReducer?.loading} loading={RegisterUserReducer?.loading} TextStyle={{ color: global.primaryColorDark }} onPress={handleSubmit(onSubmit)} />
+                        <ButtonC title="Sign Up" bgColor={global.secondaryColor} disabled={RegisterUserReducer?.loading} loading={RegisterUserReducer?.loading} TextStyle={{ color: global.primaryColorDark }} onPress={handleSubmit(onSubmit)} onpress2={() => !documentImage == "" ? setIsImageSaveExist(false) : setIsImageSaveExist(true)} />
                     </View>
                     <View style={styles.haveAccoundWrapper}>
-                        <TextC text={'Already have an account?'} style={{ color: global.white }} size={ResposiveSize(11)} font={"Montserrat-Regular"} /><TouchableOpacity onPress={() => navigation.navigate('Login')}><TextC text={'Login'} style={{ color: global.secondaryColor, marginLeft: ResposiveSize(5) }} size={ResposiveSize(11)} font={"Montserrat-Bold"} /></TouchableOpacity>
+                        <TextC text={'Already have an account?'} style={{ color: global.white }} size={ResponsiveSize(11)} font={"Montserrat-Regular"} /><TouchableOpacity onPress={() => navigation.navigate('Login')}><TextC text={'Login'} style={{ color: global.secondaryColor, marginLeft: ResponsiveSize(5) }} size={ResponsiveSize(11)} font={"Montserrat-Bold"} /></TouchableOpacity>
                     </View>
                 </View>
             </ScrollView>

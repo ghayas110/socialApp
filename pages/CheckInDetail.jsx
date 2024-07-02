@@ -9,7 +9,7 @@ import * as CountryAction from "../store/actions/Country/index";
 import { connect } from "react-redux";
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { ResposiveSize, global } from '../components/constant';
+import { ResponsiveSize, global } from '../components/constant';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TextC from '../components/text/text';
 import { useToast } from '../components/Toast/ToastContext';
@@ -102,31 +102,31 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
     bodyWrapper: {
       flexDirection: 'column',
       alignItems: 'center',
-      paddingHorizontal: ResposiveSize(15)
+      paddingHorizontal: ResponsiveSize(15)
     },
     header: {
       paddingTop: windowHeight * 0.06,
-      width: windowWidth - ResposiveSize(30)
+      width: windowWidth - ResponsiveSize(30)
     },
     titleWrapper: {
-      width: windowWidth - ResposiveSize(30),
+      width: windowWidth - ResponsiveSize(30),
       paddingVertical: windowHeight * 0.05
     },
     titleTextFirst: {
       fontFamily: 'Montserrat-ExtraBold',
-      fontSize: ResposiveSize(45),
+      fontSize: ResponsiveSize(45),
       color: 'white',
-      lineHeight: ResposiveSize(45)
+      lineHeight: ResponsiveSize(45)
     },
     titleTextSecond: {
       fontFamily: 'Montserrat-ExtraBold',
-      fontSize: ResposiveSize(45),
+      fontSize: ResponsiveSize(45),
       color: global.secondaryColor,
       width: windowWidth * 0.6,
-      lineHeight: ResposiveSize(50)
+      lineHeight: ResponsiveSize(50)
     },
     inputWrapper: {
-      width: windowWidth - ResposiveSize(30)
+      width: windowWidth - ResponsiveSize(30)
     },
     secondInputWrapper: {
       paddingTop: windowHeight * 0.02
@@ -142,58 +142,58 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
     labelS: {
       color: "white",
       fontFamily: "Montserrat-Regular",
-      fontSize: ResposiveSize(11),
-      paddingBottom: ResposiveSize(4),
+      fontSize: ResponsiveSize(11),
+      paddingBottom: ResponsiveSize(4),
     },
     dropdownButtonStyle: {
       width: global.inputWidth,
       height: global.inputHeight,
       backgroundColor: global.white,
-      borderRadius: ResposiveSize(30),
+      borderRadius: ResponsiveSize(30),
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: global.inputPaddingH,
       fontFamily: 'Montserrat-Regular',
-      borderWidth: ResposiveSize(1),
+      borderWidth: ResponsiveSize(1),
     },
     dropdownButtonTxtStyle: {
       flex: 1,
-      fontSize: ResposiveSize(11),
+      fontSize: ResponsiveSize(11),
       fontWeight: '500',
       fontFamily: 'Montserrat-Regular',
       color:'black'
     },
     dropdownButtonArrowStyle: {
-      fontSize: ResposiveSize(22),
+      fontSize: ResponsiveSize(22),
       color: '#666666'
     },
     dropdownButtonIconStyle: {
-      fontSize: ResposiveSize(22),
-      marginRight: ResposiveSize(8),
+      fontSize: ResponsiveSize(22),
+      marginRight: ResponsiveSize(8),
     },
     dropdownMenuStyle: {
       backgroundColor: '#E9ECEF',
-      borderRadius: ResposiveSize(8),
+      borderRadius: ResponsiveSize(8),
     },
     dropdownItemStyle: {
       width: '100%',
       flexDirection: 'row',
-      paddingHorizontal: ResposiveSize(12),
+      paddingHorizontal: ResponsiveSize(12),
       justifyContent: 'center',
       alignItems: 'center',
-      paddingVertical: ResposiveSize(8),
+      paddingVertical: ResponsiveSize(8),
     },
     dropdownItemTxtStyle: {
       flex: 1,
-      fontSize: ResposiveSize(11),
+      fontSize: ResponsiveSize(11),
       fontWeight: '500',
       color: '#151E26',
       fontFamily: 'Montserrat-Regular'
     },
     dropdownItemIconStyle: {
-      fontSize: ResposiveSize(22),
-      marginRight: ResposiveSize(8),
+      fontSize: ResponsiveSize(22),
+      marginRight: ResponsiveSize(8),
     },
   })
   return (
@@ -204,7 +204,7 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
         <View style={styles.bodyWrapper}>
           <View style={styles.header}>
             <Pressable style={styles.gobackBtn} onPress={navigation.goBack}>
-              <AntDedign name='left' size={ResposiveSize(20)} color={global.secondaryColor} />
+              <AntDedign name='left' size={ResponsiveSize(20)} color={global.secondaryColor} />
             </Pressable>
           </View>
           <View style={styles.titleWrapper}>
@@ -214,8 +214,8 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
 
 
           <View style={styles.inputWrapper}>
-            <View style={{ paddingHorizontal: ResposiveSize(12) }}>
-              <TextC text={"Country"} size={ResposiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResposiveSize(4) }} />
+            <View style={{ paddingHorizontal: ResponsiveSize(12) }}>
+              <TextC text={"Country"} size={ResponsiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResponsiveSize(4) }} />
             </View>
             <View>
               <SelectDropdown
@@ -228,10 +228,10 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
                   setCurrentCountry(selectedItem.name)
                 }}
                 searchInputTxtStyle={{
-                  fontSize: ResposiveSize(11)
+                  fontSize: ResponsiveSize(11)
                 }}
                 searchInputStyle={{
-                  height: ResposiveSize(30)
+                  height: ResponsiveSize(30)
                 }}
                 disabled={allCountriesData?.length < 0 || allCountriesData == undefined || allCountriesData == null ? true : false}
                 search={true}
@@ -273,8 +273,8 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
               />
             </View>
             <View style={styles.secondInputWrapper}>
-              <View style={{ paddingHorizontal: ResposiveSize(12) }}>
-                <TextC text={"State"} size={ResposiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResposiveSize(4) }} />
+              <View style={{ paddingHorizontal: ResponsiveSize(12) }}>
+                <TextC text={"State"} size={ResponsiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResponsiveSize(4) }} />
               </View>
               <View>
                 <SelectDropdown
@@ -286,10 +286,10 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
                     setCurrentState(selectedItem.name)
                   }}
                   searchInputTxtStyle={{
-                    fontSize: ResposiveSize(11)
+                    fontSize: ResponsiveSize(11)
                   }}
                   searchInputStyle={{
-                    height: ResposiveSize(30)
+                    height: ResponsiveSize(30)
                   }}
                   disabled={allStateData?.length < 0 || allStateData == undefined || allStateData == null ? true : false}
                   search={true}
@@ -332,8 +332,8 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
               </View>
             </View>
             <View style={styles.secondInputWrapper}>
-              <View style={{ paddingHorizontal: ResposiveSize(12) }}>
-                <TextC text={"City"} size={ResposiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResposiveSize(4) }} />
+              <View style={{ paddingHorizontal: ResponsiveSize(12) }}>
+                <TextC text={"City"} size={ResponsiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResponsiveSize(4) }} />
               </View>
               <View>
                 {currentState == "" ?
@@ -353,10 +353,10 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
                     disabled={allCityData?.length < 0 || allCityData == undefined || allCityData == null ? true : false}
                     search={true}
                     searchInputTxtStyle={{
-                      fontSize: ResposiveSize(11)
+                      fontSize: ResponsiveSize(11)
                     }}
                     searchInputStyle={{
-                      height: ResposiveSize(30)
+                      height: ResponsiveSize(30)
                     }}
                     renderButton={(selectedItem, isOpened) => {
                       return (
@@ -410,7 +410,7 @@ const CheckInDetail = ({ CheckInReducer, CheckInInApp, getAllCountries, getAllSt
 
 
           <View style={styles.haveAccoundWrapper}>
-            <TextC text={'Disclaimer: This app will not show exact locations but just the city you are currently laying over in.'} style={{ color: 'white', textAlign: 'left' }} size={ResposiveSize(11)} font={"Montserrat-ExtraLight"} />
+            <TextC text={'Disclaimer: This app will not show exact locations but just the city you are currently laying over in.'} style={{ color: 'white', textAlign: 'left' }} size={ResponsiveSize(11)} font={"Montserrat-ExtraLight"} />
           </View>
         </View>
       </ScrollView>

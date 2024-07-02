@@ -165,4 +165,4 @@ const Incomplete = () => {
     );
 }
 
-export default Incomplete;
+export default React.memo(Incomplete);

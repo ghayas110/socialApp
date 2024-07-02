@@ -9,7 +9,7 @@ import { OtpInput } from "react-native-otp-entry";
 import * as VrifyOtpAction from "../store/actions/VerifyOtp/index";
 import { connect } from "react-redux";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ResposiveSize, global } from '../components/constant';
+import { ResponsiveSize, global } from '../components/constant';
 import { useToast } from '../components/Toast/ToastContext';
 
 
@@ -62,13 +62,10 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
         email: email,
         otp: opt
       })
-      console.log(verifyOtpLoad)
       if (verifyOtpLoad.message == "User Verified") {
         await AsyncStorage.removeItem('Token');
         await AsyncStorage.removeItem('UserName');
-        await AsyncStorage.setItem('Token', verifyOtpLoad?.data?.access_token);
-        await AsyncStorage.setItem('UserName', verifyOtpLoad?.data?.user_name);
-        navigation.navigate('CheckIn')
+        navigation.navigate('Login')
         setOtp("")
       }
       else if (verifyOtpLoad.message == "Invalid OTP") {
@@ -131,11 +128,11 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
     bodyWrapper: {
       flexDirection: 'column',
       alignItems: 'center',
-      paddingHorizontal: ResposiveSize(15)
+      paddingHorizontal: ResponsiveSize(15)
     },
     header: {
       paddingTop: windowHeight * 0.06,
-      width: windowWidth - ResposiveSize(30),
+      width: windowWidth - ResponsiveSize(30),
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between'
@@ -150,7 +147,7 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
       paddingVertical: windowHeight * 0.03
     },
     inputWrapper: {
-      paddingHorizontal: ResposiveSize(20)
+      paddingHorizontal: ResponsiveSize(20)
     },
     loginBtnWrapper: {
       paddingTop: windowHeight * 0.03,
@@ -173,16 +170,16 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
           <View style={styles.contentWrapper}>
             <View style={styles.header}>
               <Pressable style={styles.gobackBtn} onPress={navigation.goBack}>
-                <AntDedign name='left' size={ResposiveSize(20)} color={global.secondaryColor} />
+                <AntDedign name='left' size={ResponsiveSize(20)} color={global.secondaryColor} />
               </Pressable>
-              <TextC text={"Enter code"} size={ResposiveSize(22)} style={{ color: global.secondaryColor }} font={'Montserrat-Bold'} />
-              <View style={{ width: ResposiveSize(20) }}></View>
+              <TextC text={"Enter code"} size={ResponsiveSize(22)} style={{ color: global.secondaryColor }} font={'Montserrat-Bold'} />
+              <View style={{ width: ResponsiveSize(20) }}></View>
             </View>
             <View style={styles.centerContentWrapper}>
-              <TextC text={"We’ve sent an Email with an activation"} size={ResposiveSize(12)} style={{ color: global.white, textAlign: 'center' }} font={'Montserrat-Regular'} />
+              <TextC text={"We’ve sent an Email with an activation"} size={ResponsiveSize(12)} style={{ color: global.white, textAlign: 'center' }} font={'Montserrat-Regular'} />
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TextC text={"code to your account"} size={ResposiveSize(12)} style={{ color: global.white, textAlign: 'center' }} font={'Montserrat-Regular'} />
-                <TextC text={emailState} size={ResposiveSize(12)} style={{ color: global.secondaryColor, textAlign: 'center', marginLeft: ResposiveSize(4), width: ResposiveSize(100) }} font={'Montserrat-Bold'} ellipsizeMode={"tail"} numberOfLines={1} />
+                <TextC text={"code to your account"} size={ResponsiveSize(12)} style={{ color: global.white, textAlign: 'center' }} font={'Montserrat-Regular'} />
+                <TextC text={emailState} size={ResponsiveSize(12)} style={{ color: global.secondaryColor, textAlign: 'center', marginLeft: ResponsiveSize(4), width: ResponsiveSize(100) }} font={'Montserrat-Bold'} ellipsizeMode={"tail"} numberOfLines={1} />
               </View>
             </View>
           </View>
@@ -192,8 +189,8 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
                 color: global.secondaryColor,
               }}
               theme={{
-                pinCodeTextStyle: { fontSize: ResposiveSize(29), fontFamily: 'Montserrat-Medium', color: 'black' },
-                pinCodeContainerStyle: { backgroundColor:  global.white, borderWidth: 1, borderColor: otpError ? 'red' : global.secondaryColor, width: ResposiveSize(45), height: ResposiveSize(55) },
+                pinCodeTextStyle: { fontSize: ResponsiveSize(29), fontFamily: 'Montserrat-Medium', color: 'black' },
+                pinCodeContainerStyle: { backgroundColor:  global.white, borderWidth: 1, borderColor: otpError ? 'red' : global.secondaryColor, width: ResponsiveSize(45), height: ResponsiveSize(55) },
               }}
               numberOfDigits={5} onTextChange={(text) => {
                 setOtpError(false)
@@ -202,22 +199,22 @@ const OtpScreen = ({ verifyOtp, OtpVerificationReducer, ResendOtp }) => {
               }} />
           </View>
           {wrongOtop &&
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: ResposiveSize(20), paddingTop: ResposiveSize(30) }}>
-              <TextC text={"Wrong code, please try again"} size={ResposiveSize(15)} style={{ color: global.secondaryColor, textAlign: 'center', marginLeft: ResposiveSize(4) }} font={'Montserrat-Regular'} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: ResponsiveSize(20), paddingTop: ResponsiveSize(30) }}>
+              <TextC text={"Wrong code, please try again"} size={ResponsiveSize(15)} style={{ color: global.secondaryColor, textAlign: 'center', marginLeft: ResponsiveSize(4) }} font={'Montserrat-Regular'} />
             </View>}
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: ResposiveSize(20), paddingTop: ResposiveSize(20) }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: ResponsiveSize(20), paddingTop: ResponsiveSize(20) }}>
             {isActive ?
               <>
-                <TextC text={"Send code again"} size={ResposiveSize(11)} style={{ color: global.white, textAlign: 'center' }} font={'Montserrat-Regular'} />
-                <TextC text={`00:${seconds}`} size={ResposiveSize(11)} style={{ color: global.secondaryColor, textAlign: 'center', marginLeft: 3 }} font={'Montserrat-Bold'} />
+                <TextC text={"Send code again"} size={ResponsiveSize(11)} style={{ color: global.white, textAlign: 'center' }} font={'Montserrat-Regular'} />
+                <TextC text={`00:${seconds}`} size={ResponsiveSize(11)} style={{ color: global.secondaryColor, textAlign: 'center', marginLeft: 3 }} font={'Montserrat-Bold'} />
               </> :
               <>
-                <TextC text={"I didn’t receive a code"} size={ResposiveSize(11)} style={{ color: global.white, textAlign: 'center' }} font={'Montserrat-Regular'} />
+                <TextC text={"I didn’t receive a code"} size={ResponsiveSize(11)} style={{ color: global.white, textAlign: 'center' }} font={'Montserrat-Regular'} />
                 {!loader ?
                   <TouchableOpacity onPress={ResetOtp} disabled={OtpVerificationReducer?.loading}>
-                    <TextC text={"Resend"} size={ResposiveSize(11)} style={{ color: global.secondaryColor, textAlign: 'center', marginLeft: 4 }} font={'Montserrat-Bold'} />
+                    <TextC text={"Resend"} size={ResponsiveSize(11)} style={{ color: global.secondaryColor, textAlign: 'center', marginLeft: 4 }} font={'Montserrat-Bold'} />
                   </TouchableOpacity> :
-                  <ActivityIndicator size={ResposiveSize(20)} style={{ marginLeft: ResposiveSize(5) }} color={global.secondaryColor} />
+                  <ActivityIndicator size={ResponsiveSize(20)} style={{ marginLeft: ResponsiveSize(5) }} color={global.secondaryColor} />
                 }
               </>
             }

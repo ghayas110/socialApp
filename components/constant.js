@@ -4,7 +4,7 @@ const windowHeight = Dimensions.get('window').height;
 const scale = windowWidth / 320;
 
 
-const ResposiveSize = (size) => Math.round(size * scale);
+const ResponsiveSize = (size) => Math.round(size * scale);
 const global = {
     primaryColor: '#05348E',
     primaryColorDark:"#002245",
@@ -17,4 +17,4 @@ const global = {
     placeholderColor: '#666666'
 }
 
-export { global, ResposiveSize }
+export { global, ResponsiveSize }

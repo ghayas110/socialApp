@@ -25,8 +25,10 @@ import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { ProfileStackNavigation, EventStackNavigation } from './StackNavigation';
 import LoginSwitcher from '../pages/LoginSwitcher';
-import { ResposiveSize, global } from '../components/constant';
+import { ResponsiveSize, global } from '../components/constant';
 import SignUpSecondStep from '../pages/SignUpSecondStep';
+import ReApplyDocument from '../pages/ReApplyDocument';
+import Approval from '../pages/Approval';
 
 
 const MainNavigation = () => {
@@ -53,11 +55,11 @@ const MainNavigation = () => {
 
   const styles = StyleSheet.create({
     centerTab: {
-      height: ResposiveSize(55),
-      width: ResposiveSize(55),
+      height: ResponsiveSize(55),
+      width: ResponsiveSize(55),
       borderRadius: 70,
       backgroundColor: global.primaryColor,
-      marginBottom: ResposiveSize(25),
+      marginBottom: ResponsiveSize(25),
       flexDirection:'column',
       alignItems:'center',
       justifyContent:'center'
@@ -68,14 +70,14 @@ const MainNavigation = () => {
       {isLoggedIn ?
         <Tab.Navigator
           screenOptions={{
-            tabBarStyle: { backgroundColor: '#69BE25', borderTopLeftRadius: ResposiveSize(20), borderTopRightRadius: ResposiveSize(20) },
+            tabBarStyle: { backgroundColor: '#69BE25', borderTopLeftRadius: ResponsiveSize(20), borderTopRightRadius: ResponsiveSize(20) },
           }}>
           <Tab.Screen name="Home" component={HomeScreen}
             options={{
               navigationBarColor: '#69BE25',
               tabBarIcon: ({ color, size, focused }) => (
                 <View style={{ alignItems: "center", justifyContent: "center" }}>
-                  <Image source={!focused ? require('../assets/icons/homeTab/tabHomeLight.png') : require('../assets/icons/homeTab/tabHomeFill.png')} style={{ width: ResposiveSize(25), height: ResposiveSize(20), objectFit: 'contain' }} />
+                  <Image source={!focused ? require('../assets/icons/homeTab/tabHomeLight.png') : require('../assets/icons/homeTab/tabHomeFill.png')} style={{ width: ResponsiveSize(25), height: ResponsiveSize(20), objectFit: 'contain' }} />
                 </View>
               ),
               tabBarShowLabel: false,
@@ -92,7 +94,7 @@ const MainNavigation = () => {
           <Tab.Screen name="Event" component={EventStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
-                <Image source={!focused ? require('../assets/icons/homeTab/tabEventLight.png') : require('../assets/icons/homeTab/tabEventFill.png')} style={{ width: ResposiveSize(25), height: ResposiveSize(20), objectFit: 'contain' }} />
+                <Image source={!focused ? require('../assets/icons/homeTab/tabEventLight.png') : require('../assets/icons/homeTab/tabEventFill.png')} style={{ width: ResponsiveSize(25), height: ResponsiveSize(20), objectFit: 'contain' }} />
               </View>
             ),
             headerShown: false,
@@ -106,7 +108,7 @@ const MainNavigation = () => {
           <Tab.Screen name="CreatePost" component={CreatePost} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <View style={styles.centerTab}>
-                <Image source={require('../assets/icons/homeTab/centerTab.png')} style={{ width: ResposiveSize(25), height: ResposiveSize(20), objectFit: 'contain' }} />
+                <Image source={require('../assets/icons/homeTab/centerTab.png')} style={{ width: ResponsiveSize(25), height: ResponsiveSize(20), objectFit: 'contain' }} />
               </View>
             ),
             tabBarStyle: { display: 'none' },
@@ -120,7 +122,7 @@ const MainNavigation = () => {
           }} />
           <Tab.Screen name="Reel" component={ReelScreen} options={{
             tabBarIcon: ({ color, size, focused }) => (
-              <Image source={!focused ? require('../assets/icons/homeTab/tabChatLight.png') : require('../assets/icons/homeTab/tabChatFill.png')} style={{ width: ResposiveSize(25), height: ResposiveSize(20), objectFit: 'contain' }} />
+              <Image source={!focused ? require('../assets/icons/homeTab/tabChatLight.png') : require('../assets/icons/homeTab/tabChatFill.png')} style={{ width: ResponsiveSize(25), height: ResponsiveSize(20), objectFit: 'contain' }} />
             ),
             tabBarShowLabel: false,
             headerTitle: () => (
@@ -132,7 +134,7 @@ const MainNavigation = () => {
           }} />
           <Tab.Screen name="Profile" component={ProfileStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
-              <Image source={!focused ? require('../assets/icons/homeTab/tabProfile.png') : require('../assets/icons/homeTab/tabProfile.png')} style={{ width: ResposiveSize(25), height: ResposiveSize(20), objectFit: 'contain' }} />
+              <Image source={!focused ? require('../assets/icons/homeTab/tabProfile.png') : require('../assets/icons/homeTab/tabProfile.png')} style={{ width: ResponsiveSize(25), height: ResponsiveSize(20), objectFit: 'contain' }} />
             ),
             headerShown: false,
             tabBarShowLabel: false,
@@ -159,6 +161,8 @@ const MainNavigation = () => {
           </Stack.Screen>
           <Stack.Screen options={{ navigationBarHidden: true }} name="SignUp" component={SignUp} />
           <Stack.Screen options={{ navigationBarHidden: true }} name="SignUpSecond" component={SignUpSecondStep} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="Reapply" component={ReApplyDocument} />
+          <Stack.Screen options={{ navigationBarHidden: true }} name="Approval" component={Approval} />
           <Stack.Screen options={{ navigationBarHidden: true }} name="Otp" component={Otp} />
           <Stack.Screen options={{ navigationBarHidden: true }} name="ResetPassword" component={ResetPassword} />
           <Stack.Screen options={{ navigationBarHidden: true }} name="PasswordChanged" component={PasswordChanged} />
