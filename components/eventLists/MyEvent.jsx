@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, StyleSheet, Image, ScrollView, Animated, FlatList, Pressable } from "react-native";
+import { View, StyleSheet, Image, Animated, FlatList,TouchableOpacity, Pressable } from "react-native";
 import TextC from "../text/text";
 import { ResponsiveSize, global } from "../constant";
 import LinearGradient from 'react-native-linear-gradient';
@@ -8,8 +8,8 @@ import * as AllEventAction from "../../store/actions/Events/index";
 import { connect } from "react-redux";
 import TimeAgo from '@manu_omg/react-native-timeago';
 import ButtonC from "../button/index";
+import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SkeletonPlaceholder = ({ style, refreshing }) => {
     const translateX = new Animated.Value(-350);
@@ -109,21 +109,17 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
 };
 
 
-
-const AllEvents = ({ getAllEvents, AllEventReducer }) => {
+const MyEvent = ({ getMyEvents, MyEventReducer }) => {
     const [page, setPage] = useState(1)
-    const [user, setUser] = useState('')
     const navigation = useNavigation()
-    const fetchMoreData = async () => {
-        const user_id = await AsyncStorage.getItem('user_id');
-        setUser(user_id)
-    };
+
     useEffect(() => {
-        fetchMoreData()
-        if (AllEventReducer?.data?.length <= 0) {
-            getAllEvents({ page: page, refreash: true })
+        if (MyEventReducer?.data?.length <= 0) {
+            getMyEvents({ page: page, refreash: true })
         }
     }, []);
+
+
     const styles = StyleSheet.create({
         Wrapper: {
             backgroundColor: "#F5F5F5",
@@ -186,15 +182,8 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
             position: 'absolute',
             bottom: ResponsiveSize(10),
             right: ResponsiveSize(10),
-            fontFamily: "Montserrat-Medium",
-            fontSize: ResponsiveSize(10)
-        },
-        timeAgoJoined: {
-            position: 'absolute',
-            bottom: ResponsiveSize(10),
-            right: ResponsiveSize(10),
-            flexDirection: 'row',
-            alignItems: 'center',
+            flexDirection:'row',
+            alignItems:'center',
         },
         notFound: {
             flex: 1,
@@ -202,22 +191,26 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
             alignItems: 'center',
             justifyContent: 'center',
         },
-        joinedBadge: {
-            borderWidth: 1,
-            borderColor: global.secondaryColor,
-            paddingHorizontal: ResponsiveSize(10),
-            borderRadius: ResponsiveSize(10),
-            paddingVertical: ResponsiveSize(2),
-            backgroundColor: global.secondaryColor,
-            color: 'white',
-            marginRight: ResponsiveSize(5),
+        EditEvetn:{
+            position: 'absolute',
+            top: ResponsiveSize(10),
+            right: ResponsiveSize(10),
+            flexDirection:'row',
+            alignItems:'center',
         },
+        joinedBadge:{
+            paddingHorizontal:ResponsiveSize(8),
+            paddingVertical:ResponsiveSize(4),
+        }
     })
+
+
+
     const [refreshing, setRefreshing] = React.useState(false);
     const onRefresh = async () => {
         setPage(1)
         setRefreshing(true);
-        const loadingEvent = await getAllEvents({ page: 1, refreash: true })
+        const loadingEvent = await getMyEvents({ page: 1, refreash: true })
         if (loadingEvent == true) {
             setRefreshing(false);
         }
@@ -226,46 +219,37 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
         }
     }
 
+
     const renderItem = useCallback((items) => {
         return (
-            <>
-                <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={styles.Wrapper}>
-                    <Image style={styles.UpcomingImage} src={items?.item?.event_cover_image_thumbnail} />
-                    <View style={styles.UpcomingContent}>
-                        <TextC text={items?.item?.event_title} font={"Montserrat-Bold"} size={ResponsiveSize(12)} style={{ width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1} />
-                        <TextC text={items?.item?.event_details} font={"Montserrat-Medium"} size={ResponsiveSize(10)} style={{ width: ResponsiveSize(140), paddingTop: ResponsiveSize(5) }} ellipsizeMode={"tail"} numberOfLines={2} />
-                        <View style={{ paddingTop: ResponsiveSize(10), flexDirection: 'row', alignItems: 'center' }}>
-                            <Image style={{ height: ResponsiveSize(13), width: ResponsiveSize(13), marginRight: ResponsiveSize(3) }} source={require('../../assets/icons/calender.png')} />
-                            <TextC text={items?.item?.event_date} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
-                        </View>
+            <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={styles.Wrapper}>
+                <Image style={styles.UpcomingImage} src={items?.item?.event_cover_image_thumbnail} />
+                <View style={styles.UpcomingContent}>
+                    <TextC text={items?.item?.event_title} font={"Montserrat-Bold"} size={ResponsiveSize(12)} style={{ width: ResponsiveSize(120),lineHeight:ResponsiveSize(13)}} ellipsizeMode={"tail"} numberOfLines={1} />
+                    <TextC text={items?.item?.event_details} font={"Montserrat-Medium"} size={ResponsiveSize(10)} style={{ width: ResponsiveSize(140), paddingTop: ResponsiveSize(5),lineHeight:ResponsiveSize(11) }} ellipsizeMode={"tail"} numberOfLines={2} />
+                    <View style={{ paddingTop: ResponsiveSize(5), flexDirection: 'row', alignItems: 'center' }}>
+                        <Image style={{ height: ResponsiveSize(13), width: ResponsiveSize(13), marginRight: ResponsiveSize(3) }} source={require('../../assets/icons/calender.png')} />
+                        <TextC text={items?.item?.event_date} style={{lineHeight:ResponsiveSize(11)}} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
                     </View>
-                    {items?.item?.creator_user_id?.toString() == user&& <View style={styles.EditEvetn}>
-                        <TouchableOpacity style={styles.joinedBadge}>
-                            <AntDesign color={'red'} size={ResponsiveSize(16)} name="delete" />
-                        </TouchableOpacity>
-                    </View>
-                    }
-                    {items?.item?.is_participant == 1 ?
-                        <View style={styles.timeAgoJoined}>
-                            <View style={styles.joinedBadge}><TextC font={'Montserrat-Medium'} size={10} style={{ color: 'white' }} text={"Joined"} /></View>
-                            <TimeAgo
-                                style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(10) }}
-                                time={items?.item?.created_at}
-                            />
-                        </View>
-                        :
-                        <TimeAgo
-                            style={styles.timeAgo}
-                            time={items?.item?.created_at}
-                        />}
-                </Pressable>
-            </>
-        );
+                </View>
+                <View style={styles.EditEvetn}>
+                    <TouchableOpacity style={styles.joinedBadge}>
+                        <AntDesign color={'red'} size={ResponsiveSize(16)} name="delete"/>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.timeAgo}>
+                    <TimeAgo
+                        style={{fontFamily:"Montserrat-Medium",fontSize:ResponsiveSize(10)}}
+                        time={items?.item?.created_at}
+                    />
+                </View>
+            </Pressable>);
     }, []);
 
     return (
         <>
-            {AllEventReducer?.loading ? (
+            {MyEventReducer?.loading ? (
                 <>
                     <SkeletonPlaceholder />
                     <SkeletonPlaceholder />
@@ -275,7 +259,7 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
                     <SkeletonPlaceholder />
                     <SkeletonPlaceholder />
                 </>
-            ) : AllEventReducer?.loading === false && AllEventReducer?.data?.length <= 0 ? (
+            ) : MyEventReducer?.loading === false && MyEventReducer?.data?.length <= 0 ? (
                 <View style={styles.notFound}>
                     <TextC text={"No Event Right Now"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
                     <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
@@ -291,12 +275,12 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
                     showsVerticalScrollIndicator={false}
                     initialNumToRender={10}
                     refreshing={refreshing}
-                    data={AllEventReducer?.data}
+                    data={MyEventReducer?.data}
                     keyExtractor={(items, index) => index?.toString()}
                     maxToRenderPerBatch={10}
                     windowSize={10}
                     onEndReached={() => {
-                        getAllEvents({ page: page + 1, refreash: false })
+                        getMyEvents({ page: page + 1, refreash: false })
                         setPage(page + 1)
                     }}
                     onEndReachedThreshold={0.5}
@@ -307,8 +291,7 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
     );
 }
 
-
-function mapStateToProps({ AllEventReducer }) {
-    return { AllEventReducer };
+function mapStateToProps({ MyEventReducer }) {
+    return { MyEventReducer };
 }
-export default connect(mapStateToProps, AllEventAction)(React.memo(AllEvents));
+export default connect(mapStateToProps, AllEventAction)(React.memo(MyEvent));

@@ -4,12 +4,12 @@ import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import TextC from '../components/text/text';
 import AllEvents from '../components/eventLists/AllEvents';
-import Incomplete from '../components/eventLists/incomplete';
-import Unseen from '../components/eventLists/unseen';
+import Unseen from '../components/eventLists/MyEvent.jsx';
 import EventHeader from '../components/mainHeader/event';
 import { global, ResponsiveSize } from '../components/constant';
 import Animated, { useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-import UnSeen from '../components/eventLists/unseen';
+import Joined from '../components/eventLists/Joined.jsx';
+import MyEvent from '../components/eventLists/MyEvent.jsx';
 
 
 
@@ -73,7 +73,7 @@ const EventScreen = () => {
       alignItems: 'center',
       justifyContent: 'center',
       position: 'absolute',
-      top: -1,
+      top: 0,
       zIndex: 1,
       backgroundColor: global.primaryColor,
       borderRadius: ResponsiveSize(60),
@@ -95,9 +95,9 @@ const EventScreen = () => {
       case 1:
         return <AllEvents />;
       case 2:
-        return <Incomplete />;
+        return <Joined />;
       case 3:
-        return <UnSeen />;
+        return <MyEvent />;
       default:
         return null;
     }

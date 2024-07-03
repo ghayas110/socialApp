@@ -117,7 +117,9 @@ const LogIn = ({ onLogin, LoginReducer, loginUser, CheckUserStatus }) => {
       }
       else if (CheckStatus.accout_approval_status == "APPROVED") {
         await AsyncStorage.removeItem('Token');
+        await AsyncStorage.removeItem('user_id');
         await AsyncStorage.setItem('Token', LoginStart.access_token);
+        await AsyncStorage.setItem('user_id', LoginStart.user_id.toString());
         onLogin()
       }
       else if (CheckStatus.accout_approval_status == "REJECTED") {

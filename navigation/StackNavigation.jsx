@@ -5,18 +5,20 @@ import AddEvent from '../pages/AddEvent'
 import EventScreen from '../pages/EventScreen'
 import EventHeader from '../components/mainHeader/event';
 import ProfileScreen from '../pages/ProfileScreen';
+import EventDetail from '../pages/EventDetail';
 
 
 
 const EventStackNavigation = () => {
   const Stack = createNativeStackNavigator();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName={"EventScreen"}>
       <Stack.Screen options={{
         headerShown: false,
-        navigationBarHidden:  true
+        navigationBarHidden: true
       }} name="EventScreen" component={EventScreen} />
-      <Stack.Screen options={{ headerShown: false, }} name="AddEvent" component={AddEvent} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="AddEvent" component={AddEvent} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="EventDetail" component={EventDetail} />
     </Stack.Navigator>
   )
 }
@@ -26,8 +28,8 @@ const ProfileStackNavigation = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator>
-      <Stack.Screen options={{headerShown:false}} name="ProfileMain" component={ProfileScreen} />
+      <Stack.Screen options={{ headerShown: false }} name="ProfileMain" component={ProfileScreen} />
     </Stack.Navigator>
   )
 }
-export {EventStackNavigation,ProfileStackNavigation}
+export { EventStackNavigation, ProfileStackNavigation }

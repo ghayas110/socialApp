@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, View, LogBox } from 'react-native';
 import MainNavigation from './navigation/MainNavigation';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
@@ -9,8 +9,8 @@ import { BottomSheetProvider } from './components/bottomSheet/BottomSheet';
 import store from './store/index';
 import { Provider } from 'react-redux';
 import { ToastProvider } from './components/Toast/ToastContext';
-
 const App = () => {
+  LogBox.ignoreAllLogs();
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>

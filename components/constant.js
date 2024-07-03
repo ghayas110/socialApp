@@ -11,6 +11,7 @@ const global = {
     secondaryColor: "#69BE25",
     black: 'black',
     white: 'white',
+    description:"#DADADA",
     inputWidth: windowWidth * 0.9,
     inputHeight: windowHeight * 0.07,
     inputPaddingH: windowHeight * 0.02,
