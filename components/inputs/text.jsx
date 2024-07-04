@@ -1,25 +1,28 @@
 import React from "react";
-import {View,Text,StyleSheet,TextInput} from "react-native"
-import { global } from "../constant";
+import { View, Text, StyleSheet, TextInput, Dimensions } from "react-native"
+import { global, ResponsiveSize } from "../constant";
 
 
-const TextInputC = ({placeholder,error})=>{
+const TextInputC = ({ placeholder, error, onChangeText, multiline,value,numberOfLines, height,textAlignVertical,style }) => {
+    console.log(error)
     const styles = StyleSheet.create({
         Input: {
-            fontSize: 14,
+            fontSize: ResponsiveSize(11),
             paddingHorizontal: global.inputPaddingH,
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#EEEEEE',
             width: global.inputWidth,
             fontFamily: 'Montserrat-Regular',
-            height: global.inputHeight,
+            height: height ? height : global.inputHeight,
             color: global.black,
-            borderRadius: 30,
-            borderWidth:1,
-            ...(error === undefined ? { borderColor: global.white } : { borderColor: 'red' })
+            borderRadius: ResponsiveSize(30),
+            borderWidth: 1,
+            textAlignVertical:textAlignVertical,
+            ...style,
+            ...(error === undefined ? { borderColor: global.description } : { borderColor: 'red' })
         },
     })
-    return(
-        <TextInput style={styles.Input} placeholder={placeholder} placeholderTextColor={global.placeholderColor}/>
+    return (
+        <TextInput multiline={multiline} numberOfLines={numberOfLines} onChangeText={onChangeText} value={value} style={styles.Input} placeholder={placeholder} placeholderTextColor={global.placeholderColor} />
     )
 }
 

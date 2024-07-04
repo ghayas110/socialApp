@@ -16,7 +16,7 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
         container: {
             overflow: 'hidden',
             backgroundColor: '#F5F5F5',
-            padding: 10,
+            padding: ResponsiveSize(10),
             borderRadius: ResponsiveSize(25),
             flexDirection: 'row',
             alignItems: 'center',
@@ -135,71 +135,74 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer }) => {
             borderRadius: ResponsiveSize(25)
         },
         UpcomingContent: {
-            paddingLeft: 10
+            paddingLeft: ResponsiveSize(10)
         },
         profileImages1: {
-            height: 23,
-            width: 23,
+            height: ResponsiveSize(23),
+            width: ResponsiveSize(23),
             backgroundColor: "red",
-            borderRadius: 23,
+            borderRadius: ResponsiveSize(23),
             position: 'absolute',
             left: 0
         },
         profileImages2: {
-            height: 23,
-            width: 23,
+            height: ResponsiveSize(23),
+            width: ResponsiveSize(23),
             backgroundColor: "teal",
-            borderRadius: 23,
+            borderRadius: ResponsiveSize(23),
             position: 'absolute',
-            left: 10
+            left: ResponsiveSize(10)
         },
         profileImages3: {
-            height: 23,
-            width: 23,
+            height: ResponsiveSize(23),
+            width: ResponsiveSize(23),
             backgroundColor: "yellow",
-            borderRadius: 23,
+            borderRadius: ResponsiveSize(23),
             position: 'absolute',
-            left: 20
+            left: ResponsiveSize(20)
 
         },
         profileImages4: {
-            height: 23,
-            width: 23,
+            height: ResponsiveSize(23),
+            width: ResponsiveSize(23),
             backgroundColor: "gray",
-            borderRadius: 23,
+            borderRadius: ResponsiveSize(23),
             position: 'absolute',
-            left: 30
+            left: ResponsiveSize(30)
         },
         LikeBtn: {
             position: 'absolute',
-            top: 15,
-            right: 15,
-            height: 23,
-            width: 23,
+            top: ResponsiveSize(15),
+            right: ResponsiveSize(15),
+            height: ResponsiveSize(23),
+            width: ResponsiveSize(23),
         },
         timeAgo: {
             position: 'absolute',
             bottom: ResponsiveSize(10),
             right: ResponsiveSize(10),
-            flexDirection:'row',
-            alignItems:'center',
+            flexDirection: 'row',
+            alignItems: 'center',
         },
         joinedBadge: {
-            borderWidth:1,
-            borderColor:global.secondaryColor,
-            paddingHorizontal:ResponsiveSize(10),
+            borderWidth: 1,
+            borderColor: global.secondaryColor,
+            paddingHorizontal: ResponsiveSize(10),
             borderRadius: ResponsiveSize(10),
             paddingVertical: ResponsiveSize(2),
             backgroundColor: global.secondaryColor,
             color: 'white',
-            marginRight:ResponsiveSize(5),
+            marginRight: ResponsiveSize(5),
         },
         notFound: {
             flex: 1,
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-        }
+        },
+        timeAgoJoinedV: {
+            paddingBottom: ResponsiveSize(5),
+        },
     })
 
 
@@ -223,21 +226,21 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer }) => {
             <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={styles.Wrapper}>
                 <Image style={styles.UpcomingImage} src={items?.item?.event_cover_image_thumbnail} />
                 <View style={styles.UpcomingContent}>
-                    <TextC text={items?.item?.event_title} font={"Montserrat-Bold"} size={ResponsiveSize(12)} style={{ width: ResponsiveSize(140),lineHeight:ResponsiveSize(13)}} ellipsizeMode={"tail"} numberOfLines={1} />
-                    <TextC text={items?.item?.event_details} font={"Montserrat-Medium"} size={ResponsiveSize(10)} style={{ width: ResponsiveSize(140), paddingTop: ResponsiveSize(5),lineHeight:ResponsiveSize(11) }} ellipsizeMode={"tail"} numberOfLines={2} />
+                    <View style={styles.timeAgoJoinedV}>
+                        <TimeAgo
+                            style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(10) }}
+                            time={items?.item?.created_at}
+                        />
+                    </View>
+                    <TextC text={items?.item?.event_title} font={"Montserrat-Bold"} size={ResponsiveSize(12)} style={{ width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1} />
+                    <TextC text={items?.item?.event_details} font={"Montserrat-Medium"} size={ResponsiveSize(10)} style={{ width: ResponsiveSize(140), paddingTop: ResponsiveSize(5) }} ellipsizeMode={"tail"} numberOfLines={2} />
                     <View style={{ paddingTop: ResponsiveSize(5), flexDirection: 'row', alignItems: 'center' }}>
                         <Image style={{ height: ResponsiveSize(13), width: ResponsiveSize(13), marginRight: ResponsiveSize(3) }} source={require('../../assets/icons/calender.png')} />
-                        <TextC text={items?.item?.event_date} style={{lineHeight:ResponsiveSize(11)}} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                        <TextC text={items?.item?.event_date} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
                     </View>
                 </View>
-                <View style={styles.timeAgo}>
-                    <View style={styles.joinedBadge}><TextC font={'Montserrat-Medium'} size={10} style={{color:'white'}} text={"Joined"} /></View>
-                    <TimeAgo
-                        style={{fontFamily:"Montserrat-Medium",fontSize:ResponsiveSize(10)}}
-                        time={items?.item?.created_at}
-                    />
-                </View>
-            </Pressable>);
+            </Pressable >
+        );
     }, []);
 
     return (
@@ -254,12 +257,12 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer }) => {
                 </>
             ) : JoinedEventReducer?.loading === false && JoinedEventReducer?.data?.length <= 0 ? (
                 <View style={styles.notFound}>
-                    <TextC text={"No Event Right Now"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
+                    <TextC text={"No joined Event Right Now"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
                     <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
-                        <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any event right now. Try to Create"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                        <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any joined event right now. Try to refreash"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
                     </View>
                     <View style={{ paddingTop: ResponsiveSize(15), paddingHorizontal: ResponsiveSize(50) }}>
-                        <ButtonC title={"Create New"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
+                        <ButtonC onPress={onRefresh} title={"Try again"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
                     </View>
                 </View>
             ) : (

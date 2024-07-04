@@ -14,8 +14,9 @@ const global = {
     description:"#DADADA",
     inputWidth: windowWidth * 0.9,
     inputHeight: windowHeight * 0.07,
-    inputPaddingH: windowHeight * 0.02,
-    placeholderColor: '#666666'
+    inputPaddingH: windowWidth * 0.06,
+    placeholderColor: '#666666',
+    red:'red'
 }
 
 export { global, ResponsiveSize }

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, StyleSheet, Image, Animated, FlatList,TouchableOpacity, Pressable } from "react-native";
+import { View, StyleSheet, Image, Animated, FlatList, TouchableOpacity, Pressable } from "react-native";
 import TextC from "../text/text";
 import { ResponsiveSize, global } from "../constant";
 import LinearGradient from 'react-native-linear-gradient';
@@ -17,7 +17,7 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
         container: {
             overflow: 'hidden',
             backgroundColor: '#F5F5F5',
-            padding: 10,
+            padding: ResponsiveSize(10),
             borderRadius: ResponsiveSize(25),
             flexDirection: 'row',
             alignItems: 'center',
@@ -109,17 +109,15 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
 };
 
 
-const MyEvent = ({ getMyEvents, MyEventReducer }) => {
+const MyEvent = ({ getMyEvents, MyEventReducer,isRefreash}) => {
     const [page, setPage] = useState(1)
     const navigation = useNavigation()
-
     useEffect(() => {
         if (MyEventReducer?.data?.length <= 0) {
             getMyEvents({ page: page, refreash: true })
         }
     }, []);
-
-
+    console.log(MyEventReducer)
     const styles = StyleSheet.create({
         Wrapper: {
             backgroundColor: "#F5F5F5",
@@ -136,54 +134,54 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
             borderRadius: ResponsiveSize(25)
         },
         UpcomingContent: {
-            paddingLeft: 10
+            paddingLeft: ResponsiveSize(10)
         },
         profileImages1: {
-            height: 23,
-            width: 23,
+            height: ResponsiveSize(23),
+            width: ResponsiveSize(23),
             backgroundColor: "red",
-            borderRadius: 23,
+            borderRadius: ResponsiveSize(23),
             position: 'absolute',
-            left: 0
+            left: ResponsiveSize(0)
         },
         profileImages2: {
-            height: 23,
-            width: 23,
+            height: ResponsiveSize(23),
+            width: ResponsiveSize(23),
             backgroundColor: "teal",
-            borderRadius: 23,
+            borderRadius: ResponsiveSize(23),
             position: 'absolute',
-            left: 10
+            left: ResponsiveSize(10)
         },
         profileImages3: {
-            height: 23,
-            width: 23,
+            height: ResponsiveSize(23),
+            width: ResponsiveSize(23),
             backgroundColor: "yellow",
-            borderRadius: 23,
+            borderRadius: ResponsiveSize(23),
             position: 'absolute',
-            left: 20
+            left: ResponsiveSize(20)
 
         },
         profileImages4: {
-            height: 23,
-            width: 23,
+            height: ResponsiveSize(23),
+            width: ResponsiveSize(23),
             backgroundColor: "gray",
-            borderRadius: 23,
+            borderRadius: ResponsiveSize(23),
             position: 'absolute',
-            left: 30
+            left: ResponsiveSize(30)
         },
         LikeBtn: {
             position: 'absolute',
-            top: 15,
-            right: 15,
-            height: 23,
-            width: 23,
+            top: ResponsiveSize(15),
+            right: ResponsiveSize(15),
+            height: ResponsiveSize(23),
+            width: ResponsiveSize(23),
         },
         timeAgo: {
             position: 'absolute',
             bottom: ResponsiveSize(10),
             right: ResponsiveSize(10),
-            flexDirection:'row',
-            alignItems:'center',
+            flexDirection: 'row',
+            alignItems: 'center',
         },
         notFound: {
             flex: 1,
@@ -191,21 +189,36 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
             alignItems: 'center',
             justifyContent: 'center',
         },
-        EditEvetn:{
+        EditEvetn: {
             position: 'absolute',
             top: ResponsiveSize(10),
             right: ResponsiveSize(10),
-            flexDirection:'row',
-            alignItems:'center',
+            flexDirection: 'row',
+            alignItems: 'center',
         },
-        joinedBadge:{
-            paddingHorizontal:ResponsiveSize(8),
-            paddingVertical:ResponsiveSize(4),
+        joinedBadge: {
+            paddingHorizontal: ResponsiveSize(8),
+            paddingVertical: ResponsiveSize(4),
+        },
+        timeAgoJoined: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingBottom: ResponsiveSize(10),
+        },
+        timeAgoJoinedV: {
+            paddingBottom: ResponsiveSize(5),
+        },
+        timeAgoOwn: {
+            borderWidth: 1,
+            borderColor: global.primaryColor,
+            paddingHorizontal: ResponsiveSize(10),
+            borderRadius: ResponsiveSize(10),
+            paddingVertical: ResponsiveSize(2),
+            backgroundColor: global.primaryColor,
+            color: global.white,
+            marginRight: ResponsiveSize(5),
         }
     })
-
-
-
     const [refreshing, setRefreshing] = React.useState(false);
     const onRefresh = async () => {
         setPage(1)
@@ -218,33 +231,26 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
             setRefreshing(false);
         }
     }
-
-
     const renderItem = useCallback((items) => {
         return (
             <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={styles.Wrapper}>
                 <Image style={styles.UpcomingImage} src={items?.item?.event_cover_image_thumbnail} />
                 <View style={styles.UpcomingContent}>
-                    <TextC text={items?.item?.event_title} font={"Montserrat-Bold"} size={ResponsiveSize(12)} style={{ width: ResponsiveSize(120),lineHeight:ResponsiveSize(13)}} ellipsizeMode={"tail"} numberOfLines={1} />
-                    <TextC text={items?.item?.event_details} font={"Montserrat-Medium"} size={ResponsiveSize(10)} style={{ width: ResponsiveSize(140), paddingTop: ResponsiveSize(5),lineHeight:ResponsiveSize(11) }} ellipsizeMode={"tail"} numberOfLines={2} />
+                    <View style={styles.timeAgoJoinedV}>
+                        <TimeAgo
+                            style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(10) }}
+                            time={items?.item?.created_at}
+                        />
+                    </View>
+                    <TextC text={items?.item?.event_title} font={"Montserrat-Bold"} size={ResponsiveSize(12)} style={{ width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1} />
+                    <TextC text={items?.item?.event_details} font={"Montserrat-Medium"} size={ResponsiveSize(10)} style={{ width: ResponsiveSize(140), paddingTop: ResponsiveSize(5) }} ellipsizeMode={"tail"} numberOfLines={2} />
                     <View style={{ paddingTop: ResponsiveSize(5), flexDirection: 'row', alignItems: 'center' }}>
                         <Image style={{ height: ResponsiveSize(13), width: ResponsiveSize(13), marginRight: ResponsiveSize(3) }} source={require('../../assets/icons/calender.png')} />
-                        <TextC text={items?.item?.event_date} style={{lineHeight:ResponsiveSize(11)}} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                        <TextC text={items?.item?.event_date} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
                     </View>
                 </View>
-                <View style={styles.EditEvetn}>
-                    <TouchableOpacity style={styles.joinedBadge}>
-                        <AntDesign color={'red'} size={ResponsiveSize(16)} name="delete"/>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.timeAgo}>
-                    <TimeAgo
-                        style={{fontFamily:"Montserrat-Medium",fontSize:ResponsiveSize(10)}}
-                        time={items?.item?.created_at}
-                    />
-                </View>
-            </Pressable>);
+            </Pressable >
+        );
     }, []);
 
     return (
@@ -266,7 +272,7 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
                         <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any event right now. Try to Create"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
                     </View>
                     <View style={{ paddingTop: ResponsiveSize(15), paddingHorizontal: ResponsiveSize(50) }}>
-                        <ButtonC title={"Create New"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
+                        <ButtonC onPress={()=>navigation.navigate('AddEvent')} title={"Create New"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
                     </View>
                 </View>
             ) : (

@@ -13,10 +13,11 @@ import MyEvent from '../components/eventLists/MyEvent.jsx';
 
 
 
-const EventScreen = () => {
+const EventScreen = ({ route }) => {
+  const { myEventReFreash, allEventReFreash, joinedEventReFreash } = route.params;
   const windowWidth = Dimensions.get('window').width;
   const scheme = useColorScheme();
-  const [tabSlider, useTabSlider] = useState(1)
+  const [tabSlider, useTabSlider] = useState(joinedEventReFreash ? 2 : myEventReFreash ? 3 : 1)
   const innerBody = windowWidth - ResponsiveSize(30)
   const left = useSharedValue("0%");
   const handlePress = (r) => {
@@ -88,16 +89,14 @@ const EventScreen = () => {
     useTabSlider(r)
     handlePress(r)
   }
-
-
   const TabContent = () => {
     switch (tabSlider) {
       case 1:
-        return <AllEvents />;
+        return <AllEvents isRefreash={allEventReFreash} />;
       case 2:
-        return <Joined />;
+        return <Joined isRefreash={joinedEventReFreash} />;
       case 3:
-        return <MyEvent />;
+        return <MyEvent isRefreash={myEventReFreash} />;
       default:
         return null;
     }

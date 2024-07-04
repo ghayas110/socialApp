@@ -91,7 +91,7 @@ const MainNavigation = () => {
           />
 
 
-          <Tab.Screen name="Event" component={EventStackNavigation} options={{
+          <Tab.Screen name="Event"  component={EventStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Image source={!focused ? require('../assets/icons/homeTab/tabEventLight.png') : require('../assets/icons/homeTab/tabEventFill.png')} style={{ width: ResponsiveSize(25), height: ResponsiveSize(20), objectFit: 'contain' }} />
@@ -99,7 +99,6 @@ const MainNavigation = () => {
             ),
             headerShown: false,
             tabBarShowLabel: false,
-            // tabBarStyle: { display: route.name=="EventCreated"?'none':""},
           }} />
 
 

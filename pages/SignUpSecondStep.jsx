@@ -96,8 +96,6 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline, route }) => {
         }
     };
 
-
-
     const styles = StyleSheet.create({
         container: {
             flex: 1,
@@ -285,7 +283,6 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline, route }) => {
             , ["15%"]
         );
     };
-    console.log(new Date())
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>

@@ -1,7 +1,7 @@
 {
-    "baseUrl3": "http://crewlink.backend.digitalmobix.com",
+    "baseUrl": "http://crewlink.backend.digitalmobix.com",
     "baseUrl2": "https://fz3rqbgd-3000.euw.devtunnels.ms",
-    "baseUrl": "http:192.168.200.163:3000",
+    "baseUrl3": "http:192.168.200.163:3000",
     "CountryBaseUrl": "https://countriesnow.space",
     "apiKey":"TwillioAPI"
 }

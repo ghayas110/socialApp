@@ -3,7 +3,6 @@ import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AddEvent from '../pages/AddEvent'
 import EventScreen from '../pages/EventScreen'
-import EventHeader from '../components/mainHeader/event';
 import ProfileScreen from '../pages/ProfileScreen';
 import EventDetail from '../pages/EventDetail';
 
@@ -16,7 +15,7 @@ const EventStackNavigation = () => {
       <Stack.Screen options={{
         headerShown: false,
         navigationBarHidden: true
-      }} name="EventScreen" component={EventScreen} />
+      }} name="EventScreen" initialParams={{myEventReFreash:false,allEventReFreash:false,joinedEventReFreash:false}} component={EventScreen} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="AddEvent" component={AddEvent} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="EventDetail" component={EventDetail} />
     </Stack.Navigator>

@@ -111,11 +111,11 @@ const LogIn = ({ onLogin, LoginReducer, loginUser, CheckUserStatus }) => {
       const CheckStatus = await CheckUserStatus({
         Token: LoginStart.access_token
       })
-      console.log(CheckStatus)
       if (CheckStatus.accout_approval_status == "IN_REVIEW") {
         navigation.navigate('Approval', { status: "IN_REVIEW" })
       }
       else if (CheckStatus.accout_approval_status == "APPROVED") {
+        console.log(LoginStart.access_token)
         await AsyncStorage.removeItem('Token');
         await AsyncStorage.removeItem('user_id');
         await AsyncStorage.setItem('Token', LoginStart.access_token);
