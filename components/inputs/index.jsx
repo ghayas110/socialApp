@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, TextInput, Text, View, TouchableOpacity, Dimensions } from "react-native";
-import Feather from 'react-native-vector-icons/Feather'
+import Feather from 'react-native-vector-icons/Feather';
 import { global, ResposiveSize } from "../constant";
 import TextC from "../text/text";
 const windowWidth = Dimensions.get('window').width;
