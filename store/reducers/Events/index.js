@@ -11,7 +11,11 @@ import {
     TASK_DELETE_EVENT_START,
     TASK_DELETE_EVENT_END,
     TASK_CREATE_EVENT_START,
-    TASK_CREATE_EVENT_END
+    TASK_CREATE_EVENT_END,
+    TASK_JOIN_EVENT_START,
+    TASK_JOIN_EVENT_END,
+    TASK_LEAVE_EVENT_START,
+    TASK_LEAVE_EVENT_END
 } from '../../actions/types'
 
 
@@ -19,6 +23,8 @@ const allEvent = {
     data: [],
     deleteEventLoading: false,
     EventCreateLoading: false,
+    EventLeaveLoading: false,
+    EventJoinLoading: false,
     loading: false,
 }
 
@@ -61,7 +67,6 @@ const AllEventReducer = (state = allEvent, action) => {
                 ...state,
                 deleteEventLoading: action.loading,
             };
-
         case TASK_CREATE_EVENT_START:
             return {
                 ...state,
@@ -71,6 +76,26 @@ const AllEventReducer = (state = allEvent, action) => {
             return {
                 ...state,
                 EventCreateLoading: action.loading,
+            };
+        case TASK_JOIN_EVENT_START:
+            return {
+                ...state,
+                EventJoinLoading: action.loading,
+            };
+        case TASK_JOIN_EVENT_END:
+            return {
+                ...state,
+                EventJoinLoading: action.loading,
+            };
+        case TASK_LEAVE_EVENT_START:
+            return {
+                ...state,
+                EventLeaveLoading: action.loading,
+            };
+        case TASK_LEAVE_EVENT_END:
+            return {
+                ...state,
+                EventLeaveLoading: action.loading,
             };
         default:
             return state;
@@ -104,7 +129,6 @@ const MyEventReducer = (state = myEvent, action) => {
         case TASK_GET_MY_EVENT_START:
             return {
                 ...state,
-                data: action.payload,
                 loading: action.loading,
             };
 

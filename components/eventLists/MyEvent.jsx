@@ -109,7 +109,7 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
 };
 
 
-const MyEvent = ({ getMyEvents, MyEventReducer,isRefreash}) => {
+const MyEvent = ({ getMyEvents, MyEventReducer }) => {
     const [page, setPage] = useState(1)
     const navigation = useNavigation()
     useEffect(() => {
@@ -117,7 +117,6 @@ const MyEvent = ({ getMyEvents, MyEventReducer,isRefreash}) => {
             getMyEvents({ page: page, refreash: true })
         }
     }, []);
-    console.log(MyEventReducer)
     const styles = StyleSheet.create({
         Wrapper: {
             backgroundColor: "#F5F5F5",
@@ -272,7 +271,7 @@ const MyEvent = ({ getMyEvents, MyEventReducer,isRefreash}) => {
                         <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any event right now. Try to Create"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
                     </View>
                     <View style={{ paddingTop: ResponsiveSize(15), paddingHorizontal: ResponsiveSize(50) }}>
-                        <ButtonC onPress={()=>navigation.navigate('AddEvent')} title={"Create New"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
+                        <ButtonC onPress={() => navigation.navigate('AddEvent')} title={"Create New"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
                     </View>
                 </View>
             ) : (
@@ -286,8 +285,10 @@ const MyEvent = ({ getMyEvents, MyEventReducer,isRefreash}) => {
                     maxToRenderPerBatch={10}
                     windowSize={10}
                     onEndReached={() => {
-                        getMyEvents({ page: page + 1, refreash: false })
-                        setPage(page + 1)
+                        if (MyEventReducer?.data?.length > 10) {
+                            getMyEvents({ page: page + 1, refreash: false })
+                            setPage(page + 1)
+                        }
                     }}
                     onEndReachedThreshold={0.5}
                     renderItem={renderItem}

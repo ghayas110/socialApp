@@ -389,7 +389,6 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline, route }) => {
                                             mode="date"
                                             minimumDate={new Date()}
                                             onConfirm={(date) => {
-                                                console.log(date, 'expiry Date')
                                                 setExpiry(false)
                                                 onChange(date)
                                             }}

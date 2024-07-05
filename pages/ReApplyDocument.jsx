@@ -67,7 +67,6 @@ const ReApplyDocument = ({ ReApplyDocReducer, getAllAirline }) => {
     const sentemailLoad = await sendEmail({
       email: data.email
     })
-    console.log(sentemailLoad)
     if (sentemailLoad.message == "Password reset email sent.") {
       navigation.navigate('Login')
     }
@@ -80,7 +79,6 @@ const ReApplyDocument = ({ ReApplyDocReducer, getAllAirline }) => {
         bg: "#fff2f2"
       })
     }
-    console.log(sentemailLoad, 'sadsds')
   }
 
   const styles = StyleSheet.create({
@@ -339,7 +337,6 @@ const ReApplyDocument = ({ ReApplyDocReducer, getAllAirline }) => {
                       mode="date"
                       minimumDate={new Date()}
                       onConfirm={(date) => {
-                        console.log(date, 'expiry Date')
                         setExpiry(false)
                         onChange(date)
                       }}

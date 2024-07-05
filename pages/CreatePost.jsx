@@ -139,7 +139,6 @@ const CreatePost = () => {
             if (Platform.OS === 'android') {
                 imageFiles = await RNFS.readDir(RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera');
             } else {
-                console.log(RNFS.LibraryDirectoryPath,'okkk')
                 imageFiles = await RNFS.readDir("/var/mobile/Media/DCIM/100APPLE");
             }
             const imagePaths = imageFiles.map(file => file.path);
@@ -200,8 +199,6 @@ const CreatePost = () => {
         });
     };
 
-
-    console.log(content,'contetn')
     return (
         <>
             <View style={styles.FirstImagePreview}>

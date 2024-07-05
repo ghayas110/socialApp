@@ -4,7 +4,6 @@ import { global, ResponsiveSize } from "../constant";
 
 
 const TextInputC = ({ placeholder, error, onChangeText, multiline,value,numberOfLines, height,textAlignVertical,style }) => {
-    console.log(error)
     const styles = StyleSheet.create({
         Input: {
             fontSize: ResponsiveSize(11),

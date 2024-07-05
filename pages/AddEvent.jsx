@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, StatusBar, ScrollView, View, Dimensions, TouchableOpacity, Image, Text, PermissionsAndroid, ImageBackground, ActivityIndicator } from 'react-native'
+import { StyleSheet, SafeAreaView, StatusBar, ScrollView, View, Dimensions, TouchableOpacity, Image, Text, PermissionsAndroid, ImageBackground, ActivityIndicator, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
@@ -20,7 +20,7 @@ import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
 import ButtonC from '../components/button';
 
 
-const AddEvent = ({ AllEventReducer, CreateEvent }) => {
+const AddEvent = ({ AllEventReducer, CreateEvent,getMyEvents }) => {
     const windowWidth = Dimensions.get('window').width;
     const scheme = useColorScheme();
     const { openBottomSheet, closeBottomSheet } = useBottomSheet();
@@ -206,41 +206,43 @@ const AddEvent = ({ AllEventReducer, CreateEvent }) => {
         },
     });
     const onSubmit = async (data) => {
-        if (!documentImage == "") {
-            try {
-                const formData = new FormData();
-                formData.append('event_title', data?.title);
-                formData.append('event_location', data?.location);
-                formData.append('event_details', data?.description);
-                formData.append('event_longitude', '66.990501');
-                formData.append('event_latitude', '24.860966');
-                formData.append('event_start_time', data?.startTime);
-                formData.append('event_end_time', data?.endTime);
-                formData.append('event_date', data?.eventDate);
-                if (document[0]?.uri) {
-                    formData.append('event_cover_image', {
-                        uri: document[0]?.uri,
-                        name: 'photo.jpg',
-                        type: 'image/jpeg',
-                    });
-                }
-                const Responce = await CreateEvent(formData)
-                if (Responce == true) {
-                    navigation.navigate("EventScreen", { myEventReFreash: true })
-                }
-                else if (Responce == false) {
-                    showToast({
-                        title: "Something went wrong",
-                        message: "Something went wrong. Please try again.",
-                        iconColor: "red",
-                        iconName: "mail",
-                        bg: "#fff2f2"
-                    })
-                }
-            } catch (e) {
-                console.log(e)
-            }
-        }
+        navigation.navigate("EventScreen",{Tab:3})
+        getMyEvents({ page: 1, refreash: true })
+        // if (!documentImage == "") {
+        //     try {
+        //         const formData = new FormData();
+        //         formData.append('event_title', data?.title);
+        //         formData.append('event_location', data?.location);
+        //         formData.append('event_details', data?.description);
+        //         formData.append('event_longitude', '66.990501');
+        //         formData.append('event_latitude', '24.860966');
+        //         formData.append('event_start_time', data?.startTime);
+        //         formData.append('event_end_time', data?.endTime);
+        //         formData.append('event_date', data?.eventDate);
+        //         if (document[0]?.uri) {
+        //             formData.append('event_cover_image', {
+        //                 uri: document[0]?.uri,
+        //                 name: 'photo.jpg',
+        //                 type: 'image/jpeg',
+        //             });
+        //         }
+        //         console.log(document[0]?.uri)
+        //         const Responce = await CreateEvent(formData)
+        //         if (Responce == true) {
+        //         }
+        //         else if (Responce == false) {
+        //             showToast({
+        //                 title: "Something went wrong",
+        //                 message: "Something went wrong. Please try again.",
+        //                 iconColor: "red",
+        //                 iconName: "mail",
+        //                 bg: "#fff2f2"
+        //             })
+        //         }
+        //     } catch (e) {
+        //         console.log(e, 'okkkk')
+        //     }
+        // }
     };
 
 
@@ -248,10 +250,10 @@ const AddEvent = ({ AllEventReducer, CreateEvent }) => {
         <SafeAreaView>
             <StatusBar backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : 'white'} barStyle={scheme === 'dark' ? "light-content" : 'dark-content'} />
             <View style={styles.wrapper}>
-                <View style={styles.logoSide1}>
+                <Pressable onPress={() => navigation.goBack()} style={styles.logoSide1}>
                     <AntDesign name='left' color={"#05348E"} size={ResponsiveSize(16)} />
                     <Image source={require('../assets/icons/Logo.png')} style={{ objectFit: 'contain', width: ResponsiveSize(70), height: ResponsiveSize(22) }} />
-                </View>
+                </Pressable>
                 <View style={styles.logoSide2}>
                     <TextC size={ResponsiveSize(12)} font={'Montserrat-Bold'} text={"New Event"} />
                 </View>

@@ -5,6 +5,7 @@ import AddEvent from '../pages/AddEvent'
 import EventScreen from '../pages/EventScreen'
 import ProfileScreen from '../pages/ProfileScreen';
 import EventDetail from '../pages/EventDetail';
+import UpdateEvent from '../pages/UpdateEvent';
 
 
 
@@ -15,9 +16,10 @@ const EventStackNavigation = () => {
       <Stack.Screen options={{
         headerShown: false,
         navigationBarHidden: true
-      }} name="EventScreen" initialParams={{myEventReFreash:false,allEventReFreash:false,joinedEventReFreash:false}} component={EventScreen} />
+      }} name="EventScreen" initialParams={{Tab:1}} component={EventScreen} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="AddEvent" component={AddEvent} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="EventDetail" component={EventDetail} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="UpdateEvent" component={UpdateEvent} />
     </Stack.Navigator>
   )
 }

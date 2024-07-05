@@ -50,7 +50,6 @@ const OtpScreen = ({ sendEmail, ForgotPasswordReducer }) => {
     const sentemailLoad = await sendEmail({
       email: data.email
     })
-    console.log(sentemailLoad)
     if (sentemailLoad.message == "Password reset email sent.") {
       navigation.navigate('Login')
     }
@@ -63,7 +62,6 @@ const OtpScreen = ({ sendEmail, ForgotPasswordReducer }) => {
         bg:"#fff2f2"
       })
     }
-    console.log(sentemailLoad, 'sadsds')
   }
 
   const styles = StyleSheet.create({

@@ -42,7 +42,6 @@ const MainNavigation = () => {
   const VerifyToken = async () => {
     try {
       const value = await AsyncStorage.getItem('Token');
-      console.log(value)
       if (value !== null) {
         setIsLoggedIn(true);
       } else {

@@ -14,7 +14,6 @@ export const insertUser = (body) => async (dispatch) => {
             type: TASK_REGISTER_START,
             loading: true,
         });
-        console.log(body,'bodyy')
         const response = await fetch(`${baseUrl.baseUrl}/users/signup`, {
             method: "POST",
             headers: {
@@ -23,7 +22,6 @@ export const insertUser = (body) => async (dispatch) => {
             },
             body: body
         });
-        console.log(response, 'pkkkk')
         const res = await response.json()
         dispatch({
             type: TASK_REGISTER_COMPLETE,
@@ -36,7 +34,7 @@ export const insertUser = (body) => async (dispatch) => {
             type: TASK_REGISTER_END,
             loading: false,
         });
-        console.log(error, "okkkk")
+        console.log(error,";okkk")
     }
 }
 

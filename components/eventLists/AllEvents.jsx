@@ -18,7 +18,7 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
         container: {
             overflow: 'hidden',
             backgroundColor: '#F5F5F5',
-            padding:ResponsiveSize(10),
+            padding: ResponsiveSize(10),
             borderRadius: ResponsiveSize(25),
             flexDirection: 'row',
             alignItems: 'center',
@@ -110,14 +110,8 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
 };
 const AllEvents = ({ getAllEvents, AllEventReducer }) => {
     const [page, setPage] = useState(1)
-    const [user, setUser] = useState('')
     const navigation = useNavigation()
-    const fetchMoreData = async () => {
-        const user_id = await AsyncStorage.getItem('user_id');
-        setUser(user_id)
-    };
     useEffect(() => {
-        fetchMoreData()
         if (AllEventReducer?.data?.length <= 0) {
             getAllEvents({ page: page, refreash: true })
         }
@@ -315,8 +309,10 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
                     maxToRenderPerBatch={10}
                     windowSize={10}
                     onEndReached={() => {
-                        getAllEvents({ page: page + 1, refreash: false })
-                        setPage(page + 1)
+                        if (AllEventReducer?.data?.length > 10) {
+                            getAllEvents({ page: page + 1, refreash: false })
+                            setPage(page + 1)
+                        }
                     }}
                     onEndReachedThreshold={0.5}
                     renderItem={renderItem}

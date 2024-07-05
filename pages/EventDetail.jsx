@@ -9,7 +9,7 @@ import * as AllEventAction from "../store/actions/Events/index";
 import { connect } from "react-redux";
 import Feather from 'react-native-vector-icons/Feather'
 
-const EventDetail = ({ route, getEventDetail, DeleteEvent,AllEventReducer }) => {
+const EventDetail = ({ route, getEventDetail, DeleteEvent, AllEventReducer, JoinEvents, LeaveEvents, getAllEvents, getJoinedEvents, getMyEvents }) => {
   const { id } = route.params;
   const [eventDetail, setEventDetail] = useState()
   const [loading, setLoading] = useState(false)
@@ -24,8 +24,8 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent,AllEventReducer }) => 
     setLoading(true)
     const loadingDetail = await getEventDetail({ id })
     if (loadingDetail) {
-      setLoading(false)
       setEventDetail(loadingDetail)
+      setLoading(false)
     }
     else {
       setLoading(false)
@@ -89,6 +89,17 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent,AllEventReducer }) => 
       marginRight: ResponsiveSize(5),
       overflow: 'hidden',
     },
+    profileAvatar: {
+      height: ResponsiveSize(50),
+      width: ResponsiveSize(50),
+      borderRadius: ResponsiveSize(50),
+      marginRight: ResponsiveSize(5),
+      overflow: 'hidden',
+      backgroundColor: global.description,
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     detailSpaces: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -98,36 +109,44 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent,AllEventReducer }) => 
     },
     leaveBtn: {
       backgroundColor: global.red,
+      width: ResponsiveSize(120),
       paddingHorizontal: ResponsiveSize(30),
       paddingVertical: ResponsiveSize(5),
       borderRadius: ResponsiveSize(5),
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'center',
     },
     JoinBtn: {
       backgroundColor: global.secondaryColor,
+      width: ResponsiveSize(120),
       paddingHorizontal: ResponsiveSize(30),
       paddingVertical: ResponsiveSize(5),
       borderRadius: ResponsiveSize(5),
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'center',
     },
     leaveBtn2: {
       backgroundColor: global.red,
+      width: ResponsiveSize(80),
       paddingHorizontal: ResponsiveSize(10),
       paddingVertical: ResponsiveSize(5),
       borderRadius: ResponsiveSize(5),
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'center',
     },
     JoinBtn2: {
       backgroundColor: global.secondaryColor,
+      width: ResponsiveSize(80),
       paddingHorizontal: ResponsiveSize(10),
       paddingVertical: ResponsiveSize(5),
       borderRadius: ResponsiveSize(5),
       flexDirection: 'row',
       alignItems: 'center',
-      marginLeft: ResponsiveSize(10)
+      marginLeft: ResponsiveSize(10),
+      justifyContent: 'center',
     },
     seeFullMap: {
       backgroundColor: global.secondaryColor,
@@ -199,16 +218,46 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent,AllEventReducer }) => 
     }
   })
 
+  const joinEvent = async (id) => {
+    const isJoin = await JoinEvents({
+      event_id: id
+    })
+    if (isJoin == true) {
+      getAllEvents({ page: 1, refreash: true })
+      getJoinedEvents({ page: 1, refreash: true })
+      getMyEvents({ page: 1, refreash: true })
+      navigation.navigate("EventScreen", { Tab: 1 })
+    }
+    else if (isJoin == false) {
+      setDeleteModal(false)
+    }
+  }
+  const leaveEvent = async (id) => {
+    const isJoin = await LeaveEvents({
+      event_id: id
+    })
+    if (isJoin == true) {
+      getAllEvents({ page: 1, refreash: true })
+      getJoinedEvents({ page: 1, refreash: true })
+      getMyEvents({ page: 1, refreash: true })
+      navigation.navigate("EventScreen", { Tab: 1 })
+    }
+    else if (isJoin == false) {
+      setDeleteModal(false)
+    }
+  }
   const deleteEvent = async (id) => {
     const isDelete = await DeleteEvent(id)
     if (isDelete == true) {
-      navigation.navigate("EventScreen",{myEventReFreash:true})
+      getAllEvents({ page: 1, refreash: true })
+      getJoinedEvents({ page: 1, refreash: true })
+      getMyEvents({ page: 1, refreash: true })
+      navigation.navigate("EventScreen", { Tab: 1 })
     }
     else if (isDelete == false) {
       setDeleteModal(false)
     }
   }
-
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -227,23 +276,34 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent,AllEventReducer }) => 
                     <>
                       {eventDetail?.is_participant == 1 ?
                         <>
-                          <TouchableOpacity style={styles.leaveBtn}>
-                            <TextC text={"Leave"} style={{ color: global.white }} font={"Montserrat-Medium"} />
-                            <Feather name="log-out" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
+                          <TouchableOpacity onPress={() => leaveEvent(eventDetail?.event_id)} style={styles.leaveBtn}>
+                            {AllEventReducer?.EventLeaveLoading ?
+                              <ActivityIndicator size="small" color={global.white} />
+                              :
+                              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <TextC text={"Leave"} style={{ color: global.white }} font={"Montserrat-Medium"} />
+                                <Feather name="log-out" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
+                              </View>
+                            }
                           </TouchableOpacity>
-
                         </>
                         :
-                        <TouchableOpacity style={styles.JoinBtn}>
-                          <TextC text={"Join"} style={{ color: global.white }} font={"Montserrat-Medium"} />
-                          <AntDedign name="adduser" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
+                        <TouchableOpacity onPress={() => joinEvent(eventDetail?.event_id)} style={styles.JoinBtn}>
+                          {AllEventReducer?.EventJoinLoading ?
+                            <ActivityIndicator size="small" color={global.white} />
+                            :
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                              <TextC text={"Join"} style={{ color: global.white }} font={"Montserrat-Medium"} />
+                              <AntDedign name="adduser" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
+                            </View>
+                          }
                         </TouchableOpacity>
                       }
                     </> :
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                       <TouchableOpacity onPress={() => setDeleteModal(true)} style={styles.leaveBtn2}>
                         <TextC text={"Delete"} style={{ color: global.white }} font={"Montserrat-Medium"} />
-                        <Feather name="log-out" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
+                        <AntDedign name="delete" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
                       </TouchableOpacity>
 
                       <Modal
@@ -277,7 +337,7 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent,AllEventReducer }) => 
                         </View>
                       </Modal>
 
-                      <TouchableOpacity onPress={() => navigation.navigate('AddEvent', { id: eventDetail?.event_id })} style={styles.JoinBtn2}>
+                      <TouchableOpacity onPress={() => navigation.navigate('UpdateEvent',{id:eventDetail?.event_id})} style={styles.JoinBtn2}>
                         <TextC text={"Edit"} style={{ color: global.white }} font={"Montserrat-Medium"} />
                         <AntDedign name="adduser" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
                       </TouchableOpacity>
@@ -287,8 +347,8 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent,AllEventReducer }) => 
                 </View>
                 <View style={styles.headerBottom}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Image
-                      source={eventDetail?.profile_picture_url ? { uri: eventDetail.profile_picture_url } : null}
+                    <ImageBackground
+                      source={require('../assets/icons/user.png')}
                       style={styles.profile} />
                     <View style={{ flexDirection: 'column' }}>
                       <TextC font={"Montserrat-Bold"} style={{ color: global.white, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1} size={ResponsiveSize(15)} text={eventDetail?.user_name} />

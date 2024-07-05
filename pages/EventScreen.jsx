@@ -1,5 +1,5 @@
 import { StyleSheet, SafeAreaView, StatusBar, View, TouchableOpacity, Dimensions } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import TextC from '../components/text/text';
@@ -14,12 +14,13 @@ import MyEvent from '../components/eventLists/MyEvent.jsx';
 
 
 const EventScreen = ({ route }) => {
-  const { myEventReFreash, allEventReFreash, joinedEventReFreash } = route.params;
+  const { Tab } = route.params;
   const windowWidth = Dimensions.get('window').width;
   const scheme = useColorScheme();
-  const [tabSlider, useTabSlider] = useState(joinedEventReFreash ? 2 : myEventReFreash ? 3 : 1)
+  const [tabSlider, useTabSlider] = useState(Tab);
   const innerBody = windowWidth - ResponsiveSize(30)
   const left = useSharedValue("0%");
+
   const handlePress = (r) => {
     left.value = withTiming(r == 2 ? "33.33%" : r == 3 ? "66.66%" : "0%");
   };
@@ -92,11 +93,11 @@ const EventScreen = ({ route }) => {
   const TabContent = () => {
     switch (tabSlider) {
       case 1:
-        return <AllEvents isRefreash={allEventReFreash} />;
+        return <AllEvents/>;
       case 2:
-        return <Joined isRefreash={joinedEventReFreash} />;
+        return <Joined tabActivator={tabActivator}/>;
       case 3:
-        return <MyEvent isRefreash={myEventReFreash} />;
+        return <MyEvent/>;
       default:
         return null;
     }
@@ -114,7 +115,7 @@ const EventScreen = ({ route }) => {
                 left,
               }}
             >
-              <TextC text={tabSlider == 1 ? 'All Events' : tabSlider == 2 ? 'Joined' : tabSlider == 3 ? "My Events" : ""} style={{ color: "white" }} font={'Montserrat-Medium'} size={ResponsiveSize(11)} />
+              <TextC text={Tab == 1 ? 'All Events' : Tab == 2 ? 'Joined' : Tab == 3 ? "My Events" : ""} style={{ color: "white" }} font={'Montserrat-Medium'} size={ResponsiveSize(11)} />
             </Animated.View>
             <TouchableOpacity onPress={() => { tabActivator(1) }} style={styles.TopTab}>
               <TextC text={'All Events'} font={'Montserrat-Medium'} size={ResponsiveSize(11)} />

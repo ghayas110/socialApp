@@ -10,7 +10,7 @@ import TimeAgo from '@manu_omg/react-native-timeago';
 import ButtonC from "../button/index";
 import { useNavigation } from "@react-navigation/native";
 
-const SkeletonPlaceholder = ({ style, refreshing }) => {
+const SkeletonPlaceholder = ({ style }) => {
     const translateX = new Animated.Value(-350);
     const styles = StyleSheet.create({
         container: {
@@ -108,7 +108,7 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
 };
 
 
-const Joined = ({ getJoinedEvents, JoinedEventReducer }) => {
+const Joined = ({ getJoinedEvents, JoinedEventReducer,tabActivator }) => {
     const [page, setPage] = useState(1)
     const navigation = useNavigation()
 
@@ -257,12 +257,12 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer }) => {
                 </>
             ) : JoinedEventReducer?.loading === false && JoinedEventReducer?.data?.length <= 0 ? (
                 <View style={styles.notFound}>
-                    <TextC text={"No joined Event Right Now"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
+                    <TextC text={"No Joined Event Right Now"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
                     <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
-                        <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any joined event right now. Try to refreash"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                        <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any joined event right now. Try to join again"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
                     </View>
                     <View style={{ paddingTop: ResponsiveSize(15), paddingHorizontal: ResponsiveSize(50) }}>
-                        <ButtonC onPress={onRefresh} title={"Try again"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
+                        <ButtonC onPress={()=>tabActivator(1)} title={"Join Events"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
                     </View>
                 </View>
             ) : (
@@ -276,8 +276,10 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer }) => {
                     maxToRenderPerBatch={10}
                     windowSize={10}
                     onEndReached={() => {
-                        getJoinedEvents({ page: page + 1, refreash: false })
-                        setPage(page + 1)
+                        if (JoinedEventReducer?.data?.length > 10) {
+                            getJoinedEvents({ page: page + 1, refreash: false })
+                            setPage(page + 1)
+                        }
                     }}
                     onEndReachedThreshold={0.5}
                     renderItem={renderItem}
