@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 import TimeAgo from '@manu_omg/react-native-timeago';
 import ButtonC from "../button/index";
 import { useNavigation } from "@react-navigation/native";
+import { RefreshControl } from "react-native-gesture-handler";
 
 const SkeletonPlaceholder = ({ style }) => {
     const translateX = new Animated.Value(-350);
@@ -108,7 +109,7 @@ const SkeletonPlaceholder = ({ style }) => {
 };
 
 
-const Joined = ({ getJoinedEvents, JoinedEventReducer,tabActivator }) => {
+const Joined = ({ getJoinedEvents, JoinedEventReducer, tabActivator }) => {
     const [page, setPage] = useState(1)
     const navigation = useNavigation()
 
@@ -196,9 +197,6 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer,tabActivator }) => {
         },
         notFound: {
             flex: 1,
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         timeAgoJoinedV: {
             paddingBottom: ResponsiveSize(5),
@@ -256,15 +254,35 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer,tabActivator }) => {
                     <SkeletonPlaceholder />
                 </>
             ) : JoinedEventReducer?.loading === false && JoinedEventReducer?.data?.length <= 0 ? (
-                <View style={styles.notFound}>
-                    <TextC text={"No Joined Event Right Now"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
-                    <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
-                        <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any joined event right now. Try to join again"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    } style={styles.notFound}>
+                    <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(180) }}>
+                        {JoinedEventReducer?.networkError == true &&
+                            <View style={{ paddingBottom: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                                <Image style={{ height: ResponsiveSize(80), width: ResponsiveSize(80) }} source={require('../../assets/icons/something-went-wrong.png')} />
+                            </View>
+                        }
+                        {JoinedEventReducer?.networkError == true ?
+                            <TextC text={"Something went wrong"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} /> :
+                            <TextC text={"No Joined Event Right Now"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
+                        }
+                        {JoinedEventReducer?.networkError == true ?
+                            <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                                <TextC style={{ textAlign: 'center', color: global?.black }} text={"Brace yourself till we get the error fixed"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                            </View> :
+                            <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                                <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any joined event right now. Try to join again"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                            </View>
+                        }
+                        {JoinedEventReducer?.networkError !== true &&
+                            <View style={{ paddingTop: ResponsiveSize(15), paddingHorizontal: ResponsiveSize(50) }}>
+                                <ButtonC onPress={() => tabActivator(1)} title={"Join Events"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
+                            </View>
+                        }
                     </View>
-                    <View style={{ paddingTop: ResponsiveSize(15), paddingHorizontal: ResponsiveSize(50) }}>
-                        <ButtonC onPress={()=>tabActivator(1)} title={"Join Events"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
-                    </View>
-                </View>
+                </ScrollView>
             ) : (
                 <FlatList
                     onRefresh={onRefresh}

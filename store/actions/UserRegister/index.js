@@ -34,7 +34,7 @@ export const insertUser = (body) => async (dispatch) => {
             type: TASK_REGISTER_END,
             loading: false,
         });
-        console.log(error,";okkk")
+        console.log(error)
     }
 }
 

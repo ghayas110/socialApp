@@ -15,7 +15,10 @@ import {
     TASK_JOIN_EVENT_START,
     TASK_JOIN_EVENT_END,
     TASK_LEAVE_EVENT_START,
-    TASK_LEAVE_EVENT_END
+    TASK_LEAVE_EVENT_END,
+    TASK_UPDATE_EVENT_START,
+    TASK_UPDATE_EVENT_END,
+    TASK_UPDATE_EVENT_ERROR,
 } from '../../actions/types'
 
 
@@ -23,19 +26,23 @@ const allEvent = {
     data: [],
     deleteEventLoading: false,
     EventCreateLoading: false,
+    EventUpdateLoading: false,
     EventLeaveLoading: false,
     EventJoinLoading: false,
     loading: false,
+    networkError: false,
 }
 
 const joinedEvent = {
     data: [],
     loading: false,
+    networkError: false,
 }
 
 const myEvent = {
     data: [],
     loading: false,
+    networkError: false,
 }
 
 const AllEventReducer = (state = allEvent, action) => {
@@ -55,6 +62,7 @@ const AllEventReducer = (state = allEvent, action) => {
         case TASK_GET_ALLEVENTS_END_ERROR:
             return {
                 ...state,
+                networkError: action.networkError,
                 loading: action.loading,
             };
         case TASK_DELETE_EVENT_START:
@@ -97,6 +105,23 @@ const AllEventReducer = (state = allEvent, action) => {
                 ...state,
                 EventLeaveLoading: action.loading,
             };
+        case TASK_UPDATE_EVENT_START:
+            return {
+                ...state,
+                EventUpdateLoading: action.loading,
+            };
+
+        case TASK_UPDATE_EVENT_END:
+            return {
+                ...state,
+                EventUpdateLoading: action.loading,
+            };
+        case TASK_UPDATE_EVENT_ERROR:
+            return {
+                ...state,
+                networkError: action.networkError,
+                EventUpdateLoading: action.loading,
+            };
         default:
             return state;
     }
@@ -118,6 +143,7 @@ const JoinedEventReducer = (state = joinedEvent, action) => {
         case TASK_GET_JOINED_EVENTS_END_ERROR:
             return {
                 ...state,
+                networkError: action.networkError,
                 loading: action.loading,
             };
         default:
@@ -141,6 +167,7 @@ const MyEventReducer = (state = myEvent, action) => {
         case TASK_GET_MY_EVENT_END_ERROR:
             return {
                 ...state,
+                networkError: action.networkError,
                 loading: action.loading,
             };
 

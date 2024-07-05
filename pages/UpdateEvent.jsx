@@ -18,25 +18,42 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
 import ButtonC from '../components/button';
+import { useToast } from '../components/Toast/ToastContext';
 
 
-const UpdateEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getEventDetail, route }) => {
+const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail, route }) => {
     const { id } = route.params;
     const windowWidth = Dimensions.get('window').width;
     const scheme = useColorScheme();
     const { openBottomSheet, closeBottomSheet } = useBottomSheet();
-    const [isImageSave, setIsImageSave] = useState(true)
     const [documentImage, setDocumentImage] = useState('')
-    const [document, setDocument] = useState('')
-
     const [eventDetail, setEventDetail] = useState()
     const [loading, setLoading] = useState(true)
-    const [deleteModal, setDeleteModal] = useState(false);
-
+    const [selected, setSelected] = useState(today?.toISOString()?.split("T")[0]);
+    const [startTime, setStartTime] = useState(new Date());
+    const [endTime, setEndTime] = useState(new Date());
+    const { showToast } = useToast();
+    const [isImage,setIsImage] = useState()
 
     useEffect(() => {
-        loadEventDetail()
-    }, [])
+        if (eventDetail) {
+            reset({
+                title: eventDetail?.event_title,
+                location: eventDetail?.event_location,
+                description: eventDetail?.event_details,
+                eventDate: eventDetail?.event_date,
+                startTime: new Date(eventDetail?.original_event_start_time),
+                endTime: new Date(eventDetail?.original_event_end_time),
+            })
+            setSelected(eventDetail?.event_date)
+            setStartTime(new Date(eventDetail?.original_event_start_time))
+            setEndTime(new Date(eventDetail?.original_event_end_time))
+            setDocumentImage(eventDetail?.event_cover_image_thumbnail)
+        }
+        else {
+            loadEventDetail()
+        }
+    }, [eventDetail])
 
     const loadEventDetail = async () => {
         setLoading(true)
@@ -44,21 +61,11 @@ const UpdateEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getEventDetail
         if (loadingDetail) {
             setEventDetail(loadingDetail)
             setLoading(false)
-            reset({
-                title: eventDetail?.event_title,
-                location: eventDetail?.event_location,
-                description:eventDetail?.event_details,
-                eventDate: selected,
-                startTime: eventDetail?.event_start_time,
-                endTime: eventDetail?.event_end_time,
-            })
         }
         else {
             setLoading(false)
         }
     }
-
-    console.log(eventDetail)
 
 
     const handleOpenSheet = () => {
@@ -85,26 +92,18 @@ const UpdateEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getEventDetail
         }
     };
     const openPhotoLibrary = async () => {
-        setIsImageSave(true)
         const result = await launchImageLibrary();
         if (result?.assets.length > 0) {
-            setDocument(result.assets)
             setDocumentImage(result?.assets[0]?.uri)
-            setTimeout(() => {
-                setIsImageSave(false)
-            }, 1500);
+            setIsImage(result?.assets)
             closeBottomSheet()
         }
     }
     const openMobileCamera = async () => {
-        setIsImageSave(true)
         const result = await launchCamera();
         if (result?.assets.length > 0) {
-            setDocument(result.assets)
             setDocumentImage(result?.assets[0]?.uri)
-            setTimeout(() => {
-                setIsImageSave(false)
-            }, 1500);
+            setIsImage(result?.assets)
             closeBottomSheet()
         }
     }
@@ -179,7 +178,7 @@ const UpdateEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getEventDetail
             width: windowWidth - ResponsiveSize(30),
             height: ResponsiveSize(100),
             backgroundColor: '#EEEEEE',
-            marginBottom: ResponsiveSize(100),
+            marginBottom: ResponsiveSize(50),
             borderRadius: ResponsiveSize(20),
             flexDirection: 'row',
             alignItems: 'center',
@@ -197,11 +196,8 @@ const UpdateEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getEventDetail
 
     })
     const today = new Date
-    const [selected, setSelected] = useState(today?.toISOString()?.split("T")[0]);
     const [startTimeModal, setStartTimeModal] = useState(false);
     const [endTimeModal, setEndTimeModal] = useState(false);
-    const [startTime, setStartTime] = useState(new Date());
-    const [endTime, setEndTime] = useState(new Date());
     const navigation = useNavigation()
 
     const schema = yup.object().shape({
@@ -232,52 +228,35 @@ const UpdateEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getEventDetail
     } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
-            title: eventDetail?.event_title,
-            location: eventDetail?.event_location,
-            description: '',
-            eventDate: selected,
-            startTime: eventDetail?.event_start_time,
-            endTime: eventDetail?.event_end_time,
+            title: "",
+            location: "",
+            description: "",
+            eventDate: "",
+            startTime: "",
+            endTime: "",
         },
     });
     const onSubmit = async (data) => {
-        navigation.navigate("EventScreen", { Tab: 3 })
-        getMyEvents({ page: 1, refreash: true })
-        // if (!documentImage == "") {
-        //     try {
-        //         const formData = new FormData();
-        //         formData.append('event_title', data?.title);
-        //         formData.append('event_location', data?.location);
-        //         formData.append('event_details', data?.description);
-        //         formData.append('event_longitude', '66.990501');
-        //         formData.append('event_latitude', '24.860966');
-        //         formData.append('event_start_time', data?.startTime);
-        //         formData.append('event_end_time', data?.endTime);
-        //         formData.append('event_date', data?.eventDate);
-        //         if (document[0]?.uri) {
-        //             formData.append('event_cover_image', {
-        //                 uri: document[0]?.uri,
-        //                 name: 'photo.jpg',
-        //                 type: 'image/jpeg',
-        //             });
-        //         }
-        //         console.log(document[0]?.uri)
-        //         const Responce = await CreateEvent(formData)
-        //         if (Responce == true) {
-        //         }
-        //         else if (Responce == false) {
-        //             showToast({
-        //                 title: "Something went wrong",
-        //                 message: "Something went wrong. Please try again.",
-        //                 iconColor: "red",
-        //                 iconName: "mail",
-        //                 bg: "#fff2f2"
-        //             })
-        //         }
-        //     } catch (e) {
-        //         console.log(e, 'okkkk')
-        //     }
-        // }
+        if (!documentImage == "") {
+            try {
+                const Responce = await UpdateEvent({...data,...{id:id,documentImage:documentImage,isImage:isImage}})
+                if (Responce == true) {
+                    navigation.navigate("EventScreen", { Tab: 3 })
+                    getMyEvents({ page: 1, refreash: true })
+                }
+                else if (Responce == false) {
+                    showToast({
+                        title: "Something went wrong",
+                        message: "Something went wrong. Please try again.",
+                        iconColor: "red",
+                        iconName: "mail",
+                        bg: "#fff2f2"
+                    })
+                }
+            } catch (e) {
+                console.log(e, 'okkkk5555')
+            }
+        }
     };
 
 
@@ -294,7 +273,7 @@ const UpdateEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getEventDetail
                 </View>
                 <View style={styles.logoSide3}>
                     <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.NextBtn}>
-                        {AllEventReducer?.EventCreateLoading == true ?
+                        {AllEventReducer?.EventUpdateLoading?
                             <ActivityIndicator size={ResponsiveSize(12)} color={global.white} />
                             :
                             <TextC size={12} text={'Update'} font={'Montserrat-SemiBold'} />
@@ -377,6 +356,7 @@ const UpdateEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getEventDetail
                                         onDayPress={day => {
                                             onChange(day.dateString)
                                             setSelected(day.dateString);
+                                            console.log(day.dateString, 'asdasdai');
                                         }}
                                         minDate={today?.toISOString()?.split("T")[0]}
                                         markedDates={{
@@ -427,10 +407,9 @@ const UpdateEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getEventDetail
                                             date={startTime}
                                             mode="time"
                                             onConfirm={(date) => {
-                                                const splitTime = date.toTimeString().split(":")
                                                 setStartTime(date)
                                                 setStartTimeModal(false)
-                                                onChange(`${splitTime[0]}:${splitTime[1]}`)
+                                                onChange(date)
                                             }}
                                             onCancel={() => {
                                                 setStartTimeModal(false)
@@ -465,10 +444,9 @@ const UpdateEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getEventDetail
                                             minimumDate={startTime}
                                             mode="time"
                                             onConfirm={(date) => {
-                                                const splitTime = date.toTimeString().split(":")
                                                 setEndTime(date)
                                                 setEndTimeModal(false)
-                                                onChange(`${splitTime[0]}:${splitTime[1]}`)
+                                                onChange(date)
                                             }}
                                             onCancel={() => {
                                                 setEndTimeModal(false)
@@ -479,7 +457,6 @@ const UpdateEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getEventDetail
                                 />
                             </View>
                         </View>
-
                         <View style={{ flexDirection: 'column', paddingHorizontal: ResponsiveSize(15), paddingVertical: ResponsiveSize(10) }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <TextC text={"Cover Image"} font={'Montserrat-Bold'} />

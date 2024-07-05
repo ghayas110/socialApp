@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as AllEventAction from "../store/actions/Events/index";
 import { connect } from "react-redux";
 import Feather from 'react-native-vector-icons/Feather'
+import FastImage from 'react-native-fast-image';
 
 const EventDetail = ({ route, getEventDetail, DeleteEvent, AllEventReducer, JoinEvents, LeaveEvents, getAllEvents, getJoinedEvents, getMyEvents }) => {
   const { id } = route.params;
@@ -263,8 +264,11 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent, AllEventReducer, Join
       <SafeAreaView style={styles.container}>
         <StatusBar translucent={true} backgroundColor={'transparent'} barStyle={"light-content"} />
         {loading ? <View style={styles.thumbnailLoad}></View> :
-          <ImageBackground
-            source={eventDetail?.event_cover_image ? { uri: eventDetail.event_cover_image } : null}
+          <FastImage
+            source={{
+              uri: eventDetail?.event_cover_image,
+              priority: FastImage.priority.high,
+            }}
             style={styles.thumbnail}>
             <View style={styles.layer}>
               <View style={styles.bodyWrapperHeader}>
@@ -337,7 +341,7 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent, AllEventReducer, Join
                         </View>
                       </Modal>
 
-                      <TouchableOpacity onPress={() => navigation.navigate('UpdateEvent',{id:eventDetail?.event_id})} style={styles.JoinBtn2}>
+                      <TouchableOpacity onPress={() => navigation.navigate('UpdateEvent', { id: eventDetail?.event_id })} style={styles.JoinBtn2}>
                         <TextC text={"Edit"} style={{ color: global.white }} font={"Montserrat-Medium"} />
                         <AntDedign name="adduser" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
                       </TouchableOpacity>
@@ -347,8 +351,11 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent, AllEventReducer, Join
                 </View>
                 <View style={styles.headerBottom}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <ImageBackground
-                      source={require('../assets/icons/user.png')}
+                    <FastImage
+                      source={{
+                        uri: eventDetail?.profile_picture_url,
+                        priority: FastImage.priority.high,
+                      }}
                       style={styles.profile} />
                     <View style={{ flexDirection: 'column' }}>
                       <TextC font={"Montserrat-Bold"} style={{ color: global.white, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1} size={ResponsiveSize(15)} text={eventDetail?.user_name} />
@@ -362,7 +369,7 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent, AllEventReducer, Join
                 </View>
               </View>
             </View>
-          </ImageBackground>
+          </FastImage>
         }
 
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: ResponsiveSize(40) }}>

@@ -9,7 +9,8 @@ import { connect } from "react-redux";
 import TimeAgo from '@manu_omg/react-native-timeago';
 import ButtonC from "../button/index";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import FastImage from 'react-native-fast-image'
+import { RefreshControl } from "react-native-gesture-handler";
 
 
 const SkeletonPlaceholder = ({ style, refreshing }) => {
@@ -116,6 +117,7 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
             getAllEvents({ page: page, refreash: true })
         }
     }, []);
+
     const styles = StyleSheet.create({
         Wrapper: {
             backgroundColor: "#F5F5F5",
@@ -181,12 +183,8 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
             fontFamily: "Montserrat-Medium",
             fontSize: ResponsiveSize(10)
         },
-
         notFound: {
             flex: 1,
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         joinedBadge: {
             borderWidth: 1,
@@ -233,7 +231,14 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
         return (
             <>
                 <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={styles.Wrapper}>
-                    <Image style={styles.UpcomingImage} src={items?.item?.event_cover_image_thumbnail} />
+                    <FastImage
+                        style={{ width: ResponsiveSize(100), height: ResponsiveSize(100), borderRadius: ResponsiveSize(25) }}
+                        source={{
+                            uri: items?.item?.event_cover_image_thumbnail,
+                            priority: FastImage.priority.high,
+                        }}
+                        resizeMode={FastImage.resizeMode.cover}
+                    />
                     <View style={styles.UpcomingContent}>
                         {items?.item?.is_participant == 0 && items?.item?.is_my_event == 0 ?
                             <View style={styles.timeAgoJoinedV}>
@@ -289,15 +294,36 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
                     <SkeletonPlaceholder />
                 </>
             ) : AllEventReducer?.loading === false && AllEventReducer?.data?.length <= 0 ? (
-                <View style={styles.notFound}>
-                    <TextC text={"No Event Right Now"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
-                    <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
-                        <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any event right now. Try to Create"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    } style={styles.notFound}>
+                    <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(180) }}>
+                        {AllEventReducer?.networkError == true &&
+                            <View style={{ paddingBottom: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                                <Image style={{ height: ResponsiveSize(80), width: ResponsiveSize(80) }} source={require('../../assets/icons/something-went-wrong.png')} />
+                            </View>
+                        }
+                        {AllEventReducer?.networkError == true ?
+                            <TextC text={"Something went wrong"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} /> :
+                            <TextC text={"No Event Right Now"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
+                        }
+                        {AllEventReducer?.networkError == true ?
+                            <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                                <TextC style={{ textAlign: 'center', color: global?.black }} text={"Brace yourself till we get the error fixed"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                            </View> :
+                            <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                                <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any event right now. Try to Create"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                            </View>
+                        }
+                        {AllEventReducer?.networkError !== true &&
+                            <View style={{ paddingTop: ResponsiveSize(15), paddingHorizontal: ResponsiveSize(50) }}>
+                                <ButtonC onPress={() => navigation.navigate('AddEvent')} title={"Create New"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
+                            </View>
+                        }
+
                     </View>
-                    <View style={{ paddingTop: ResponsiveSize(15), paddingHorizontal: ResponsiveSize(50) }}>
-                        <ButtonC onPress={() => navigation.navigate('AddEvent')} title={"Create New"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
-                    </View>
-                </View>
+                </ScrollView>
             ) : (
                 <FlatList
                     onRefresh={onRefresh}
@@ -309,10 +335,8 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
                     maxToRenderPerBatch={10}
                     windowSize={10}
                     onEndReached={() => {
-                        if (AllEventReducer?.data?.length > 10) {
-                            getAllEvents({ page: page + 1, refreash: false })
-                            setPage(page + 1)
-                        }
+                        getAllEvents({ page: page + 1, refreash: false })
+                        setPage(page + 1)
                     }}
                     onEndReachedThreshold={0.5}
                     renderItem={renderItem}

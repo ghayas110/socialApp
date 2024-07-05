@@ -90,6 +90,13 @@ const EventScreen = ({ route }) => {
     useTabSlider(r)
     handlePress(r)
   }
+
+
+  useEffect(()=>{
+    useTabSlider(Tab)
+    handlePress(Tab)
+  },[Tab])
+
   const TabContent = () => {
     switch (tabSlider) {
       case 1:
@@ -115,7 +122,7 @@ const EventScreen = ({ route }) => {
                 left,
               }}
             >
-              <TextC text={Tab == 1 ? 'All Events' : Tab == 2 ? 'Joined' : Tab == 3 ? "My Events" : ""} style={{ color: "white" }} font={'Montserrat-Medium'} size={ResponsiveSize(11)} />
+              <TextC text={tabSlider == 1 ? 'All Events' : tabSlider == 2 ? 'Joined' : tabSlider == 3 ? "My Events" : ""} style={{ color: "white" }} font={'Montserrat-Medium'} size={ResponsiveSize(11)} />
             </Animated.View>
             <TouchableOpacity onPress={() => { tabActivator(1) }} style={styles.TopTab}>
               <TextC text={'All Events'} font={'Montserrat-Medium'} size={ResponsiveSize(11)} />

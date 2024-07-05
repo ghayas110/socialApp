@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, StyleSheet, Image, Animated, FlatList, TouchableOpacity, Pressable } from "react-native";
+import { View, StyleSheet, Image, Animated, FlatList, TouchableOpacity, Pressable, ScrollView, RefreshControl } from "react-native";
 import TextC from "../text/text";
 import { ResponsiveSize, global } from "../constant";
 import LinearGradient from 'react-native-linear-gradient';
@@ -184,9 +184,6 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
         },
         notFound: {
             flex: 1,
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         EditEvetn: {
             position: 'absolute',
@@ -265,15 +262,36 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
                     <SkeletonPlaceholder />
                 </>
             ) : MyEventReducer?.loading === false && MyEventReducer?.data?.length <= 0 ? (
-                <View style={styles.notFound}>
-                    <TextC text={"No Event Right Now"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
-                    <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
-                        <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any event right now. Try to Create"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    } style={styles.notFound}>
+                    <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(180) }}>
+                        {MyEventReducer?.networkError == true &&
+                            <View style={{ paddingBottom: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                                <Image style={{ height: ResponsiveSize(80), width: ResponsiveSize(80) }} source={require('../../assets/icons/something-went-wrong.png')} />
+                            </View>
+                        }
+                        {MyEventReducer?.networkError == true ?
+                            <TextC text={"Something went wrong"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} /> :
+                            <TextC text={"No Event Right Now"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
+                        }
+                        {MyEventReducer?.networkError == true ?
+                            <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                                <TextC style={{ textAlign: 'center', color: global?.black }} text={"Brace yourself till we get the error fixed"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                            </View> :
+                            <View style={{ paddingTop: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                                <TextC style={{ textAlign: 'center', color: global?.black }} text={"We couldn't find any event right now. Try to Create"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                            </View>
+                        }
+                        {MyEventReducer?.networkError !== true &&
+                            <View style={{ paddingTop: ResponsiveSize(15), paddingHorizontal: ResponsiveSize(50) }}>
+                                <ButtonC onPress={() => navigation.navigate('AddEvent')} title={"Create New"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
+                            </View>
+                        }
+
                     </View>
-                    <View style={{ paddingTop: ResponsiveSize(15), paddingHorizontal: ResponsiveSize(50) }}>
-                        <ButtonC onPress={() => navigation.navigate('AddEvent')} title={"Create New"} bgColor={global.primaryColor} TextStyle={{ color: global.white }} />
-                    </View>
-                </View>
+                </ScrollView>
             ) : (
                 <FlatList
                     onRefresh={onRefresh}

@@ -14,6 +14,9 @@ import {
     TASK_DELETE_EVENT_END,
     TASK_CREATE_EVENT_START,
     TASK_CREATE_EVENT_END,
+    TASK_UPDATE_EVENT_START,
+    TASK_UPDATE_EVENT_END,
+    TASK_UPDATE_EVENT_ERROR,
     TASK_JOIN_EVENT_START,
     TASK_JOIN_EVENT_END,
     TASK_LEAVE_EVENT_START,
@@ -26,13 +29,18 @@ export const getAllEvents = ({ page, refreash }) => async (dispatch, getState) =
     const Token = await AsyncStorage.getItem('Token');
     const state = getState();
     try {
+        dispatch({
+            type: TASK_GET_ALLEVENTS_END_ERROR,
+            networkError: false,
+            loading: false,
+        });
         if (page <= 1) {
             dispatch({
                 type: TASK_GET_ALLEVENTS_START,
                 loading: true,
             });
         }
-        const response = await fetch(`${baseUrl.baseUrl}/events/get-all-events/${page}/10`, {
+        const response = await fetch(`${baseUrl.baseUrl}/events/get-all-events/${page}/5`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -40,36 +48,51 @@ export const getAllEvents = ({ page, refreash }) => async (dispatch, getState) =
                 'accesstoken': `Bearer ${Token}`
             },
         });
-        const res = await response.json()
-        if (res?.data) {
-            const combinedArray = [...state?.AllEventReducer?.data, ...res?.data].reduce((acc, current) => {
-                const x = acc.find(item => item?.event_id === current?.event_id);
-                if (!x) {
-                    acc.push(current);
+        if (response.ok === true) {
+            const res = await response.json()
+            console.log(res)
+            if (res?.data) {
+                const combinedArray = [...state?.AllEventReducer?.data, ...res?.data].reduce((acc, current) => {
+                    const x = acc.find(item => item?.event_id === current?.event_id);
+                    if (!x) {
+                        acc.push(current);
+                    }
+                    return acc;
+                }, []);
+                if (refreash == true) {
+                    dispatch({
+                        type: TASK_GET_ALLEVENTS_END,
+                        payload: res?.data,
+                        loading: false,
+                    });
+                    return response.ok
                 }
-                return acc;
-            }, []);
-            if (refreash == true) {
-                dispatch({
-                    type: TASK_GET_ALLEVENTS_END,
-                    payload: res?.data,
-                    loading: false,
-                });
-                return response.ok
+                else if (refreash == false) {
+                    dispatch({
+                        type: TASK_GET_ALLEVENTS_END,
+                        payload: combinedArray,
+                        loading: false,
+                    });
+                    return response.ok
+                }
             }
-            else if (refreash == false) {
+            else if (res.message == 'No Event Found') {
                 dispatch({
                     type: TASK_GET_ALLEVENTS_END,
-                    payload: combinedArray,
+                    payload: [],
                     loading: false,
                 });
-                return response.ok
             }
         }
-        else if (res.message == 'No Events Found') {
+        else {
+            dispatch({
+                type: TASK_GET_ALLEVENTS_END_ERROR,
+                networkError: true,
+                loading: false,
+            });
             dispatch({
                 type: TASK_GET_ALLEVENTS_END,
-                payload:[],
+                payload: [],
                 loading: false,
             });
         }
@@ -77,6 +100,12 @@ export const getAllEvents = ({ page, refreash }) => async (dispatch, getState) =
     catch (error) {
         dispatch({
             type: TASK_GET_ALLEVENTS_END_ERROR,
+            networkError: true,
+            loading: false,
+        });
+        dispatch({
+            type: TASK_GET_ALLEVENTS_END,
+            payload: [],
             loading: false,
         });
         console.log(error)
@@ -87,6 +116,11 @@ export const getJoinedEvents = ({ page, refreash }) => async (dispatch, getState
     const Token = await AsyncStorage.getItem('Token');
     const state = getState();
     try {
+        dispatch({
+            type: TASK_GET_JOINED_EVENTS_END_ERROR,
+            networkError: false,
+            loading: false,
+        });
         if (page <= 1) {
             dispatch({
                 type: TASK_GET_JOINED_EVENTS_START,
@@ -101,35 +135,51 @@ export const getJoinedEvents = ({ page, refreash }) => async (dispatch, getState
                 'accesstoken': `Bearer ${Token}`
             },
         });
-        const res = await response.json()
-        if (res?.events) {
-            const combinedArray = [...state?.JoinedEventReducer?.data, ...res?.events].reduce((acc, current) => {
-                const x = acc.find(item => item?.event_id === current?.event_id);
-                if (!x) {
-                    acc.push(current);
+        if (response.ok === true) {
+            const res = await response.json()
+            console.log(res)
+            if (res?.events.length > 0) {
+                const combinedArray = [...state?.JoinedEventReducer?.data, ...res?.events].reduce((acc, current) => {
+                    const x = acc.find(item => item?.event_id === current?.event_id);
+                    if (!x) {
+                        acc.push(current);
+                    }
+                    return acc;
+                }, []);
+                if (refreash == true) {
+                    dispatch({
+                        type: TASK_GET_JOINED_EVENTS_END,
+                        payload: res?.events,
+                        loading: false,
+                    });
+                    return response.ok
                 }
-                return acc;
-            }, []);
-            if (refreash == true) {
-                dispatch({
-                    type: TASK_GET_JOINED_EVENTS_END,
-                    payload: res?.events,
-                    loading: false,
-                });
-                return response.ok
+                else if (refreash == false) {
+                    dispatch({
+                        type: TASK_GET_JOINED_EVENTS_END,
+                        payload: combinedArray,
+                        loading: false,
+                    });
+                    return response.ok
+                }
             }
-            else if (refreash == false) {
+            else if (res?.events?.message == "No Event Found") {
                 dispatch({
                     type: TASK_GET_JOINED_EVENTS_END,
-                    payload: combinedArray,
+                    payload: [],
                     loading: false,
                 });
-                return response.ok
             }
         }
         else {
             dispatch({
                 type: TASK_GET_JOINED_EVENTS_END_ERROR,
+                networkError: true,
+                loading: false,
+            });
+            dispatch({
+                type: TASK_GET_JOINED_EVENTS_END,
+                payload: [],
                 loading: false,
             });
         }
@@ -137,6 +187,12 @@ export const getJoinedEvents = ({ page, refreash }) => async (dispatch, getState
     catch (error) {
         dispatch({
             type: TASK_GET_JOINED_EVENTS_END_ERROR,
+            networkError: true,
+            loading: false,
+        });
+        dispatch({
+            type: TASK_GET_JOINED_EVENTS_END,
+            payload: [],
             loading: false,
         });
         console.log(error)
@@ -147,6 +203,11 @@ export const getMyEvents = ({ page, refreash }) => async (dispatch, getState) =>
     const Token = await AsyncStorage.getItem('Token');
     const state = getState();
     try {
+        dispatch({
+            type: TASK_GET_MY_EVENT_END_ERROR,
+            networkError: false,
+            loading: false,
+        });
         if (page <= 1) {
             dispatch({
                 type: TASK_GET_MY_EVENT_START,
@@ -161,36 +222,50 @@ export const getMyEvents = ({ page, refreash }) => async (dispatch, getState) =>
                 'accesstoken': `Bearer ${Token}`
             },
         });
-        const res = await response.json()
-        if (res?.data) {
-            const combinedArray = [...state?.MyEventReducer?.data, ...res?.data].reduce((acc, current) => {
-                const x = acc.find(item => item?.event_id === current?.event_id);
-                if (!x) {
-                    acc.push(current);
+        if (response?.ok == true) {
+            const res = await response.json()
+            if (res?.data) {
+                const combinedArray = [...state?.MyEventReducer?.data, ...res?.data].reduce((acc, current) => {
+                    const x = acc.find(item => item?.event_id === current?.event_id);
+                    if (!x) {
+                        acc.push(current);
+                    }
+                    return acc;
+                }, []);
+                if (refreash == true) {
+                    dispatch({
+                        type: TASK_GET_MY_EVENT_END,
+                        payload: res?.data,
+                        loading: false,
+                    });
+                    return response.ok
                 }
-                return acc;
-            }, []);
-            if (refreash == true) {
-                dispatch({
-                    type: TASK_GET_MY_EVENT_END,
-                    payload: res?.data,
-                    loading: false,
-                });
-                return response.ok
+                else if (refreash == false) {
+                    dispatch({
+                        type: TASK_GET_MY_EVENT_END,
+                        payload: combinedArray,
+                        loading: false,
+                    });
+                    return response.ok
+                }
             }
-            else if (refreash == false) {
+            else if (res.message == 'No Event Found') {
                 dispatch({
                     type: TASK_GET_MY_EVENT_END,
-                    payload: combinedArray,
+                    payload: [],
                     loading: false,
                 });
-                return response.ok
             }
         }
-        else if (res.message == 'No Events Found') {
+        else {
+            dispatch({
+                type: TASK_GET_MY_EVENT_END_ERROR,
+                networkError: true,
+                loading: false,
+            });
             dispatch({
                 type: TASK_GET_MY_EVENT_END,
-                payload:[],
+                payload: [],
                 loading: false,
             });
         }
@@ -198,6 +273,12 @@ export const getMyEvents = ({ page, refreash }) => async (dispatch, getState) =>
     catch (error) {
         dispatch({
             type: TASK_GET_MY_EVENT_END_ERROR,
+            networkError: true,
+            loading: false,
+        });
+        dispatch({
+            type: TASK_GET_MY_EVENT_END,
+            payload: [],
             loading: false,
         });
         console.log(error)
@@ -364,6 +445,66 @@ export const LeaveEvents = (body) => async (dispatch, getState) => {
     catch (error) {
         dispatch({
             type: TASK_LEAVE_EVENT_END,
+            loading: false,
+        });
+        console.log(error)
+    }
+}
+
+export const UpdateEvent = (data) => async (dispatch, getState) => {
+    const Token = await AsyncStorage.getItem('Token');
+    dispatch({
+        type: TASK_UPDATE_EVENT_START,
+        loading: true,
+    });
+    try {
+        const formData = new FormData();
+        formData.append('event_title', data?.title);
+        formData.append('event_id', data?.id);
+        formData.append('event_location', data?.location);
+        formData.append('event_details', data?.description);
+        formData.append('event_longitude', 66.990501);
+        formData.append('event_latitude', 24.860966);
+        formData.append('event_start_time', data?.startTime);
+        formData.append('event_end_time', data?.endTime);
+        formData.append('event_date', data?.eventDate);
+        if (data?.isImage) {
+            formData.append('event_cover_image', {
+                uri: data?.documentImage,
+                name: 'photo.jpg',
+                type: 'image/jpeg',
+            });
+        }
+        const response = await fetch(`${baseUrl.baseUrl}/events/update-event`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+            body: formData
+        });
+        const res = await response.json()
+        console.log(res)
+        if (res.message == "Event Updated successfully") {
+            dispatch({
+                type: TASK_UPDATE_EVENT_END,
+                loading: false,
+            });
+            return true
+        }
+        else {
+            dispatch({
+                type: TASK_UPDATE_EVENT_END,
+                loading: false,
+            });
+            return false
+        }
+    }
+    catch (error) {
+        dispatch({
+            type: TASK_UPDATE_EVENT_ERROR,
+            networkError: true,
             loading: false,
         });
         console.log(error)

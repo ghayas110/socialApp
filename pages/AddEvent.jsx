@@ -18,9 +18,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
 import ButtonC from '../components/button';
+import { useToast } from '../components/Toast/ToastContext';
 
 
-const AddEvent = ({ AllEventReducer, CreateEvent,getMyEvents }) => {
+const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, getAllEvents }) => {
     const windowWidth = Dimensions.get('window').width;
     const scheme = useColorScheme();
     const { openBottomSheet, closeBottomSheet } = useBottomSheet();
@@ -167,6 +168,7 @@ const AddEvent = ({ AllEventReducer, CreateEvent,getMyEvents }) => {
     const [startTime, setStartTime] = useState(new Date());
     const [endTime, setEndTime] = useState(new Date());
     const navigation = useNavigation()
+    const { showToast } = useToast();
 
 
     const schema = yup.object().shape({
@@ -206,43 +208,44 @@ const AddEvent = ({ AllEventReducer, CreateEvent,getMyEvents }) => {
         },
     });
     const onSubmit = async (data) => {
-        navigation.navigate("EventScreen",{Tab:3})
-        getMyEvents({ page: 1, refreash: true })
-        // if (!documentImage == "") {
-        //     try {
-        //         const formData = new FormData();
-        //         formData.append('event_title', data?.title);
-        //         formData.append('event_location', data?.location);
-        //         formData.append('event_details', data?.description);
-        //         formData.append('event_longitude', '66.990501');
-        //         formData.append('event_latitude', '24.860966');
-        //         formData.append('event_start_time', data?.startTime);
-        //         formData.append('event_end_time', data?.endTime);
-        //         formData.append('event_date', data?.eventDate);
-        //         if (document[0]?.uri) {
-        //             formData.append('event_cover_image', {
-        //                 uri: document[0]?.uri,
-        //                 name: 'photo.jpg',
-        //                 type: 'image/jpeg',
-        //             });
-        //         }
-        //         console.log(document[0]?.uri)
-        //         const Responce = await CreateEvent(formData)
-        //         if (Responce == true) {
-        //         }
-        //         else if (Responce == false) {
-        //             showToast({
-        //                 title: "Something went wrong",
-        //                 message: "Something went wrong. Please try again.",
-        //                 iconColor: "red",
-        //                 iconName: "mail",
-        //                 bg: "#fff2f2"
-        //             })
-        //         }
-        //     } catch (e) {
-        //         console.log(e, 'okkkk')
-        //     }
-        // }
+        if (!documentImage == "") {
+            try {
+                const formData = new FormData();
+                formData.append('event_title', data?.title);
+                formData.append('event_location', data?.location);
+                formData.append('event_details', data?.description);
+                formData.append('event_longitude', '66.990501');
+                formData.append('event_latitude', '24.860966');
+                formData.append('event_start_time', data?.startTime);
+                formData.append('event_end_time', data?.endTime);
+                formData.append('event_date', data?.eventDate);
+                if (document[0]?.uri) {
+                    formData.append('event_cover_image', {
+                        uri: document[0]?.uri,
+                        name: 'photo.jpg',
+                        type: 'image/jpeg',
+                    });
+                }
+                const Responce = await CreateEvent(formData)
+                if (Responce == true) {
+                    getMyEvents({ page: 1, refreash: true })
+                    getAllEvents({ page: 1, refreash: true })
+                    getJoinedEvents({ page: 1, refreash: true })
+                    navigation.navigate("EventScreen", { Tab: 3 })
+                }
+                else if (Responce == false) {
+                    showToast({
+                        title: "Something went wrong",
+                        message: "Something went wrong. Please try again.",
+                        iconColor: "red",
+                        iconName: "mail",
+                        bg: "#fff2f2"
+                    })
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        }
     };
 
 
@@ -388,10 +391,9 @@ const AddEvent = ({ AllEventReducer, CreateEvent,getMyEvents }) => {
                                     date={startTime}
                                     mode="time"
                                     onConfirm={(date) => {
-                                        const splitTime = date.toTimeString().split(":")
                                         setStartTime(date)
                                         setStartTimeModal(false)
-                                        onChange(`${splitTime[0]}:${splitTime[1]}`)
+                                        onChange(date)
                                     }}
                                     onCancel={() => {
                                         setStartTimeModal(false)
@@ -426,10 +428,9 @@ const AddEvent = ({ AllEventReducer, CreateEvent,getMyEvents }) => {
                                     minimumDate={startTime}
                                     mode="time"
                                     onConfirm={(date) => {
-                                        const splitTime = date.toTimeString().split(":")
                                         setEndTime(date)
                                         setEndTimeModal(false)
-                                        onChange(`${splitTime[0]}:${splitTime[1]}`)
+                                        onChange(date)
                                     }}
                                     onCancel={() => {
                                         setEndTimeModal(false)
