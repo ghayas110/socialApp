@@ -377,7 +377,6 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
                                                 onDayPress={day => {
                                                     onChange(day.dateString)
                                                     setSelected(day.dateString);
-                                                    console.log(day.dateString, 'asdasdai');
                                                 }}
                                                 minDate={today?.toISOString()?.split("T")[0]}
                                                 markedDates={{

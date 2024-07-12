@@ -9,6 +9,10 @@ import { BottomSheetProvider } from './components/bottomSheet/BottomSheet';
 import store from './store/index';
 import { Provider } from 'react-redux';
 import { ToastProvider } from './components/Toast/ToastContext';
+import useSWR, { SWRConfig } from 'swr'
+
+
+
 const App = () => {
   LogBox.ignoreAllLogs();
   return (
@@ -16,9 +20,11 @@ const App = () => {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetProvider>
           <Provider store={store}>
-            <ToastProvider>
+            {/* <ToastProvider> */}
+            <SWRConfig value={{ fetcher: ({ resource, init }) => fetch(resource, init).then(res => res.json()), provider:() => new Map()}}>
               <MainNavigation />
-            </ToastProvider>
+            </SWRConfig>
+            {/* </ToastProvider> */}
           </Provider>
         </BottomSheetProvider>
       </GestureHandlerRootView>

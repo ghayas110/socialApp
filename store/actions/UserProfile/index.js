@@ -21,7 +21,6 @@ export const GetProfileData = () => async (dispatch) => {
             body: JSON.stringify(body)
         });
         const res = await response.json()
-        console.log(res)
         dispatch({
             type: TASK_GET_PROFILE_DETAIL_END,
             loading: false,

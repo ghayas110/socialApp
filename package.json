@@ -52,6 +52,7 @@
     "redux": "^5.0.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^3.1.0",
+    "swr": "^2.2.5",
     "yup": "^1.4.0"
   },
   "devDependencies": {

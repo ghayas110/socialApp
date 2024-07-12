@@ -49,7 +49,6 @@ export const getAllEvents = ({ page, refreash }) => async (dispatch, getState) =
         });
         if (response.ok === true) {
             const res = await response.json()
-            console.log(res)
             if (res?.data) {
                 const combinedArray = [...state?.AllEventReducer?.data, ...res?.data].reduce((acc, current) => {
                     const x = acc.find(item => item?.event_id === current?.event_id);
@@ -133,7 +132,6 @@ export const getJoinedEvents = ({ page, refreash }) => async (dispatch, getState
         });
         if (response.ok === true) {
             const res = await response.json()
-            console.log(res)
             if (res?.events.length > 0) {
                 const combinedArray = [...state?.JoinedEventReducer?.data, ...res?.events].reduce((acc, current) => {
                     const x = acc.find(item => item?.event_id === current?.event_id);

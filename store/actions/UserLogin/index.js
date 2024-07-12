@@ -20,7 +20,6 @@ export const loginUser = (body) => async (dispatch) => {
             body: JSON.stringify(body)
         });
         const res = await response.json()
-        console.log(res)
         dispatch({
             type: TASK_LOGIN_END,
             loading: false,
@@ -47,7 +46,6 @@ export const CheckUserStatus = (body) => async (dispatch) => {
             },
         });
         const res = await response.json()
-        console.log(res)
         return res
     }
     catch (error) {
