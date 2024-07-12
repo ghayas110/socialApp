@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@fawazahmed/react-native-read-more": "^3.0.4",
     "@gorhom/bottom-sheet": "^4.6.3",
     "@hookform/resolvers": "^3.4.2",
     "@manu_omg/react-native-timeago": "^0.0.2",

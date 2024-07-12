@@ -22,7 +22,9 @@ export const insertUser = (body) => async (dispatch) => {
             },
             body: body
         });
+        console.log(response,response.status,'without json response')
         const res = await response.json()
+        console.log(res,'json response')
         dispatch({
             type: TASK_REGISTER_COMPLETE,
             loading: false,
@@ -34,7 +36,7 @@ export const insertUser = (body) => async (dispatch) => {
             type: TASK_REGISTER_END,
             loading: false,
         });
-        console.log(error)
+        console.log(error,'crash response')
     }
 }
 
@@ -51,6 +53,7 @@ export const getAllAirline = () => async (dispatch) => {
             },
         });
         const res = await response.json()
+        console.log(res)
         dispatch({
             type: TASK_AIRLINE_LOAD_END,
             loading: false,

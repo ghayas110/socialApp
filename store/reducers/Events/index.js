@@ -63,7 +63,6 @@ const AllEventReducer = (state = allEvent, action) => {
             return {
                 ...state,
                 networkError: action.networkError,
-                loading: action.loading,
             };
         case TASK_DELETE_EVENT_START:
             return {
@@ -120,7 +119,6 @@ const AllEventReducer = (state = allEvent, action) => {
             return {
                 ...state,
                 networkError: action.networkError,
-                EventUpdateLoading: action.loading,
             };
         default:
             return state;
@@ -144,7 +142,6 @@ const JoinedEventReducer = (state = joinedEvent, action) => {
             return {
                 ...state,
                 networkError: action.networkError,
-                loading: action.loading,
             };
         default:
             return state;
@@ -168,7 +165,6 @@ const MyEventReducer = (state = myEvent, action) => {
             return {
                 ...state,
                 networkError: action.networkError,
-                loading: action.loading,
             };
 
         default:

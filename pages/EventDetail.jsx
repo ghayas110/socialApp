@@ -262,141 +262,153 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent, AllEventReducer, Join
   return (
     <>
       <SafeAreaView style={styles.container}>
-        <StatusBar translucent={true} backgroundColor={'transparent'} barStyle={"light-content"} />
-        {loading ? <View style={styles.thumbnailLoad}></View> :
-          <FastImage
-            source={{
-              uri: eventDetail?.event_cover_image,
-              priority: FastImage.priority.high,
-            }}
-            style={styles.thumbnail}>
-            <View style={styles.layer}>
-              <View style={styles.bodyWrapperHeader}>
-                <View style={styles.header}>
-                  <Pressable style={styles.gobackBtn} onPress={navigation.goBack}>
-                    <AntDedign name='left' size={ResponsiveSize(20)} color={global.white} />
-                  </Pressable>
-                  {eventDetail?.is_myevent == 0 ?
-                    <>
-                      {eventDetail?.is_participant == 1 ?
+        {AllEventReducer?.networkError ?
+          <ScrollView style={{ flexGrow: 1, padding: ResponsiveSize(15) }}>
+            <View style={{ paddingTop: ResponsiveSize(180), flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ paddingBottom: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                <Image style={{ height: ResponsiveSize(80), width: ResponsiveSize(80) }} source={require('../assets/icons/something-went-wrong.png')} />
+              </View>
+              <TextC text={"Something went wrong"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
+              <TextC style={{ textAlign: 'center', color: global?.black }} text={"Brace yourself till we get the error fixed"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+            </View>
+          </ScrollView> :
+          <>
+            <StatusBar translucent={true} backgroundColor={'transparent'} barStyle={"light-content"} />
+            {loading ? <View style={styles.thumbnailLoad}></View> :
+              <FastImage
+                source={{
+                  uri: eventDetail?.event_cover_image,
+                  priority: FastImage.priority.high,
+                }}
+                style={styles.thumbnail}>
+                <View style={styles.layer}>
+                  <View style={styles.bodyWrapperHeader}>
+                    <View style={styles.header}>
+                      <Pressable style={styles.gobackBtn} onPress={navigation.goBack}>
+                        <AntDedign name='left' size={ResponsiveSize(20)} color={global.white} />
+                      </Pressable>
+                      {eventDetail?.is_myevent == 0 ?
                         <>
-                          <TouchableOpacity onPress={() => leaveEvent(eventDetail?.event_id)} style={styles.leaveBtn}>
-                            {AllEventReducer?.EventLeaveLoading ?
-                              <ActivityIndicator size="small" color={global.white} />
-                              :
-                              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <TextC text={"Leave"} style={{ color: global.white }} font={"Montserrat-Medium"} />
-                                <Feather name="log-out" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
-                              </View>
-                            }
-                          </TouchableOpacity>
-                        </>
-                        :
-                        <TouchableOpacity onPress={() => joinEvent(eventDetail?.event_id)} style={styles.JoinBtn}>
-                          {AllEventReducer?.EventJoinLoading ?
-                            <ActivityIndicator size="small" color={global.white} />
+                          {eventDetail?.is_participant == 1 ?
+                            <>
+                              <TouchableOpacity onPress={() => leaveEvent(eventDetail?.event_id)} style={styles.leaveBtn}>
+                                {AllEventReducer?.EventLeaveLoading ?
+                                  <ActivityIndicator size="small" color={global.white} />
+                                  :
+                                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <TextC text={"Leave"} style={{ color: global.white }} font={"Montserrat-Medium"} />
+                                    <Feather name="log-out" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
+                                  </View>
+                                }
+                              </TouchableOpacity>
+                            </>
                             :
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <TextC text={"Join"} style={{ color: global.white }} font={"Montserrat-Medium"} />
-                              <AntDedign name="adduser" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
-                            </View>
-                          }
-                        </TouchableOpacity>
-                      }
-                    </> :
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <TouchableOpacity onPress={() => setDeleteModal(true)} style={styles.leaveBtn2}>
-                        <TextC text={"Delete"} style={{ color: global.white }} font={"Montserrat-Medium"} />
-                        <AntDedign name="delete" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
-                      </TouchableOpacity>
-
-                      <Modal
-                        statusBarTranslucent={true}
-                        animationType="slide"
-                        transparent={true}
-                        visible={deleteModal}
-                        onRequestClose={() => {
-                          setDeleteModal(!deleteModal);
-                        }}>
-                        <View style={styles.centeredView}>
-                          <View style={styles.modalView}>
-                            <View style={styles.iconWrapper}>
-                              <Feather size={ResponsiveSize(20)} color={global.red} name='alert-triangle' />
-                            </View>
-                            <TextC text={"Are you sure?"} font={"Montserrat-Bold"} style={{ color: global.black, paddingTop: ResponsiveSize(8) }} />
-                            <TextC size={12} text={"This action cannot be undone. all data accociated with this event will be lost."} font={"Montserrat-Medium"} style={{ color: global.placeholderColor, paddingTop: ResponsiveSize(8), textAlign: 'center' }} />
-
-                            <TouchableOpacity onPress={() => deleteEvent(eventDetail?.event_id)} style={styles.deleteBtn}>
-                              {AllEventReducer?.deleteEventLoading ?
+                            <TouchableOpacity onPress={() => joinEvent(eventDetail?.event_id)} style={styles.JoinBtn}>
+                              {AllEventReducer?.EventJoinLoading ?
                                 <ActivityIndicator size="small" color={global.white} />
                                 :
-                                <TextC text={"Delete"} style={{ color: global.white }} font={"Montserrat-Medium"} />
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                  <TextC text={"Join"} style={{ color: global.white }} font={"Montserrat-Medium"} />
+                                  <AntDedign name="adduser" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
+                                </View>
                               }
                             </TouchableOpacity>
+                          }
+                        </> :
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <TouchableOpacity onPress={() => setDeleteModal(true)} style={styles.leaveBtn2}>
+                            <TextC text={"Delete"} style={{ color: global.white }} font={"Montserrat-Medium"} />
+                            <AntDedign name="delete" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
+                          </TouchableOpacity>
 
-                            <TouchableOpacity onPress={() => setDeleteModal(false)} style={styles.cancelBtn}>
-                              <TextC text={"Cancel"} style={{ color: global.black }} font={"Montserrat-Medium"} />
-                            </TouchableOpacity>
-                          </View>
+                          <Modal
+                            statusBarTranslucent={true}
+                            animationType="slide"
+                            transparent={true}
+                            visible={deleteModal}
+                            onRequestClose={() => {
+                              setDeleteModal(!deleteModal);
+                            }}>
+                            <View style={styles.centeredView}>
+                              <View style={styles.modalView}>
+                                <View style={styles.iconWrapper}>
+                                  <Feather size={ResponsiveSize(20)} color={global.red} name='alert-triangle' />
+                                </View>
+                                <TextC text={"Are you sure?"} font={"Montserrat-Bold"} style={{ color: global.black, paddingTop: ResponsiveSize(8) }} />
+                                <TextC size={12} text={"This action cannot be undone. all data accociated with this event will be lost."} font={"Montserrat-Medium"} style={{ color: global.placeholderColor, paddingTop: ResponsiveSize(8), textAlign: 'center' }} />
+
+                                <TouchableOpacity onPress={() => deleteEvent(eventDetail?.event_id)} style={styles.deleteBtn}>
+                                  {AllEventReducer?.deleteEventLoading ?
+                                    <ActivityIndicator size="small" color={global.white} />
+                                    :
+                                    <TextC text={"Delete"} style={{ color: global.white }} font={"Montserrat-Medium"} />
+                                  }
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => setDeleteModal(false)} style={styles.cancelBtn}>
+                                  <TextC text={"Cancel"} style={{ color: global.black }} font={"Montserrat-Medium"} />
+                                </TouchableOpacity>
+                              </View>
+                            </View>
+                          </Modal>
+
+                          <TouchableOpacity onPress={() => navigation.navigate('UpdateEvent', { id: eventDetail?.event_id })} style={styles.JoinBtn2}>
+                            <TextC text={"Edit"} style={{ color: global.white }} font={"Montserrat-Medium"} />
+                            <AntDedign name="adduser" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
+                          </TouchableOpacity>
                         </View>
-                      </Modal>
+                      }
 
-                      <TouchableOpacity onPress={() => navigation.navigate('UpdateEvent', { id: eventDetail?.event_id })} style={styles.JoinBtn2}>
-                        <TextC text={"Edit"} style={{ color: global.white }} font={"Montserrat-Medium"} />
-                        <AntDedign name="adduser" color={'white'} style={{ paddingLeft: ResponsiveSize(5) }} />
+                    </View>
+                    <View style={styles.headerBottom}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <FastImage
+                          source={{
+                            uri: eventDetail?.profile_picture_url,
+                            priority: FastImage.priority.high,
+                          }}
+                          style={styles.profile} />
+                        <View style={{ flexDirection: 'column' }}>
+                          <TextC font={"Montserrat-Bold"} style={{ color: global.white, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1} size={ResponsiveSize(15)} text={eventDetail?.user_name} />
+                          <TextC font={"Montserrat-Medium"} style={{ color: global.description, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1} size={ResponsiveSize(11)} text={eventDetail?.event_location} />
+                        </View>
+                      </View>
+                      <TouchableOpacity style={styles.seeFullMap}>
+                        <TextC text={"Map"} style={{ color: global.white }} font={"Montserrat-Medium"} />
+                        <Ionicons name='location-outline' style={{ paddingLeft: ResponsiveSize(5) }} size={ResponsiveSize(16)} color={global.white} />
                       </TouchableOpacity>
                     </View>
-                  }
-
+                  </View>
                 </View>
-                <View style={styles.headerBottom}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <FastImage
-                      source={{
-                        uri: eventDetail?.profile_picture_url,
-                        priority: FastImage.priority.high,
-                      }}
-                      style={styles.profile} />
-                    <View style={{ flexDirection: 'column' }}>
-                      <TextC font={"Montserrat-Bold"} style={{ color: global.white, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1} size={ResponsiveSize(15)} text={eventDetail?.user_name} />
-                      <TextC font={"Montserrat-Medium"} style={{ color: global.description, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1} size={ResponsiveSize(11)} text={eventDetail?.event_location} />
+              </FastImage>
+            }
+            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: ResponsiveSize(40) }}>
+              {loading ?
+                <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                  <ActivityIndicator size="large" color={global.primaryColor} />
+                </View>
+                :
+                <View style={styles.bodyWrapper}>
+                  <TextC font={"Montserrat-Bold"} size={ResponsiveSize(22)} text={eventDetail?.event_title} />
+                  <View style={styles.detailSpaces}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <View style={{ flexDirection: 'column' }}>
+                        <TextC font={"Montserrat-Bold"} text={'Create at'} style={{ textAlign: 'center' }} />
+                        <TextC font={"Montserrat-Regular"} text={eventDetail?.created_at?.split("T")[0]} style={{ textAlign: 'center', color: global.placeholderColor }} />
+                      </View>
+                      <View style={{ flexDirection: 'column', paddingLeft: ResponsiveSize(20) }}>
+                        <TextC font={"Montserrat-Bold"} text={eventDetail?.event_date} style={{ textAlign: 'center' }} />
+                        <TextC font={"Montserrat-Regular"} text={`${eventDetail?.event_start_time} to ${eventDetail?.event_end_time}`} style={{ textAlign: 'center', color: global.placeholderColor }} />
+                      </View>
                     </View>
                   </View>
-                  <TouchableOpacity style={styles.seeFullMap}>
-                    <TextC text={"Map"} style={{ color: global.white }} font={"Montserrat-Medium"} />
-                    <Ionicons name='location-outline' style={{ paddingLeft: ResponsiveSize(5) }} size={ResponsiveSize(16)} color={global.white} />
-                  </TouchableOpacity>
+                  <TextC font={"Montserrat-Bold"} size={ResponsiveSize(14)} text={"About this event"} />
+                  <TextC font={"Montserrat-Regular"} style={{ color: global.black, paddingTop: ResponsiveSize(12) }} size={ResponsiveSize(12)} text={eventDetail?.event_details} />
                 </View>
-              </View>
-            </View>
-          </FastImage>
+              }
+            </ScrollView>
+          </>
         }
-
-        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: ResponsiveSize(40) }}>
-          {loading ?
-            <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-              <ActivityIndicator size="large" color={global.primaryColor} />
-            </View>
-            :
-            <View style={styles.bodyWrapper}>
-              <TextC font={"Montserrat-Bold"} size={ResponsiveSize(22)} text={eventDetail?.event_title} />
-              <View style={styles.detailSpaces}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <View style={{ flexDirection: 'column' }}>
-                    <TextC font={"Montserrat-Bold"} text={'Create at'} style={{ textAlign: 'center' }} />
-                    <TextC font={"Montserrat-Regular"} text={eventDetail?.created_at?.split("T")[0]} style={{ textAlign: 'center', color: global.placeholderColor }} />
-                  </View>
-                  <View style={{ flexDirection: 'column', paddingLeft: ResponsiveSize(20) }}>
-                    <TextC font={"Montserrat-Bold"} text={eventDetail?.event_date} style={{ textAlign: 'center' }} />
-                    <TextC font={"Montserrat-Regular"} text={`${eventDetail?.event_start_time} to ${eventDetail?.event_end_time}`} style={{ textAlign: 'center', color: global.placeholderColor }} />
-                  </View>
-                </View>
-              </View>
-              <TextC font={"Montserrat-Bold"} size={ResponsiveSize(14)} text={"About this event"} />
-              <TextC font={"Montserrat-Regular"} style={{ color: global.black, paddingTop: ResponsiveSize(12) }} size={ResponsiveSize(12)} text={eventDetail?.event_details} />
-            </View>
-          }
-        </ScrollView>
       </SafeAreaView >
     </>
   )

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, Dimensions } from "react-native"
 import { global, ResponsiveSize } from "../constant";
 
 
-const TextInputC = ({ placeholder, error, onChangeText, multiline,value,numberOfLines, height,textAlignVertical,style }) => {
+const TextInputC = ({ placeholder, error, onChangeText, multiline,value,numberOfLines, height,textAlignVertical,style,disable }) => {
     const styles = StyleSheet.create({
         Input: {
             fontSize: ResponsiveSize(11),
@@ -21,7 +21,7 @@ const TextInputC = ({ placeholder, error, onChangeText, multiline,value,numberOf
         },
     })
     return (
-        <TextInput multiline={multiline} numberOfLines={numberOfLines} onChangeText={onChangeText} value={value} style={styles.Input} placeholder={placeholder} placeholderTextColor={global.placeholderColor} />
+        <TextInput editable={!disable} multiline={multiline} numberOfLines={numberOfLines} onChangeText={onChangeText} value={value} style={styles.Input} placeholder={placeholder} placeholderTextColor={global.placeholderColor} />
     )
 }
 

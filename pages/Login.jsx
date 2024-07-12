@@ -34,6 +34,7 @@ const LogIn = ({ onLogin, LoginReducer, loginUser, CheckUserStatus }) => {
     control,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -112,14 +113,26 @@ const LogIn = ({ onLogin, LoginReducer, loginUser, CheckUserStatus }) => {
         Token: LoginStart.access_token
       })
       if (CheckStatus.accout_approval_status == "IN_REVIEW") {
+        reset({
+          email: '',
+          password: ''
+        })
         navigation.navigate('Approval', { status: "IN_REVIEW" })
       }
       else if (CheckStatus.accout_approval_status == "APPROVED") {
         await AsyncStorage.removeItem('Token');
         await AsyncStorage.setItem('Token', LoginStart.access_token);
+        reset({
+          email: '',
+          password: ''
+        })
         onLogin()
       }
       else if (CheckStatus.accout_approval_status == "REJECTED") {
+        reset({
+          email: '',
+          password: ''
+        })
         navigation.navigate('Approval', { status: "REJECTED" })
       }
     }

@@ -1,12 +1,9 @@
+import { DarkTheme } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View } from 'react-native'
-import { SafeAreaView, StatusBar } from 'react-native';
-import Story from '../components/citiesScroll';
-import Post from '../components/post';
+import { SafeAreaView, StatusBar, useColorScheme, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { useColorScheme } from 'react-native';
 import CityScroll from '../components/citiesScroll';
+import Post from '../components/post';
 
 const HomeScreen = () => {
   const scheme = useColorScheme();

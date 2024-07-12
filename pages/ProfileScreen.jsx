@@ -6,7 +6,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Feather from 'react-native-vector-icons/Feather'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native';
-
+import { global, ResponsiveSize } from '../components/constant'
+import ReadMore from '@fawazahmed/react-native-read-more';
 
 const ProfileScreen = () => {
   const navigation = useNavigation()
@@ -15,35 +16,37 @@ const ProfileScreen = () => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: 20,
-      paddingVertical: 20
+      paddingHorizontal: ResponsiveSize(15),
+      paddingTop: ResponsiveSize(15)
     },
     ProfileInfo: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: 20
+      padding: ResponsiveSize(15)
     },
     ProfileImage: {
-      height: 120,
-      width: 90,
-      borderRadius: 22,
-      padding: 3,
-      borderWidth: 1,
-      borderColor: '#B3B3B3'
+      height: ResponsiveSize(70),
+      width: ResponsiveSize(70),
+      borderRadius: ResponsiveSize(70),
     },
     ProfileImageMain: {
       height: "100%",
       width: "100%",
+      borderRadius: ResponsiveSize(70),
+    },
+    profileImageWrapper: {
+      width: '25%',
+
     },
     ProfilePostInfo: {
       flexDirection: 'row',
-      alignItems: 'flex-end',
+      alignItems: 'flex-start',
       justifyContent: 'space-between',
       paddingHorizontal: 10,
-      width: '70%',
+      width: '75%',
       position: 'relative',
-      paddingBottom: 15
+      paddingBottom: 15,
     },
     ProfilePostInfoInnerCard: {
       flexDirection: 'column',
@@ -53,19 +56,25 @@ const ProfileScreen = () => {
       height: 80,
       borderRadius: 20,
     },
-    profileImageWrapper: {
-      width: '30%'
+
+    ProfilePostInfoInnerCard1: {
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      width: '20%',
+      height: 80,
+      borderRadius: 20,
     },
     ProfileTitleDescription: {
-      paddingHorizontal: 20
+      paddingHorizontal: ResponsiveSize(15)
     },
     ProfileSettingBtn: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       width: '100%',
-      paddingHorizontal: 20,
-      paddingTop: 15
+      paddingHorizontal: ResponsiveSize(15),
+      paddingTop: ResponsiveSize(15)
     },
     SetttingBtn: {
       backgroundColor: '#05348E',
@@ -86,7 +95,28 @@ const ProfileScreen = () => {
       flexDirection: 'row',
       alignItems: 'center',
       borderTopColor: ''
-    }
+    },
+    wrapper: {
+      flex: 1,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      position: 'relative',
+      paddingTop: ResponsiveSize(15),
+    },
+    box: {
+      height: ResponsiveSize(90),
+      width: '25%',
+      position: 'relative',
+      backgroundColor: 'black'
+    },
+    DescriptionStyle: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: ResponsiveSize(10),
+      marginTop:ResponsiveSize(5),
+      color:global.primaryColor
+    },
   })
 
   const Logout = async () => {
@@ -114,41 +144,50 @@ const ProfileScreen = () => {
         <View style={styles.ProfileInfo}>
           <View style={styles.profileImageWrapper}>
             <View style={styles.ProfileImage}>
-              <Image style={styles.ProfileImageMain} source={require('../assets/icons/cityImage1.png')} />
+              <Image style={styles.ProfileImageMain} source={require('../assets/icons/profile.png')} />
             </View>
           </View>
           <View style={styles.ProfilePostInfo}>
-            <View style={styles.ProfilePostInfoInnerCard}>
-              <TextC text={'23hrs'} font={'Montserrat-Medium'} size={12} style={{ color: '#C8C8CC' }} />
-              <MaterialCommunityIcons name='timer-sand' size={22} color={'#69BE25'} />
-              <TextC text={'Honolulusdasd'} font={'Montserrat-SemiBold'} size={14} style={{ width: "100%" }} ellipsizeMode={"tail"} numberOfLines={1} />
+
+            <View style={styles.ProfilePostInfoInnerCard1}>
+              <TextC text={'54'} font={'Montserrat-SemiBold'} size={ResponsiveSize(20)} style={{ color: '#69BE25' }} />
+              <TextC text={'Posts'} font={'Montserrat-SemiBold'} size={ResponsiveSize(12)} />
             </View>
+
             <View style={styles.ProfilePostInfoInnerCard}>
-              <Feather name='map' size={22} color={'#69BE25'} />
-              <TextC text={'Map'} font={'Montserrat-SemiBold'} size={14} />
+              <Feather name='map' size={ResponsiveSize(20)} color={'#69BE25'} />
+              <TextC text={'Connects'} font={'Montserrat-SemiBold'} size={ResponsiveSize(12)} />
             </View>
+
             <View style={styles.ProfilePostInfoInnerCard}>
-              <TextC text={'54'} font={'Montserrat-Bold'} size={22} style={{ color: '#69BE25' }} />
-              <TextC text={'Post'} font={'Montserrat-SemiBold'} size={14} />
+              <MaterialCommunityIcons name='timer-sand' size={ResponsiveSize(20)} color={'#69BE25'} />
+              <TextC text={'Honolulusdasd'} font={'Montserrat-SemiBold'} size={ResponsiveSize(12)} style={{ width: "100%" }} ellipsizeMode={"tail"} numberOfLines={1} />
             </View>
+
           </View>
         </View>
 
 
         <View style={styles.ProfileTitleDescription}>
           <TextC font={"Montserrat-SemiBold"} text={"David R."} size={16} />
-          <TextC style={{ marginTop: 8 }} font={"Montserrat-Medium"} text={"🌍 World Explorer | 📸 Visual Storyteller✈️ Traveling the globe, one adventure at a time"} size={13} />
+          <ReadMore seeLessStyle={{fontFamily:"Montserrat-Bold",color:global.primaryColor}} seeMoreStyle={{fontFamily:"Montserrat-Bold",color:global.primaryColor}} numberOfLines={3} style={styles.DescriptionStyle}>
+            {
+              "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+            }
+          </ReadMore>
         </View>
 
         <View style={styles.ProfileSettingBtn}>
-          <TouchableOpacity style={styles.SetttingBtn}><Text style={styles.SetttingBtnText}>Edit Profile</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.SetttingBtn} onPress={()=>navigation.navigate('EditProfile')}><Text style={styles.SetttingBtnText}>Edit Profile</Text></TouchableOpacity>
           <TouchableOpacity style={styles.SetttingBtn}><Text style={styles.SetttingBtnText}>Search</Text></TouchableOpacity>
           <TouchableOpacity onPress={Logout} style={styles.SetttingBtn}><Text style={styles.SetttingBtnText}>Logout</Text></TouchableOpacity>
         </View>
 
-        <View style={styles.CollapseSlider}>
-
-        </View>
+        <ScrollView style={{ flexGrow: 1 }}>
+          <View style={styles.wrapper}>
+            <TouchableOpacity style={styles.box}></TouchableOpacity>
+          </View>
+        </ScrollView>
       </ScrollView>
     </SafeAreaView>
   )

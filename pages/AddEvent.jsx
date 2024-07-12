@@ -261,11 +261,11 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
                     <TextC size={ResponsiveSize(12)} font={'Montserrat-Bold'} text={"New Event"} />
                 </View>
                 <View style={styles.logoSide3}>
-                    <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.NextBtn}>
+                    <TouchableOpacity disabled={AllEventReducer?.EventCreateLoading} onPress={handleSubmit(onSubmit)} style={styles.NextBtn}>
                         {AllEventReducer?.EventCreateLoading == true ?
                             <ActivityIndicator size={ResponsiveSize(12)} color={global.white} />
                             :
-                            <TextC size={12} text={'Create'} font={'Montserrat-SemiBold'} />
+                            <TextC size={ResponsiveSize(11)} text={'Create'} font={'Montserrat-SemiBold'} />
                         }
                     </TouchableOpacity>
                 </View>

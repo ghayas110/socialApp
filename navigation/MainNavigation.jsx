@@ -132,7 +132,7 @@ const MainNavigation = () => {
           }} />
           <Tab.Screen name="Profile" component={ProfileStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
-              <Image source={!focused ? require('../assets/icons/homeTab/tabProfile.png') : require('../assets/icons/homeTab/tabProfile.png')} style={{ width: ResponsiveSize(25), height: ResponsiveSize(20), objectFit: 'contain' }} />
+              <Image source={!focused ? require('../assets/icons/homeTab/tabProfile.png') : require('../assets/icons/homeTab/tabProfile.png')} style={{ width: ResponsiveSize(30), height: ResponsiveSize(25), objectFit: 'contain' }} />
             ),
             headerShown: false,
             tabBarShowLabel: false,

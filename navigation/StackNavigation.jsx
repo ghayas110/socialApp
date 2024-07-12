@@ -6,6 +6,7 @@ import EventScreen from '../pages/EventScreen'
 import ProfileScreen from '../pages/ProfileScreen';
 import EventDetail from '../pages/EventDetail';
 import UpdateEvent from '../pages/UpdateEvent';
+import EditProfile from '../pages/EditProfile';
 
 
 
@@ -29,7 +30,8 @@ const ProfileStackNavigation = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator>
-      <Stack.Screen options={{ headerShown: false }} name="ProfileMain" component={ProfileScreen} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ProfileMain" component={ProfileScreen} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="EditProfile" component={EditProfile} />
     </Stack.Navigator>
   )
 }

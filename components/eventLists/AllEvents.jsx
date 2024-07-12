@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState,Suspense } from "react";
 import { View, StyleSheet, Image, ScrollView, Animated, FlatList, Pressable } from "react-native";
 import TextC from "../text/text";
 import { ResponsiveSize, global } from "../constant";
@@ -126,7 +126,7 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
             flexDirection: "row",
             alignItems: 'center',
             position: "relative",
-            marginBottom: ResponsiveSize(10)
+            marginBottom: ResponsiveSize(10),
         },
         UpcomingImage: {
             width: ResponsiveSize(100),
@@ -230,9 +230,9 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
     const renderItem = useCallback((items) => {
         return (
             <>
-                <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={styles.Wrapper}>
+                <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={{ ...styles.Wrapper, borderColor: global.description, borderWidth: 1, }}>
                     <FastImage
-                        style={{ width: ResponsiveSize(100), height: ResponsiveSize(100), borderRadius: ResponsiveSize(25) }}
+                        style={{ width: ResponsiveSize(100), height: ResponsiveSize(100), borderRadius: ResponsiveSize(20) }}
                         source={{
                             uri: items?.item?.event_cover_image_thumbnail,
                             priority: FastImage.priority.high,
@@ -243,7 +243,7 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
                         {items?.item?.is_participant == 0 && items?.item?.is_my_event == 0 ?
                             <View style={styles.timeAgoJoinedV}>
                                 <TimeAgo
-                                    style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(10) }}
+                                    style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(8) }}
                                     time={items?.item?.created_at}
                                 />
                             </View>
@@ -251,9 +251,9 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
                         }
                         {items?.item?.is_participant == 1 ?
                             <View style={styles.timeAgoJoined}>
-                                <View style={styles.joinedBadge}><TextC font={'Montserrat-Medium'} size={ResponsiveSize(10)} style={{ color: 'white' }} text={"Joined"} /></View>
+                                <View style={styles.joinedBadge}><TextC font={'Montserrat-Medium'} size={ResponsiveSize(8)} style={{ color: 'white' }} text={"Joined"} /></View>
                                 <TimeAgo
-                                    style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(10) }}
+                                    style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(8) }}
                                     time={items?.item?.created_at}
                                 />
                             </View>
@@ -261,9 +261,9 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
                         }
                         {items?.item?.is_my_event == 1 ?
                             <View style={styles.timeAgoJoined}>
-                                <View style={styles.timeAgoOwn}><TextC font={'Montserrat-Medium'} size={ResponsiveSize(10)} style={{ color: 'white' }} text={"Organizer"} /></View>
+                                <View style={styles.timeAgoOwn}><TextC font={'Montserrat-Medium'} size={ResponsiveSize(8)} style={{ color: 'white' }} text={"Organizer"} /></View>
                                 <TimeAgo
-                                    style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(10) }}
+                                    style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(8) }}
                                     time={items?.item?.created_at}
                                 />
                             </View>

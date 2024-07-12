@@ -10,6 +10,7 @@ import TimeAgo from '@manu_omg/react-native-timeago';
 import ButtonC from "../button/index";
 import { useNavigation } from "@react-navigation/native";
 import { RefreshControl } from "react-native-gesture-handler";
+import FastImage from "react-native-fast-image";
 
 const SkeletonPlaceholder = ({ style }) => {
     const translateX = new Animated.Value(-350);
@@ -221,12 +222,19 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer, tabActivator }) => {
 
     const renderItem = useCallback((items) => {
         return (
-            <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={styles.Wrapper}>
-                <Image style={styles.UpcomingImage} src={items?.item?.event_cover_image_thumbnail} />
+            <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={{ ...styles.Wrapper, borderColor: global.description, borderWidth: 1, }}>
+                <FastImage
+                    style={{ width: ResponsiveSize(100), height: ResponsiveSize(100), borderRadius: ResponsiveSize(20) }}
+                    source={{
+                        uri: items?.item?.event_cover_image_thumbnail,
+                        priority: FastImage.priority.high,
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                />
                 <View style={styles.UpcomingContent}>
                     <View style={styles.timeAgoJoinedV}>
                         <TimeAgo
-                            style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(10) }}
+                            style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(8) }}
                             time={items?.item?.created_at}
                         />
                     </View>

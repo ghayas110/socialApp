@@ -21,7 +21,7 @@ import ButtonC from '../components/button';
 import { useToast } from '../components/Toast/ToastContext';
 
 
-const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail, route }) => {
+const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail, route,getJoinedEvents,getAllEvents}) => {
     const { id } = route.params;
     const windowWidth = Dimensions.get('window').width;
     const scheme = useColorScheme();
@@ -33,7 +33,7 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
     const [startTime, setStartTime] = useState(new Date());
     const [endTime, setEndTime] = useState(new Date());
     const { showToast } = useToast();
-    const [isImage,setIsImage] = useState()
+    const [isImage, setIsImage] = useState("")
 
     useEffect(() => {
         if (eventDetail) {
@@ -199,6 +199,7 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
     const [startTimeModal, setStartTimeModal] = useState(false);
     const [endTimeModal, setEndTimeModal] = useState(false);
     const navigation = useNavigation()
+    const [errorType, setErrorType] = useState('');
 
     const schema = yup.object().shape({
         title: yup
@@ -239,27 +240,24 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
     const onSubmit = async (data) => {
         if (!documentImage == "") {
             try {
-                const Responce = await UpdateEvent({...data,...{id:id,documentImage:documentImage,isImage:isImage}})
+                const Responce = await UpdateEvent({ ...data, ...{ id: id, documentImage: documentImage, isImage: isImage } })
                 if (Responce == true) {
-                    navigation.navigate("EventScreen", { Tab: 3 })
                     getMyEvents({ page: 1, refreash: true })
+                    getJoinedEvents({ page: 1, refreash: true })
+                    getAllEvents({ page: 1, refreash: true })
+                    navigation.navigate("EventScreen", { Tab: 3 })
                 }
-                else if (Responce == false) {
-                    showToast({
-                        title: "Something went wrong",
-                        message: "Something went wrong. Please try again.",
-                        iconColor: "red",
-                        iconName: "mail",
-                        bg: "#fff2f2"
-                    })
+                else if (Responce == "Server error") {
+                    setErrorType(Responce)
                 }
             } catch (e) {
-                console.log(e, 'okkkk5555')
+                console.log(e)
             }
         }
     };
-
-
+    const noFunction = () => {
+        return
+    }
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar translucent={false} backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : 'white'} barStyle={scheme === 'dark' ? "light-content" : 'dark-content'} />
@@ -272,8 +270,8 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
                     <TextC size={ResponsiveSize(12)} font={'Montserrat-Bold'} text={"Upadte Event"} />
                 </View>
                 <View style={styles.logoSide3}>
-                    <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.NextBtn}>
-                        {AllEventReducer?.EventUpdateLoading?
+                    <TouchableOpacity disabled={AllEventReducer?.EventUpdateLoading} onPress={handleSubmit(onSubmit)} style={styles.NextBtn}>
+                        {AllEventReducer?.EventUpdateLoading ?
                             <ActivityIndicator size={ResponsiveSize(12)} color={global.white} />
                             :
                             <TextC size={12} text={'Update'} font={'Montserrat-SemiBold'} />
@@ -281,205 +279,230 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
                     </TouchableOpacity>
                 </View>
             </View>
-            <ScrollView style={{ flexGrow: 1, padding: ResponsiveSize(15) }}>
-                {loading ?
-                    <ActivityIndicator size={'large'} color={global.primaryColor} />
+
+            {AllEventReducer?.networkError ?
+                <ScrollView style={{ flexGrow: 1, padding: ResponsiveSize(15) }}>
+                    <View style={{ paddingTop: ResponsiveSize(180), flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        <View style={{ paddingBottom: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                            <Image style={{ height: ResponsiveSize(80), width: ResponsiveSize(80) }} source={require('../assets/icons/something-went-wrong.png')} />
+                        </View>
+                        <TextC text={"Something went wrong"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
+                        <TextC style={{ textAlign: 'center', color: global?.black }} text={"Brace yourself till we get the error fixed"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                    </View>
+                </ScrollView>
+                : errorType == "Server error" ?
+                    <ScrollView style={{ flexGrow: 1, padding: ResponsiveSize(15) }}>
+                        <View style={{ paddingTop: ResponsiveSize(180), flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                            <View style={{ paddingBottom: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                                <Image style={{ height: ResponsiveSize(80), width: ResponsiveSize(80) }} source={require('../assets/icons/something-went-wrong.png')} />
+                            </View>
+                            <TextC text={"Internal server error"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
+                            <TextC style={{ textAlign: 'center', color: global?.black }} text={"Brace yourself till we get the error fixed"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                        </View>
+                    </ScrollView>
                     :
-                    <>
-                        <View style={{ paddingHorizontal: ResponsiveSize(15), paddingBottom: ResponsiveSize(5), flexDirection: 'row', alignItems: 'center' }}>
-                            <TextC text={"Event title"} font={'Montserrat-Bold'} />
-                            {errors?.title?.message !== undefined &&
-                                <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
-                            }
-                        </View>
-                        <Controller
-                            control={control}
-                            rules={{
-                                required: true,
-                            }}
-                            render={({ field: { onChange, value } }) => (
-                                <TextInputC value={value} placeholder={"Event title"} onChangeText={onChange} />
-                            )}
-                            name="title"
-                        />
-                        <View style={{ paddingTop: ResponsiveSize(12) }}>
-                            <View style={{ paddingHorizontal: ResponsiveSize(15), paddingBottom: ResponsiveSize(5), flexDirection: 'row', alignItems: 'center' }}>
-                                <TextC text={"Event location"} font={'Montserrat-Bold'} />
-                                {errors?.location?.message !== undefined &&
-                                    <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
-                                }
-                            </View>
-                            <Controller
-                                control={control}
-                                rules={{
-                                    required: true,
-                                }}
-                                render={({ field: { onChange, value } }) => (
-                                    <TextInputC value={value} placeholder={'Event location'} onChangeText={onChange} />
-                                )}
-                                name="location"
-                            />
-                        </View>
-                        <View style={{ paddingTop: ResponsiveSize(12) }}>
-                            <View style={{ paddingHorizontal: ResponsiveSize(15), paddingBottom: ResponsiveSize(5), flexDirection: 'row', alignItems: 'center' }}>
-                                <TextC text={"Select description"} font={'Montserrat-Bold'} />
-                                {errors?.description?.message !== undefined &&
-                                    <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
-                                }
-                            </View>
-                            <Controller
-                                control={control}
-                                rules={{
-                                    required: true,
-                                }}
-                                render={({ field: { onChange, value } }) => (
-                                    <TextInputC value={value} style={{ paddingTop: ResponsiveSize(15) }} textAlignVertical={'top'} height={ResponsiveSize(100)} multiline={true} numberOfLines={4} placeholder={'Event description'} onChangeText={onChange} />
-                                )}
-                                name="description"
-                            />
-                        </View>
-                        <View style={{ paddingHorizontal: ResponsiveSize(15), paddingTop: ResponsiveSize(12), flexDirection: 'row', alignItems: 'center' }}>
-                            <TextC text={"Select Date"} font={'Montserrat-Bold'} />
-                            {errors?.eventDate?.message !== undefined &&
-                                <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
-                            }
-                        </View>
-                        <View style={{ position: 'relative', paddingTop: ResponsiveSize(10) }}>
-                            <Controller
-                                control={control}
-                                rules={{
-                                    required: true,
-                                }}
-                                render={({ field: { onChange, value } }) => (
-                                    <Calendar
-                                        style={{ padding: 0, margin: 0, borderRadius: 25, overflow: 'hidden', }}
-                                        onDayPress={day => {
-                                            onChange(day.dateString)
-                                            setSelected(day.dateString);
-                                            console.log(day.dateString, 'asdasdai');
+                    <ScrollView style={{ flexGrow: 1, padding: ResponsiveSize(15) }}>
+                        {loading ?
+                            <ActivityIndicator size={'large'} color={global.primaryColor} />
+                            :
+                            <>
+                                <View style={{ paddingHorizontal: ResponsiveSize(15), paddingBottom: ResponsiveSize(5), flexDirection: 'row', alignItems: 'center' }}>
+                                    <TextC text={"Event title"} font={'Montserrat-Bold'} />
+                                    {errors?.title?.message !== undefined &&
+                                        <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
+                                    }
+                                </View>
+                                <Controller
+                                    control={control}
+                                    rules={{
+                                        required: true,
+                                    }}
+                                    render={({ field: { onChange, value } }) => (
+                                        <TextInputC disable={AllEventReducer?.EventUpdateLoading} value={value} placeholder={"Event title"} onChangeText={onChange} />
+                                    )}
+                                    name="title"
+                                />
+                                <View style={{ paddingTop: ResponsiveSize(12) }}>
+                                    <View style={{ paddingHorizontal: ResponsiveSize(15), paddingBottom: ResponsiveSize(5), flexDirection: 'row', alignItems: 'center' }}>
+                                        <TextC text={"Event location"} font={'Montserrat-Bold'} />
+                                        {errors?.location?.message !== undefined &&
+                                            <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
+                                        }
+                                    </View>
+                                    <Controller
+                                        control={control}
+                                        rules={{
+                                            required: true,
                                         }}
-                                        minDate={today?.toISOString()?.split("T")[0]}
-                                        markedDates={{
-                                            [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: "red", }
-                                        }}
-                                        enableSwipeMonths={true}
-                                        monthFormat="MMM, yyyy"
-                                        theme={{
-                                            arrowColor: "#05348E",
-                                            selectedDayBackgroundColor: "#05348E",
-                                            selectedDayTextColor: "white",
-                                            textDayFontFamily: 'Montserrat-Medium',
-                                            textMonthFontFamily: 'Montserrat-Medium',
-                                            textDayHeaderFontFamily: 'Montserrat-Bold',
-                                            todayTextColor: "#05348E",
-                                            dayTextColor: "#05348E",
-                                            textDisabledColor: "white",
-                                            calendarBackground: "#A8B8D8",
-                                            textSectionTitleColor: "#05348E",
-                                        }}
+                                        render={({ field: { onChange, value } }) => (
+                                            <TextInputC disable={AllEventReducer?.EventUpdateLoading} value={value} placeholder={'Event location'} onChangeText={onChange} />
+                                        )}
+                                        name="location"
                                     />
-                                )}
-                                name="eventDate"
-                            />
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: ResponsiveSize(5) }}>
-                            <View style={styles.StartDateWrapper}>
-                                <View style={{ paddingHorizontal: ResponsiveSize(15), flexDirection: 'row', alignItems: 'center' }}>
-                                    <TextC text={"Start Hour"} font={'Montserrat-Bold'} />
-                                    {errors?.startTime?.message !== undefined &&
+                                </View>
+                                <View style={{ paddingTop: ResponsiveSize(12) }}>
+                                    <View style={{ paddingHorizontal: ResponsiveSize(15), paddingBottom: ResponsiveSize(5), flexDirection: 'row', alignItems: 'center' }}>
+                                        <TextC text={"Select description"} font={'Montserrat-Bold'} />
+                                        {errors?.description?.message !== undefined &&
+                                            <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
+                                        }
+                                    </View>
+                                    <Controller
+                                        control={control}
+                                        rules={{
+                                            required: true,
+                                        }}
+                                        render={({ field: { onChange, value } }) => (
+                                            <TextInputC disable={AllEventReducer?.EventUpdateLoading} value={value} style={{ paddingTop: ResponsiveSize(15) }} textAlignVertical={'top'} height={ResponsiveSize(100)} multiline={true} numberOfLines={4} placeholder={'Event description'} onChangeText={onChange} />
+                                        )}
+                                        name="description"
+                                    />
+                                </View>
+                                <View style={{ paddingHorizontal: ResponsiveSize(15), paddingTop: ResponsiveSize(12), flexDirection: 'row', alignItems: 'center' }}>
+                                    <TextC text={"Select Date"} font={'Montserrat-Bold'} />
+                                    {errors?.eventDate?.message !== undefined &&
                                         <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
                                     }
                                 </View>
-
-                                <TouchableOpacity onPress={() => setStartTimeModal(true)} style={styles.InputTimeStyle}>
-                                    <TextC isTime={true} font={'Montserrat-Medium'} text={startTime} size={ResponsiveSize(11)} style={{ color: '#666666' }} />
-                                    <FeatherIcon name='clock' color={'#05348E'} size={ResponsiveSize(16)} />
-                                </TouchableOpacity>
-                                <Controller
-                                    control={control}
-                                    rules={{
-                                        required: true,
-                                    }}
-                                    render={({ field: { onChange, value } }) => (
-                                        <DatePicker
-                                            modal
-                                            open={startTimeModal}
-                                            date={startTime}
-                                            mode="time"
-                                            onConfirm={(date) => {
-                                                setStartTime(date)
-                                                setStartTimeModal(false)
-                                                onChange(date)
-                                            }}
-                                            onCancel={() => {
-                                                setStartTimeModal(false)
-                                            }}
-                                        />
-                                    )}
-                                    name="startTime"
-                                />
-
-                            </View>
-                            <View style={styles.EndDateWrapper}>
-                                <View style={{ paddingHorizontal: ResponsiveSize(15), flexDirection: 'row', alignItems: 'center' }}>
-                                    <TextC text={"End Hour"} font={'Montserrat-Bold'} />
-                                    {errors?.endTime?.message !== undefined &&
-                                        <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
-                                    }
+                                <View style={{ position: 'relative', paddingTop: ResponsiveSize(10) }}>
+                                    <Controller
+                                        control={control}
+                                        rules={{
+                                            required: true,
+                                        }}
+                                        render={({ field: { onChange, value } }) => (
+                                            <Calendar
+                                                disabledByDefault={AllEventReducer?.EventUpdateLoading}
+                                                style={{ padding: 0, margin: 0, borderRadius: 25, overflow: 'hidden', }}
+                                                onDayPress={day => {
+                                                    onChange(day.dateString)
+                                                    setSelected(day.dateString);
+                                                    console.log(day.dateString, 'asdasdai');
+                                                }}
+                                                minDate={today?.toISOString()?.split("T")[0]}
+                                                markedDates={{
+                                                    [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: "red", }
+                                                }}
+                                                enableSwipeMonths={true}
+                                                monthFormat="MMM, yyyy"
+                                                theme={{
+                                                    arrowColor: "#05348E",
+                                                    selectedDayBackgroundColor: "#05348E",
+                                                    selectedDayTextColor: "white",
+                                                    textDayFontFamily: 'Montserrat-Medium',
+                                                    textMonthFontFamily: 'Montserrat-Medium',
+                                                    textDayHeaderFontFamily: 'Montserrat-Bold',
+                                                    todayTextColor: "#05348E",
+                                                    dayTextColor: "#05348E",
+                                                    textDisabledColor: "white",
+                                                    calendarBackground: "#A8B8D8",
+                                                    textSectionTitleColor: "#05348E",
+                                                }}
+                                            />
+                                        )}
+                                        name="eventDate"
+                                    />
                                 </View>
-                                <TouchableOpacity onPress={() => setEndTimeModal(true)} style={styles.InputTimeStyle}>
-                                    <TextC isTime={true} font={'Montserrat-Medium'} text={endTime} size={ResponsiveSize(11)} style={{ color: '#666666' }} />
-                                    <FeatherIcon name='clock' color={'#05348E'} size={ResponsiveSize(16)} />
-                                </TouchableOpacity>
-                                <Controller
-                                    control={control}
-                                    rules={{
-                                        required: true,
-                                    }}
-                                    render={({ field: { onChange, value } }) => (
-                                        <DatePicker
-                                            modal
-                                            open={endTimeModal}
-                                            date={endTime}
-                                            minimumDate={startTime}
-                                            mode="time"
-                                            onConfirm={(date) => {
-                                                setEndTime(date)
-                                                setEndTimeModal(false)
-                                                onChange(date)
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: ResponsiveSize(5) }}>
+                                    <View style={styles.StartDateWrapper}>
+                                        <View style={{ paddingHorizontal: ResponsiveSize(15), flexDirection: 'row', alignItems: 'center' }}>
+                                            <TextC text={"Start Hour"} font={'Montserrat-Bold'} />
+                                            {errors?.startTime?.message !== undefined &&
+                                                <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
+                                            }
+                                        </View>
+
+                                        <TouchableOpacity onPress={() => setStartTimeModal(!AllEventReducer?.EventUpdateLoading && true)} style={styles.InputTimeStyle}>
+                                            <TextC isTime={true} font={'Montserrat-Medium'} text={startTime} size={ResponsiveSize(11)} style={{ color: '#666666' }} />
+                                            <FeatherIcon name='clock' color={'#05348E'} size={ResponsiveSize(16)} />
+                                        </TouchableOpacity>
+                                        <Controller
+                                            control={control}
+                                            rules={{
+                                                required: true,
                                             }}
-                                            onCancel={() => {
-                                                setEndTimeModal(false)
-                                            }}
+                                            render={({ field: { onChange, value } }) => (
+                                                <DatePicker
+                                                    modal
+                                                    open={startTimeModal}
+                                                    date={startTime}
+                                                    mode="time"
+                                                    onConfirm={(date) => {
+                                                        setStartTime(date)
+                                                        setStartTimeModal(false)
+                                                        onChange(date)
+                                                    }}
+                                                    onCancel={() => {
+                                                        setStartTimeModal(false)
+                                                    }}
+                                                />
+                                            )}
+                                            name="startTime"
                                         />
-                                    )}
-                                    name="endTime"
-                                />
-                            </View>
-                        </View>
-                        <View style={{ flexDirection: 'column', paddingHorizontal: ResponsiveSize(15), paddingVertical: ResponsiveSize(10) }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <TextC text={"Cover Image"} font={'Montserrat-Bold'} />
-                                {documentImage == "" &&
-                                    <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
-                                }
-                            </View>
-                        </View>
-                        <TouchableOpacity onPress={requestCameraPermission} style={styles.ImageGroup}>
-                            {documentImage ?
-                                <>
-                                    <ImageBackground style={styles.ImageGroupInner} src={documentImage} resizeMode='cover' />
-                                </>
-                                :
-                                <>
-                                    <TextC text={"Add Image"} font={'Montserrat-Bold'} style={{ marginRight: ResponsiveSize(5) }} />
-                                    <FeatherIcon name='file-plus' color={global.primaryColor} size={ResponsiveSize(22)} />
-                                </>
-                            }
-                        </TouchableOpacity>
-                    </>
-                }
-            </ScrollView>
+
+                                    </View>
+                                    <View style={styles.EndDateWrapper}>
+                                        <View style={{ paddingHorizontal: ResponsiveSize(15), flexDirection: 'row', alignItems: 'center' }}>
+                                            <TextC text={"End Hour"} font={'Montserrat-Bold'} />
+                                            {errors?.endTime?.message !== undefined &&
+                                                <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
+                                            }
+                                        </View>
+                                        <TouchableOpacity onPress={() => setEndTimeModal(!AllEventReducer?.EventUpdateLoading && true)} style={styles.InputTimeStyle}>
+                                            <TextC isTime={true} font={'Montserrat-Medium'} text={endTime} size={ResponsiveSize(11)} style={{ color: '#666666' }} />
+                                            <FeatherIcon name='clock' color={'#05348E'} size={ResponsiveSize(16)} />
+                                        </TouchableOpacity>
+                                        <Controller
+                                            control={control}
+                                            rules={{
+                                                required: true,
+                                            }}
+                                            render={({ field: { onChange, value } }) => (
+                                                <DatePicker
+                                                    modal
+                                                    open={endTimeModal}
+                                                    date={endTime}
+                                                    minimumDate={startTime}
+                                                    mode="time"
+                                                    onConfirm={(date) => {
+                                                        setEndTime(date)
+                                                        setEndTimeModal(false)
+                                                        onChange(date)
+                                                    }}
+                                                    onCancel={() => {
+                                                        setEndTimeModal(false)
+                                                    }}
+                                                />
+                                            )}
+                                            name="endTime"
+                                        />
+                                    </View>
+                                </View>
+                                <View style={{ flexDirection: 'column', paddingHorizontal: ResponsiveSize(15), paddingVertical: ResponsiveSize(10) }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <TextC text={"Cover Image"} font={'Montserrat-Bold'} />
+                                        {documentImage == "" &&
+                                            <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
+                                        }
+                                    </View>
+                                </View>
+                                <TouchableOpacity onPress={!AllEventReducer?.EventUpdateLoading ? requestCameraPermission : noFunction} style={styles.ImageGroup}>
+                                    {documentImage ?
+                                        <>
+                                            <ImageBackground style={styles.ImageGroupInner} src={documentImage} resizeMode='cover' />
+                                        </>
+                                        :
+                                        <>
+                                            <TextC text={"Add Image"} font={'Montserrat-Bold'} style={{ marginRight: ResponsiveSize(5) }} />
+                                            <FeatherIcon name='file-plus' color={global.primaryColor} size={ResponsiveSize(22)} />
+                                        </>
+                                    }
+                                </TouchableOpacity>
+                            </>
+                        }
+                    </ScrollView>
+            }
+
         </SafeAreaView>
     )
 }

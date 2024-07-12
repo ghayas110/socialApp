@@ -32,7 +32,6 @@ export const getAllEvents = ({ page, refreash }) => async (dispatch, getState) =
         dispatch({
             type: TASK_GET_ALLEVENTS_END_ERROR,
             networkError: false,
-            loading: false,
         });
         if (page <= 1) {
             dispatch({
@@ -88,7 +87,6 @@ export const getAllEvents = ({ page, refreash }) => async (dispatch, getState) =
             dispatch({
                 type: TASK_GET_ALLEVENTS_END_ERROR,
                 networkError: true,
-                loading: false,
             });
             dispatch({
                 type: TASK_GET_ALLEVENTS_END,
@@ -101,7 +99,6 @@ export const getAllEvents = ({ page, refreash }) => async (dispatch, getState) =
         dispatch({
             type: TASK_GET_ALLEVENTS_END_ERROR,
             networkError: true,
-            loading: false,
         });
         dispatch({
             type: TASK_GET_ALLEVENTS_END,
@@ -119,7 +116,6 @@ export const getJoinedEvents = ({ page, refreash }) => async (dispatch, getState
         dispatch({
             type: TASK_GET_JOINED_EVENTS_END_ERROR,
             networkError: false,
-            loading: false,
         });
         if (page <= 1) {
             dispatch({
@@ -175,7 +171,6 @@ export const getJoinedEvents = ({ page, refreash }) => async (dispatch, getState
             dispatch({
                 type: TASK_GET_JOINED_EVENTS_END_ERROR,
                 networkError: true,
-                loading: false,
             });
             dispatch({
                 type: TASK_GET_JOINED_EVENTS_END,
@@ -188,7 +183,6 @@ export const getJoinedEvents = ({ page, refreash }) => async (dispatch, getState
         dispatch({
             type: TASK_GET_JOINED_EVENTS_END_ERROR,
             networkError: true,
-            loading: false,
         });
         dispatch({
             type: TASK_GET_JOINED_EVENTS_END,
@@ -206,7 +200,6 @@ export const getMyEvents = ({ page, refreash }) => async (dispatch, getState) =>
         dispatch({
             type: TASK_GET_MY_EVENT_END_ERROR,
             networkError: false,
-            loading: false,
         });
         if (page <= 1) {
             dispatch({
@@ -261,7 +254,6 @@ export const getMyEvents = ({ page, refreash }) => async (dispatch, getState) =>
             dispatch({
                 type: TASK_GET_MY_EVENT_END_ERROR,
                 networkError: true,
-                loading: false,
             });
             dispatch({
                 type: TASK_GET_MY_EVENT_END,
@@ -274,7 +266,6 @@ export const getMyEvents = ({ page, refreash }) => async (dispatch, getState) =>
         dispatch({
             type: TASK_GET_MY_EVENT_END_ERROR,
             networkError: true,
-            loading: false,
         });
         dispatch({
             type: TASK_GET_MY_EVENT_END,
@@ -288,6 +279,10 @@ export const getMyEvents = ({ page, refreash }) => async (dispatch, getState) =>
 export const getEventDetail = ({ id }) => async (dispatch, getState) => {
     const Token = await AsyncStorage.getItem('Token');
     try {
+        dispatch({
+            type: TASK_UPDATE_EVENT_ERROR,
+            networkError: false,
+        });
         const response = await fetch(`${baseUrl.baseUrl}/events/get-event-details/${id}`, {
             method: "GET",
             headers: {
@@ -296,12 +291,24 @@ export const getEventDetail = ({ id }) => async (dispatch, getState) => {
                 'accesstoken': `Bearer ${Token}`
             },
         });
-        const res = await response.json()
-        if (res?.data) {
-            return res?.data
+        if (response.ok == true) {
+            const res = await response.json()
+            if (res?.data) {
+                return res?.data
+            }
+        }
+        else {
+            dispatch({
+                type: TASK_UPDATE_EVENT_ERROR,
+                networkError: true,
+            });
         }
     }
     catch (error) {
+        dispatch({
+            type: TASK_UPDATE_EVENT_ERROR,
+            networkError: true,
+        });
         console.log(error)
     }
 }
@@ -453,11 +460,15 @@ export const LeaveEvents = (body) => async (dispatch, getState) => {
 
 export const UpdateEvent = (data) => async (dispatch, getState) => {
     const Token = await AsyncStorage.getItem('Token');
-    dispatch({
-        type: TASK_UPDATE_EVENT_START,
-        loading: true,
-    });
     try {
+        dispatch({
+            type: TASK_UPDATE_EVENT_START,
+            loading: true,
+        });
+        dispatch({
+            type: TASK_UPDATE_EVENT_ERROR,
+            networkError: false,
+        });
         const formData = new FormData();
         formData.append('event_title', data?.title);
         formData.append('event_id', data?.id);
@@ -484,30 +495,41 @@ export const UpdateEvent = (data) => async (dispatch, getState) => {
             },
             body: formData
         });
-        const res = await response.json()
-        console.log(res)
-        if (res.message == "Event Updated successfully") {
-            dispatch({
-                type: TASK_UPDATE_EVENT_END,
-                loading: false,
-            });
-            return true
+        if (response.ok == true) {
+            const res = await response.json()
+            if (res.message == "Event Updated successfully") {
+                dispatch({
+                    type: TASK_UPDATE_EVENT_END,
+                    loading: false,
+                });
+                return true
+            }
+            else if (res.message == "Internal server error") {
+                return "Server error"
+            }
         }
         else {
             dispatch({
+                type: TASK_UPDATE_EVENT_ERROR,
+                networkError: true,
+            });
+            dispatch({
                 type: TASK_UPDATE_EVENT_END,
                 loading: false,
             });
-            return false
         }
     }
     catch (error) {
         dispatch({
             type: TASK_UPDATE_EVENT_ERROR,
             networkError: true,
+        });
+        dispatch({
+            type: TASK_UPDATE_EVENT_END,
             loading: false,
         });
         console.log(error)
+        return false
     }
 }
 
