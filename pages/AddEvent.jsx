@@ -248,7 +248,9 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
         }
     };
 
-
+    const noFunction = () => {
+        return
+    }
     return (
         <SafeAreaView>
             <StatusBar backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : 'white'} barStyle={scheme === 'dark' ? "light-content" : 'dark-content'} />
@@ -283,7 +285,7 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
                         required: true,
                     }}
                     render={({ field: { onChange, value } }) => (
-                        <TextInputC value={value} placeholder={"Event title"} onChangeText={onChange} />
+                        <TextInputC disable={AllEventReducer?.EventCreateLoading} value={value} placeholder={"Event title"} onChangeText={onChange} />
                     )}
                     name="title"
                 />
@@ -300,7 +302,7 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
                             required: true,
                         }}
                         render={({ field: { onChange, value } }) => (
-                            <TextInputC value={value} placeholder={'Event location'} onChangeText={onChange} />
+                            <TextInputC disable={AllEventReducer?.EventCreateLoading} value={value} placeholder={'Event location'} onChangeText={onChange} />
                         )}
                         name="location"
                     />
@@ -318,7 +320,7 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
                             required: true,
                         }}
                         render={({ field: { onChange, value } }) => (
-                            <TextInputC value={value} style={{ paddingTop: ResponsiveSize(15) }} textAlignVertical={'top'} height={ResponsiveSize(100)} multiline={true} numberOfLines={4} placeholder={'Event description'} onChangeText={onChange} />
+                            <TextInputC disable={AllEventReducer?.EventCreateLoading} value={value} style={{ paddingTop: ResponsiveSize(15) }} textAlignVertical={'top'} height={ResponsiveSize(100)} multiline={true} numberOfLines={4} placeholder={'Event description'} onChangeText={onChange} />
                         )}
                         name="description"
                     />
@@ -337,6 +339,7 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
                         }}
                         render={({ field: { onChange, value } }) => (
                             <Calendar
+                                disabledByDefault={AllEventReducer?.EventCreateLoading}
                                 style={{ padding: 0, margin: 0, borderRadius: 25, overflow: 'hidden', }}
                                 onDayPress={day => {
                                     onChange(day.dateString)
@@ -375,7 +378,7 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
                             }
                         </View>
 
-                        <TouchableOpacity onPress={() => setStartTimeModal(true)} style={styles.InputTimeStyle}>
+                        <TouchableOpacity onPress={() => setStartTimeModal(!AllEventReducer?.EventCreateLoading && true)} style={styles.InputTimeStyle}>
                             <TextC isTime={true} font={'Montserrat-Medium'} text={startTime} size={ResponsiveSize(11)} style={{ color: '#666666' }} />
                             <FeatherIcon name='clock' color={'#05348E'} size={ResponsiveSize(16)} />
                         </TouchableOpacity>
@@ -411,7 +414,7 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
                                 <TextC text={"*"} font={'Montserrat-Bold'} style={{ color: global.red, marginLeft: ResponsiveSize(3) }} />
                             }
                         </View>
-                        <TouchableOpacity onPress={() => setEndTimeModal(true)} style={styles.InputTimeStyle}>
+                        <TouchableOpacity onPress={() => setEndTimeModal(!AllEventReducer?.EventCreateLoading && true)} style={styles.InputTimeStyle}>
                             <TextC isTime={true} font={'Montserrat-Medium'} text={endTime} size={ResponsiveSize(11)} style={{ color: '#666666' }} />
                             <FeatherIcon name='clock' color={'#05348E'} size={ResponsiveSize(16)} />
                         </TouchableOpacity>
@@ -450,7 +453,7 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
                         }
                     </View>
                 </View>
-                <TouchableOpacity onPress={requestCameraPermission} style={styles.ImageGroup}>
+                <TouchableOpacity onPress={!AllEventReducer?.EventCreateLoading ? requestCameraPermission : noFunction} style={styles.ImageGroup}>
                     {documentImage ?
                         <>
                             <ImageBackground style={styles.ImageGroupInner} src={documentImage} resizeMode='cover' />

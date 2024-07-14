@@ -22,6 +22,7 @@ export const loginUser = (body) => async (dispatch) => {
         const res = await response.json()
         dispatch({
             type: TASK_LOGIN_END,
+            token: res?.access_token,
             loading: false,
         });
         return res
@@ -42,7 +43,7 @@ export const CheckUserStatus = (body) => async (dispatch) => {
             headers: {
                 'Content-Type': 'application/json',
                 'x-api-key': baseUrl.apiKey,
-                'accesstoken':`Bearer ${body.Token}`
+                'accesstoken': `Bearer ${body.Token}`
             },
         });
         const res = await response.json()

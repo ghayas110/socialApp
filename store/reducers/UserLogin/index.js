@@ -6,6 +6,7 @@ import {
 
 const initState = {
     loading: false,
+    Token:""
 }
 
 const LoginReducer = (state = initState, action) => {
@@ -18,6 +19,7 @@ const LoginReducer = (state = initState, action) => {
         case TASK_LOGIN_END:
             return {
                 ...state,
+                Token:action.token,
                 loading: action.loading,
             };
         default:

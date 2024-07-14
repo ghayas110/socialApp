@@ -293,9 +293,9 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer, tabActivator }) => {
                 </ScrollView>
             ) : (
                 <FlatList
-                    onRefresh={onRefresh}
                     showsVerticalScrollIndicator={false}
                     initialNumToRender={10}
+                    onRefresh={onRefresh}
                     refreshing={refreshing}
                     data={JoinedEventReducer?.data}
                     keyExtractor={(items, index) => index?.toString()}

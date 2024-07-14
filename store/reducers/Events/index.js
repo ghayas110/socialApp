@@ -38,13 +38,11 @@ const joinedEvent = {
     loading: false,
     networkError: false,
 }
-
 const myEvent = {
     data: [],
     loading: false,
     networkError: false,
 }
-
 const AllEventReducer = (state = allEvent, action) => {
     switch (action.type) {
         case TASK_GET_ALLEVENTS_START:

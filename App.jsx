@@ -20,11 +20,11 @@ const App = () => {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetProvider>
           <Provider store={store}>
-            {/* <ToastProvider> */}
-            <SWRConfig value={{ fetcher: ({ resource, init }) => fetch(resource, init).then(res => res.json()), provider:() => new Map()}}>
-              <MainNavigation />
-            </SWRConfig>
-            {/* </ToastProvider> */}
+            <ToastProvider>
+              <SWRConfig value={{ provider: () => new Map() }}>
+                <MainNavigation />
+              </SWRConfig>
+            </ToastProvider>
           </Provider>
         </BottomSheetProvider>
       </GestureHandlerRootView>

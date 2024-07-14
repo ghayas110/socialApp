@@ -25,21 +25,20 @@ import {
 
 
 
-export const getAllEvents = ({ page, refreash }) => async (dispatch, getState) => {
+export const getAllEvents = ({ page }) => async (dispatch, getState) => {
     const Token = await AsyncStorage.getItem('Token');
-    const state = getState();
     try {
-        dispatch({
-            type: TASK_GET_ALLEVENTS_END_ERROR,
-            networkError: false,
-        });
-        if (page <= 1) {
+        if (page == 1) {
             dispatch({
                 type: TASK_GET_ALLEVENTS_START,
                 loading: true,
             });
         }
-        const response = await fetch(`${baseUrl.baseUrl}/events/get-all-events/${page}/5`, {
+        dispatch({
+            type: TASK_GET_ALLEVENTS_END_ERROR,
+            networkError: false,
+        });
+        const response = await fetch(`${baseUrl.baseUrl}/events/get-all-events/${page}/100`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -50,29 +49,11 @@ export const getAllEvents = ({ page, refreash }) => async (dispatch, getState) =
         if (response.ok === true) {
             const res = await response.json()
             if (res?.data) {
-                const combinedArray = [...state?.AllEventReducer?.data, ...res?.data].reduce((acc, current) => {
-                    const x = acc.find(item => item?.event_id === current?.event_id);
-                    if (!x) {
-                        acc.push(current);
-                    }
-                    return acc;
-                }, []);
-                if (refreash == true) {
-                    dispatch({
-                        type: TASK_GET_ALLEVENTS_END,
-                        payload: res?.data,
-                        loading: false,
-                    });
-                    return response.ok
-                }
-                else if (refreash == false) {
-                    dispatch({
-                        type: TASK_GET_ALLEVENTS_END,
-                        payload: combinedArray,
-                        loading: false,
-                    });
-                    return response.ok
-                }
+                dispatch({
+                    type: TASK_GET_ALLEVENTS_END,
+                    loading: false,
+                });
+                return res?.data
             }
             else if (res.message == 'No Event Found') {
                 dispatch({
@@ -89,7 +70,6 @@ export const getAllEvents = ({ page, refreash }) => async (dispatch, getState) =
             });
             dispatch({
                 type: TASK_GET_ALLEVENTS_END,
-                payload: [],
                 loading: false,
             });
         }
@@ -101,7 +81,6 @@ export const getAllEvents = ({ page, refreash }) => async (dispatch, getState) =
         });
         dispatch({
             type: TASK_GET_ALLEVENTS_END,
-            payload: [],
             loading: false,
         });
         console.log(error)
