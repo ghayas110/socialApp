@@ -19,6 +19,7 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
 import ButtonC from '../components/button';
 import { useToast } from '../components/Toast/ToastContext';
+import { useSWRConfig } from 'swr';
 
 
 const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail, route,getJoinedEvents,getAllEvents}) => {
@@ -34,6 +35,8 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
     const [endTime, setEndTime] = useState(new Date());
     const { showToast } = useToast();
     const [isImage, setIsImage] = useState("")
+    const { cache } = useSWRConfig()
+
 
     useEffect(() => {
         if (eventDetail) {
@@ -245,6 +248,9 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
                     getMyEvents({ page: 1, refreash: true })
                     getJoinedEvents({ page: 1, refreash: true })
                     getAllEvents({ page: 1, refreash: true })
+                    cache?.delete('AllEvent')
+                    cache?.delete('JoinedEvent')
+                    cache?.delete('MyEvents')
                     navigation.navigate("EventScreen", { Tab: 3 })
                 }
                 else if (Responce == "Server error") {

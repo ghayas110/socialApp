@@ -11,7 +11,7 @@ const userProfile = {
     networkError: false
 }
 
-const GetUserProfile = (state = userProfile, action) => {
+const GetUserProfileReducer = (state = userProfile, action) => {
     switch (action.type) {
         case TASK_GET_PROFILE_DETAIL_START:
             return {
@@ -36,4 +36,4 @@ const GetUserProfile = (state = userProfile, action) => {
     }
 };
 
-export { GetUserProfile }
+export { GetUserProfileReducer }

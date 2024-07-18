@@ -8,8 +8,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native';
 import { global, ResponsiveSize } from '../components/constant'
 import ReadMore from '@fawazahmed/react-native-read-more';
+import * as UserProfile from "../store/actions/UserProfile/index";
+import { connect } from "react-redux";
 
-const ProfileScreen = () => {
+
+const ProfileScreen = ({ GetUserProfileReducer }) => {
   const navigation = useNavigation()
   const styles = StyleSheet.create({
     ProfileHeader: {
@@ -34,6 +37,8 @@ const ProfileScreen = () => {
       height: "100%",
       width: "100%",
       borderRadius: ResponsiveSize(70),
+      borderWidth: 1,
+      borderColor: global.description
     },
     profileImageWrapper: {
       width: '25%',
@@ -108,16 +113,17 @@ const ProfileScreen = () => {
     box: {
       height: ResponsiveSize(90),
       width: '25%',
-      position: 'relative',
-      backgroundColor: 'black'
+      borderWidth: 1,
+      borderColor: global.description,
     },
     DescriptionStyle: {
       fontFamily: 'Montserrat-Medium',
       fontSize: ResponsiveSize(10),
-      marginTop:ResponsiveSize(5),
-      color:global.primaryColor
+      marginTop: ResponsiveSize(5),
+      color: global.primaryColor
     },
   })
+
 
   const Logout = async () => {
     try {
@@ -134,7 +140,7 @@ const ProfileScreen = () => {
           <View style={{ width: 25 }}>
           </View>
           <View>
-            <TextC font={"Montserrat-Bold"} text={"David R. Wright"} size={16} />
+            <TextC font={"Montserrat-Bold"} text={GetUserProfileReducer?.data?.user_name} size={16} />
           </View>
           <View>
             <Entypo name='menu' size={26} color={'#05348E'} />
@@ -144,18 +150,18 @@ const ProfileScreen = () => {
         <View style={styles.ProfileInfo}>
           <View style={styles.profileImageWrapper}>
             <View style={styles.ProfileImage}>
-              <Image style={styles.ProfileImageMain} source={require('../assets/icons/profile.png')} />
+              <Image style={styles.ProfileImageMain} source={GetUserProfileReducer?.data?.profile_picture_url == "" ? require('../assets/icons/avatar.png') : { uri: GetUserProfileReducer?.data?.profile_picture_url }} />
             </View>
           </View>
           <View style={styles.ProfilePostInfo}>
 
             <View style={styles.ProfilePostInfoInnerCard1}>
-              <TextC text={'54'} font={'Montserrat-SemiBold'} size={ResponsiveSize(20)} style={{ color: '#69BE25' }} />
+              <TextC text={GetUserProfileReducer?.data?.post_count || 0} font={'Montserrat-SemiBold'} size={ResponsiveSize(20)} style={{ color: '#69BE25' }} />
               <TextC text={'Posts'} font={'Montserrat-SemiBold'} size={ResponsiveSize(12)} />
             </View>
 
             <View style={styles.ProfilePostInfoInnerCard}>
-              <Feather name='map' size={ResponsiveSize(20)} color={'#69BE25'} />
+              <TextC text={GetUserProfileReducer?.data?.connection_count || 0} font={'Montserrat-SemiBold'} size={ResponsiveSize(20)} style={{ color: '#69BE25' }} />
               <TextC text={'Connects'} font={'Montserrat-SemiBold'} size={ResponsiveSize(12)} />
             </View>
 
@@ -163,34 +169,38 @@ const ProfileScreen = () => {
               <MaterialCommunityIcons name='timer-sand' size={ResponsiveSize(20)} color={'#69BE25'} />
               <TextC text={'Honolulusdasd'} font={'Montserrat-SemiBold'} size={ResponsiveSize(12)} style={{ width: "100%" }} ellipsizeMode={"tail"} numberOfLines={1} />
             </View>
-
           </View>
         </View>
 
-
         <View style={styles.ProfileTitleDescription}>
-          <TextC font={"Montserrat-SemiBold"} text={"David R."} size={16} />
-          <ReadMore seeLessStyle={{fontFamily:"Montserrat-Bold",color:global.primaryColor}} seeMoreStyle={{fontFamily:"Montserrat-Bold",color:global.primaryColor}} numberOfLines={3} style={styles.DescriptionStyle}>
-            {
-              "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-            }
+          <TextC font={"Montserrat-SemiBold"} text={GetUserProfileReducer?.data?.user_name} size={16} />
+          <ReadMore seeLessStyle={{ fontFamily: "Montserrat-Bold", color: global.primaryColor }} seeMoreStyle={{ fontFamily: "Montserrat-Bold", color: global.primaryColor }} numberOfLines={3} style={styles.DescriptionStyle}>
+            {GetUserProfileReducer?.data?.bio}
           </ReadMore>
         </View>
 
         <View style={styles.ProfileSettingBtn}>
-          <TouchableOpacity style={styles.SetttingBtn} onPress={()=>navigation.navigate('EditProfile')}><Text style={styles.SetttingBtnText}>Edit Profile</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.SetttingBtn} onPress={() => navigation.navigate('EditProfile')}><Text style={styles.SetttingBtnText}>Edit Profile</Text></TouchableOpacity>
           <TouchableOpacity style={styles.SetttingBtn}><Text style={styles.SetttingBtnText}>Search</Text></TouchableOpacity>
           <TouchableOpacity onPress={Logout} style={styles.SetttingBtn}><Text style={styles.SetttingBtnText}>Logout</Text></TouchableOpacity>
         </View>
 
         <ScrollView style={{ flexGrow: 1 }}>
           <View style={styles.wrapper}>
-            <TouchableOpacity style={styles.box}></TouchableOpacity>
+            {GetUserProfileReducer?.data?.posts !== undefined && GetUserProfileReducer?.data?.posts !== null && GetUserProfileReducer?.data?.posts !== "" && GetUserProfileReducer?.data?.posts?.length > 0 ? GetUserProfileReducer?.data?.posts.map(userPosts => (
+              <TouchableOpacity key={userPosts?.parent_id} style={styles.box}>
+                <Image style={{ resizeMode: 'cover', height: '100%', width: "100%" }} source={{ uri: userPosts?.attachment_thumbnail_url }} />
+              </TouchableOpacity>
+            )) : ""}
           </View>
+
         </ScrollView>
       </ScrollView>
     </SafeAreaView>
   )
 }
 
-export default ProfileScreen
+function mapStateToProps({ GetUserProfileReducer }) {
+  return { GetUserProfileReducer };
+}
+export default connect(mapStateToProps, UserProfile)(ProfileScreen);

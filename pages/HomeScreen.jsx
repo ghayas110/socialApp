@@ -1,13 +1,21 @@
 import { DarkTheme } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SafeAreaView, StatusBar, useColorScheme, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import CityScroll from '../components/citiesScroll';
 import Post from '../components/post';
+import * as UserProfile from "../store/actions/UserProfile/index";
+import { connect } from "react-redux";
 
-const HomeScreen = () => {
+
+
+const HomeScreen = ({GetUserProfileReducer,GetProfileData}) => {
   const scheme = useColorScheme();
+  useEffect(() => {
+    GetProfileData();
+  }, []);
 
+  
   return (
     <>
       <SafeAreaView>
@@ -28,4 +36,9 @@ const HomeScreen = () => {
   )
 }
 
-export default HomeScreen;
+
+function mapStateToProps({ GetUserProfileReducer }) {
+  return { GetUserProfileReducer };
+}
+export default connect(mapStateToProps, UserProfile)(HomeScreen);
+

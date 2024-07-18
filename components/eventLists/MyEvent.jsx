@@ -11,6 +11,7 @@ import ButtonC from "../button/index";
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useNavigation } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
+import { useSWRConfig } from "swr";
 
 const SkeletonPlaceholder = ({ style, refreshing }) => {
     const translateX = new Animated.Value(-350);
@@ -111,13 +112,43 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
 
 
 const MyEvent = ({ getMyEvents, MyEventReducer }) => {
-    const [page, setPage] = useState(1)
+    const [dataList, setDataList] = useState([])
     const navigation = useNavigation()
-    useEffect(() => {
-        if (MyEventReducer?.data?.length <= 0) {
-            getMyEvents({ page: page, refreash: true })
+    const { cache } = useSWRConfig()
+    const [page, setPage] = useState(1)
+    const [renderLength, setRenderLength] = useState(10)
+    const [totalFetchLength, setTotalFetchLength] = useState(100)
+    const threshold = totalFetchLength - 30
+    const [refreshing, setRefreshing] = React.useState(false);
+
+
+    const myEventDataLoader = async ({ refreshing, pageRe }) => {
+        if (refreshing) {
+            const loadAllevent = await getMyEvents({ page: pageRe })
+            cacheloader(loadAllevent)
         }
-    }, []);
+        else if (!refreshing) {
+            const loadAllevent = await getMyEvents({ page: page })
+            cacheloader(loadAllevent)
+        }
+    }
+
+
+
+    useEffect(() => {
+        myEventDataLoader({ refreshing: false })
+    }, [page]);
+
+
+    useEffect(() => {
+        if (renderLength > threshold) {
+            setPage(page + 1)
+            setTotalFetchLength(totalFetchLength + 100)
+        }
+    }, [renderLength])
+
+
+
     const styles = StyleSheet.create({
         Wrapper: {
             backgroundColor: "#F5F5F5",
@@ -216,18 +247,31 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
             marginRight: ResponsiveSize(5),
         }
     })
-    const [refreshing, setRefreshing] = React.useState(false);
-    const onRefresh = async () => {
-        setPage(1)
-        setRefreshing(true);
-        const loadingEvent = await getMyEvents({ page: 1, refreash: true })
-        if (loadingEvent == true) {
-            setRefreshing(false);
-        }
-        else {
-            setRefreshing(false);
-        }
+
+    const cacheloader = async (loadAllevent) => {
+        const preLoad = cache.get('MyEvents')
+        const combinedData = [...preLoad || [], ...(loadAllevent || [])];
+        const uniqueData = Array.from(
+            combinedData.reduce((map, item) => {
+                map.set(item?.event_id, item);
+                return map;
+            }, new Map()).values()
+        );
+        cache.set("MyEvents", uniqueData)
+        setDataList(cache.get('MyEvents'))
     }
+
+    const onRefresh = async () => {
+        cache.delete('MyEvents')
+        myEventDataLoader({ refreshing: true, pageRe: 1 })
+        setRenderLength(10)
+        setTotalFetchLength(100)
+        setPage(1)
+        setDataList([])
+        cacheloader()
+        setRefreshing(false);
+    }
+
     const renderItem = useCallback((items) => {
         return (
             <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={{ ...styles.Wrapper, borderColor: global.description, borderWidth: 1, }}>
@@ -256,7 +300,6 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
             </Pressable >
         );
     }, []);
-
     return (
         <>
             {MyEventReducer?.loading ? (
@@ -269,7 +312,7 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
                     <SkeletonPlaceholder />
                     <SkeletonPlaceholder />
                 </>
-            ) : MyEventReducer?.loading === false && MyEventReducer?.data?.length <= 0 ? (
+            ) : MyEventReducer?.loading === false && dataList?.length <= 0 ? (
                 <ScrollView
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -306,15 +349,12 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
                     showsVerticalScrollIndicator={false}
                     initialNumToRender={10}
                     refreshing={refreshing}
-                    data={MyEventReducer?.data}
+                    data={dataList?.slice(0, renderLength)}
                     keyExtractor={(items, index) => index?.toString()}
                     maxToRenderPerBatch={10}
                     windowSize={10}
                     onEndReached={() => {
-                        if (MyEventReducer?.data?.length > 10) {
-                            getMyEvents({ page: page + 1, refreash: false })
-                            setPage(page + 1)
-                        }
+                        setRenderLength(renderLength + 10)
                     }}
                     onEndReachedThreshold={0.5}
                     renderItem={renderItem}

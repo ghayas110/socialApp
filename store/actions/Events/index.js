@@ -101,7 +101,7 @@ export const getJoinedEvents = ({ page, refreash }) => async (dispatch, getState
                 loading: true,
             });
         }
-        const response = await fetch(`${baseUrl.baseUrl}/events/events-joined-by-user/${page}/10`, {
+        const response = await fetch(`${baseUrl.baseUrl}/events/events-joined-by-user/${page}/100`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -111,35 +111,16 @@ export const getJoinedEvents = ({ page, refreash }) => async (dispatch, getState
         });
         if (response.ok === true) {
             const res = await response.json()
-            if (res?.events.length > 0) {
-                const combinedArray = [...state?.JoinedEventReducer?.data, ...res?.events].reduce((acc, current) => {
-                    const x = acc.find(item => item?.event_id === current?.event_id);
-                    if (!x) {
-                        acc.push(current);
-                    }
-                    return acc;
-                }, []);
-                if (refreash == true) {
-                    dispatch({
-                        type: TASK_GET_JOINED_EVENTS_END,
-                        payload: res?.events,
-                        loading: false,
-                    });
-                    return response.ok
-                }
-                else if (refreash == false) {
-                    dispatch({
-                        type: TASK_GET_JOINED_EVENTS_END,
-                        payload: combinedArray,
-                        loading: false,
-                    });
-                    return response.ok
-                }
-            }
-            else if (res?.events?.message == "No Event Found") {
+            if (res?.events) {
                 dispatch({
                     type: TASK_GET_JOINED_EVENTS_END,
-                    payload: [],
+                    loading: false,
+                });
+                return res?.events
+            }
+            else if (res?.events?.message == 'No Event Found') {
+                dispatch({
+                    type: TASK_GET_JOINED_EVENTS_END,
                     loading: false,
                 });
             }
@@ -151,7 +132,6 @@ export const getJoinedEvents = ({ page, refreash }) => async (dispatch, getState
             });
             dispatch({
                 type: TASK_GET_JOINED_EVENTS_END,
-                payload: [],
                 loading: false,
             });
         }
@@ -163,10 +143,9 @@ export const getJoinedEvents = ({ page, refreash }) => async (dispatch, getState
         });
         dispatch({
             type: TASK_GET_JOINED_EVENTS_END,
-            payload: [],
             loading: false,
         });
-        console.log(error)
+        console.log(error, 'lol')
     }
 }
 
@@ -184,7 +163,7 @@ export const getMyEvents = ({ page, refreash }) => async (dispatch, getState) =>
                 loading: true,
             });
         }
-        const response = await fetch(`${baseUrl.baseUrl}/events/get-events-created-by-user/${page}/10`, {
+        const response = await fetch(`${baseUrl.baseUrl}/events/get-events-created-by-user/${page}/100`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -195,34 +174,15 @@ export const getMyEvents = ({ page, refreash }) => async (dispatch, getState) =>
         if (response?.ok == true) {
             const res = await response.json()
             if (res?.data) {
-                const combinedArray = [...state?.MyEventReducer?.data, ...res?.data].reduce((acc, current) => {
-                    const x = acc.find(item => item?.event_id === current?.event_id);
-                    if (!x) {
-                        acc.push(current);
-                    }
-                    return acc;
-                }, []);
-                if (refreash == true) {
-                    dispatch({
-                        type: TASK_GET_MY_EVENT_END,
-                        payload: res?.data,
-                        loading: false,
-                    });
-                    return response.ok
-                }
-                else if (refreash == false) {
-                    dispatch({
-                        type: TASK_GET_MY_EVENT_END,
-                        payload: combinedArray,
-                        loading: false,
-                    });
-                    return response.ok
-                }
+                dispatch({
+                    type: TASK_GET_MY_EVENT_END,
+                    loading: false,
+                });
+                return res?.data
             }
             else if (res.message == 'No Event Found') {
                 dispatch({
                     type: TASK_GET_MY_EVENT_END,
-                    payload: [],
                     loading: false,
                 });
             }
@@ -234,7 +194,6 @@ export const getMyEvents = ({ page, refreash }) => async (dispatch, getState) =>
             });
             dispatch({
                 type: TASK_GET_MY_EVENT_END,
-                payload: [],
                 loading: false,
             });
         }
@@ -246,7 +205,6 @@ export const getMyEvents = ({ page, refreash }) => async (dispatch, getState) =>
         });
         dispatch({
             type: TASK_GET_MY_EVENT_END,
-            payload: [],
             loading: false,
         });
         console.log(error)

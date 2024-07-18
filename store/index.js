@@ -7,6 +7,7 @@ import ForgotPasswordReducer from "./reducers/ForgotPassword";
 import { CheckInReducer, CityReducer,CountryReducer,StatesReducer} from "./reducers/Country";
 import ReApplyDocReducer from "./reducers/ReApplyDoc";
 import { AllEventReducer, JoinedEventReducer, MyEventReducer } from "./reducers/Events";
+import { GetUserProfileReducer } from "./reducers/UserProfile";
 
 
 const reducers = combineReducers({
@@ -21,7 +22,8 @@ const reducers = combineReducers({
   ReApplyDocReducer,
   AllEventReducer,
   JoinedEventReducer,
-  MyEventReducer
+  MyEventReducer,
+  GetUserProfileReducer
 });
 
 const composeEnhancers = window.REDUX_DEVTOOLS_EXTENSION_COMPOSE || compose;

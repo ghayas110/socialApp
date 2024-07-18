@@ -112,14 +112,6 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
     );
 };
 
-
-
-
-
-
-
-
-
 const AllEvents = ({ getAllEvents, AllEventReducer }) => {
     const navigation = useNavigation()
     const [dataList, setDataList] = useState([])
@@ -323,6 +315,7 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
             </>
         );
     }, []);
+    
     return (
         <>
             {AllEventReducer?.loading ? (
@@ -368,7 +361,6 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
                 </ScrollView>
             ) : (
                 <>
-                    {/* <Text>render length:{renderLength} | page:{page} | render Data:{dataList?.length}</Text> */}
                     <FlatList
                         onRefresh={onRefresh}
                         showsVerticalScrollIndicator={false}

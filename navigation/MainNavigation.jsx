@@ -31,7 +31,7 @@ import ReApplyDocument from '../pages/ReApplyDocument';
 import Approval from '../pages/Approval';
 
 
-const MainNavigation = () => {
+const MainNavigation = ({ isKeyboardVisible }) => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(true);
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -59,18 +59,19 @@ const MainNavigation = () => {
       borderRadius: 70,
       backgroundColor: global.primaryColor,
       marginBottom: ResponsiveSize(25),
-      flexDirection:'column',
-      alignItems:'center',
-      justifyContent:'center'
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center'
     }
   });
   return (
     <NavigationContainer>
       {isLoggedIn ?
         <Tab.Navigator
-          screenOptions={{
+          screenOptions={({ route }) => ({
             tabBarStyle: { backgroundColor: '#69BE25', borderTopLeftRadius: ResponsiveSize(20), borderTopRightRadius: ResponsiveSize(20) },
-          }}>
+            tabBarHideOnKeyboard:true
+          })}>
           <Tab.Screen name="Home" component={HomeScreen}
             options={{
               navigationBarColor: '#69BE25',
@@ -90,7 +91,7 @@ const MainNavigation = () => {
           />
 
 
-          <Tab.Screen name="Event"  component={EventStackNavigation} options={{
+          <Tab.Screen name="Event" component={EventStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Image source={!focused ? require('../assets/icons/homeTab/tabEventLight.png') : require('../assets/icons/homeTab/tabEventFill.png')} style={{ width: ResponsiveSize(25), height: ResponsiveSize(20), objectFit: 'contain' }} />

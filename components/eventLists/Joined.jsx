@@ -11,6 +11,8 @@ import ButtonC from "../button/index";
 import { useNavigation } from "@react-navigation/native";
 import { RefreshControl } from "react-native-gesture-handler";
 import FastImage from "react-native-fast-image";
+import { useSWRConfig } from "swr";
+import { Text } from "react-native-elements";
 
 const SkeletonPlaceholder = ({ style }) => {
     const translateX = new Animated.Value(-350);
@@ -110,17 +112,59 @@ const SkeletonPlaceholder = ({ style }) => {
 };
 
 
-const Joined = ({ getJoinedEvents, JoinedEventReducer, tabActivator }) => {
-    const [page, setPage] = useState(1)
+const Joined = ({ getJoinedEvents, JoinedEventReducer, tabActivator, }) => {
     const navigation = useNavigation()
+    const [dataList, setDataList] = useState([])
+    const { cache } = useSWRConfig()
+    const [page, setPage] = useState(1)
+    const [renderLength, setRenderLength] = useState(10)
+    const [totalFetchLength, setTotalFetchLength] = useState(100)
+    const threshold = totalFetchLength - 30
+    const [refreshing, setRefreshing] = React.useState(false);
 
-    useEffect(() => {
-        if (JoinedEventReducer?.data?.length <= 0) {
-            getJoinedEvents({ page: page, refreash: true })
+    const joinedEventDataLoader = async ({ refreshing, pageRe }) => {
+        if (refreshing) {
+            const loadAllevent = await getJoinedEvents({ page: pageRe })
+            cacheloader(loadAllevent)
         }
-    }, []);
+        else if (!refreshing) {
+            const loadAllevent = await getJoinedEvents({ page: page })
+            cacheloader(loadAllevent)
+        }
+    }
+    useEffect(() => {
+        joinedEventDataLoader({ refreshing: false })
+    }, [page]);
+    useEffect(() => {
+        if (renderLength > threshold) {
+            setPage(page + 1)
+            setTotalFetchLength(totalFetchLength + 100)
+        }
+    }, [renderLength])
 
+    const cacheloader = async (loadAllevent) => {
+        const preLoad = cache.get('JoinedEvent')
+        const combinedData = [...preLoad || [], ...(loadAllevent || [])];
+        const uniqueData = Array.from(
+            combinedData.reduce((map, item) => {
+                map.set(item?.event_id, item);
+                return map;
+            }, new Map()).values()
+        );
+        cache.set("JoinedEvent", uniqueData)
+        setDataList(cache.get('JoinedEvent'))
+    }
 
+    const onRefresh = async () => {
+        cache.delete('JoinedEvent')
+        joinedEventDataLoader({ refreshing: true, pageRe: 1 })
+        setRenderLength(10)
+        setTotalFetchLength(100)
+        setPage(1)
+        setDataList([])
+        cacheloader()
+        setRefreshing(false);
+    }
     const styles = StyleSheet.create({
         Wrapper: {
             backgroundColor: "#F5F5F5",
@@ -205,21 +249,6 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer, tabActivator }) => {
     })
 
 
-
-    const [refreshing, setRefreshing] = React.useState(false);
-    const onRefresh = async () => {
-        setPage(1)
-        setRefreshing(true);
-        const loadingEvent = await getJoinedEvents({ page: 1, refreash: true })
-        if (loadingEvent == true) {
-            setRefreshing(false);
-        }
-        else {
-            setRefreshing(false);
-        }
-    }
-
-
     const renderItem = useCallback((items) => {
         return (
             <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={{ ...styles.Wrapper, borderColor: global.description, borderWidth: 1, }}>
@@ -248,7 +277,6 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer, tabActivator }) => {
             </Pressable >
         );
     }, []);
-
     return (
         <>
             {JoinedEventReducer?.loading ? (
@@ -261,7 +289,7 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer, tabActivator }) => {
                     <SkeletonPlaceholder />
                     <SkeletonPlaceholder />
                 </>
-            ) : JoinedEventReducer?.loading === false && JoinedEventReducer?.data?.length <= 0 ? (
+            ) : JoinedEventReducer?.loading === false && dataList?.length <= 0 ? (
                 <ScrollView
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -292,24 +320,23 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer, tabActivator }) => {
                     </View>
                 </ScrollView>
             ) : (
-                <FlatList
-                    showsVerticalScrollIndicator={false}
-                    initialNumToRender={10}
-                    onRefresh={onRefresh}
-                    refreshing={refreshing}
-                    data={JoinedEventReducer?.data}
-                    keyExtractor={(items, index) => index?.toString()}
-                    maxToRenderPerBatch={10}
-                    windowSize={10}
-                    onEndReached={() => {
-                        if (JoinedEventReducer?.data?.length > 10) {
-                            getJoinedEvents({ page: page + 1, refreash: false })
-                            setPage(page + 1)
-                        }
-                    }}
-                    onEndReachedThreshold={0.5}
-                    renderItem={renderItem}
-                />
+                <>
+                    <FlatList
+                        onRefresh={onRefresh}
+                        showsVerticalScrollIndicator={false}
+                        initialNumToRender={10}
+                        refreshing={refreshing}
+                        data={dataList?.slice(0, renderLength)}
+                        keyExtractor={(items, index) => index?.toString()}
+                        maxToRenderPerBatch={10}
+                        windowSize={10}
+                        onEndReached={() => {
+                            setRenderLength(renderLength + 10)
+                        }}
+                        onEndReachedThreshold={0.5}
+                        renderItem={renderItem}
+                    />
+                </>
             )}
         </>
     );

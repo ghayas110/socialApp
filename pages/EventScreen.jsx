@@ -16,14 +16,43 @@ import MyEvent from '../components/eventLists/MyEvent.jsx';
 const EventScreen = ({ route }) => {
   const { Tab } = route.params;
   const windowWidth = Dimensions.get('window').width;
+  const windowheight = Dimensions.get('window').height;
   const scheme = useColorScheme();
   const [tabSlider, useTabSlider] = useState(Tab);
   const innerBody = windowWidth - ResponsiveSize(30)
   const left = useSharedValue("0%");
 
+
+  const [allEventPage, useAllEventPage] = useState(1);
+  const [joinedEventPage, useJoinedEventPage] = useState(1);
+  const [myEventPage, useMyEventPage] = useState(1);
+
   const handlePress = (r) => {
     left.value = withTiming(r == 2 ? "33.33%" : r == 3 ? "66.66%" : "0%");
   };
+
+  const tabActivator = (r) => {
+    useTabSlider(r)
+    handlePress(r)
+  }
+  useEffect(() => {
+    useTabSlider(Tab)
+    handlePress(Tab)
+  }, [Tab])
+
+  const TabContent = () => {
+    switch (tabSlider) {
+      case 1:
+        return <AllEvents page={allEventPage} pageChange={useAllEventPage} />;
+      case 2:
+        return <Joined tabActivator={tabActivator} page={joinedEventPage} pageChange={useJoinedEventPage} />;
+      case 3:
+        return <MyEvent page={myEventPage} pageChange={useMyEventPage} />;
+      default:
+        return null;
+    }
+  };
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -84,35 +113,19 @@ const EventScreen = ({ route }) => {
     },
     Content: {
       paddingVertical: ResponsiveSize(20)
-    }
+    },
+    centeredView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.5)'
+    },
   })
-  const tabActivator = (r) => {
-    useTabSlider(r)
-    handlePress(r)
-  }
-
-
-  useEffect(()=>{
-    useTabSlider(Tab)
-    handlePress(Tab)
-  },[Tab])
-
-  const TabContent = () => {
-    switch (tabSlider) {
-      case 1:
-        return <AllEvents/>;
-      case 2:
-        return <Joined tabActivator={tabActivator}/>;
-      case 3:
-        return <MyEvent/>;
-      default:
-        return null;
-    }
-  };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : 'white'} barStyle={scheme === 'dark' ? "light-content" : 'dark-content'} />
       <EventHeader backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : 'white'} barStyle={scheme === 'dark' ? "light-content" : 'dark-content'} />
+
       <View style={styles.bodyWrapper}>
         <View style={styles.tabWrapper}>
           <View style={styles.TabSlider}>
