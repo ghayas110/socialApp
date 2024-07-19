@@ -12,8 +12,10 @@ const Setting = ({setIsLoggedIn}) => {
     const windowHeight = Dimensions.get('window').height;
     const scheme = useColorScheme();
     const navigation = useNavigation()
-    const [isEnabled, setIsEnabled] = useState(false);
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    const [isEnabled1, setIsEnabled1] = useState(false);
+    const [isEnabled2, setIsEnabled2] = useState(false);
+    const toggleSwitch1 = () => setIsEnabled1(previousState => !previousState);
+    const toggleSwitch2 = () => setIsEnabled2(previousState => !previousState);
     const styles = StyleSheet.create({
         wrapper: {
             flexDirection: 'row',
@@ -115,7 +117,7 @@ const Setting = ({setIsLoggedIn}) => {
                         <TextC size={ResponsiveSize(14)} style={{ color: global.secondaryColor }} font={'Montserrat-Bold'} text={"Account"} />
                     </View>
                     <View style={styles.InnerContent}>
-                        <TouchableOpacity style={styles.ListWrapper}>
+                        <TouchableOpacity onPress={() => navigation.navigate('EditProfile')} style={styles.ListWrapper}>
                             <TextC text={"Edit Profile"} font={'Montserrat-Medium'} />
                             <AntDesign name='right' size={ResponsiveSize(15)} color={global.primaryColor} />
                         </TouchableOpacity>
@@ -123,7 +125,7 @@ const Setting = ({setIsLoggedIn}) => {
                             <TextC text={"Change Password"} font={'Montserrat-Medium'} />
                             <AntDesign name='right' size={ResponsiveSize(15)} color={global.primaryColor} />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.ListWrapper}>
+                        <TouchableOpacity onPress={() => navigation.navigate('ChangeAirline')} style={styles.ListWrapper}>
                             <TextC text={"Change Airline"} font={'Montserrat-Medium'} />
                             <AntDesign name='right' size={ResponsiveSize(15)} color={global.primaryColor} />
                         </TouchableOpacity>
@@ -145,10 +147,10 @@ const Setting = ({setIsLoggedIn}) => {
                             <View>
                                 <Switch
                                     trackColor={{ false: '#767577', true: global.secondaryColor }}
-                                    thumbColor={isEnabled ? 'white' : 'white'}
+                                    thumbColor={isEnabled1 ? 'white' : 'white'}
                                     ios_backgroundColor="#3e3e3e"
-                                    onValueChange={toggleSwitch}
-                                    value={isEnabled}
+                                    onValueChange={toggleSwitch1}
+                                    value={isEnabled1}
                                 />
                             </View>
                         </View>
@@ -157,16 +159,16 @@ const Setting = ({setIsLoggedIn}) => {
                             <View>
                                 <Switch
                                     trackColor={{ false: '#767577', true: global.secondaryColor }}
-                                    thumbColor={isEnabled ? 'white' : 'white'}
+                                    thumbColor={isEnabled2 ? 'white' : 'white'}
                                     ios_backgroundColor="#3e3e3e"
-                                    onValueChange={toggleSwitch}
-                                    value={isEnabled}
+                                    onValueChange={toggleSwitch2}
+                                    value={isEnabled2}
                                 />
                             </View>
                         </View>
                     </View>
                     <View style={{ paddingTop: ResponsiveSize(20) }}>
-                        <TouchableOpacity style={styles.DeleteBtn}>
+                        <TouchableOpacity style={styles.DeleteBtn} onPress={()=>navigation.navigate('DeleteAccount')}>
                             <TextC size={ResponsiveSize(14)} style={{ color: global.white }} font={'Montserrat-Medium'} text={"Account Delete"} />
                             <AntDesign name='delete' size={ResponsiveSize(16)} color={global.white} />
                         </TouchableOpacity>

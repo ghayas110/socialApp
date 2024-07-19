@@ -67,7 +67,6 @@ export const getAllAirline = () => async (dispatch) => {
     }
 }
 
-
 export const changePassword = (body) => async (dispatch) => {
     const Token = await AsyncStorage.getItem('Token');
     console.log(body)
@@ -89,5 +88,51 @@ export const changePassword = (body) => async (dispatch) => {
         console.log(error)
     }
 }
+
+
+export const ChangeAirline = (body) => async (dispatch) => {
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/reapply/user-airline-update`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+            body: body
+        });
+        const res = await response.json()
+        console.log(res)
+        return res?.message
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
+
+export const DeleteAccountAction = (body) => async (dispatch) => {
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/users/delete-account`, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+            body: JSON.stringify({
+                password: body
+            })
+        });
+        const res = await response.json()
+        return res?.message
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
 
 

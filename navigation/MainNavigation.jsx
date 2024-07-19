@@ -29,9 +29,10 @@ import { ResponsiveSize, global } from '../components/constant';
 import SignUpSecondStep from '../pages/SignUpSecondStep';
 import ReApplyDocument from '../pages/ReApplyDocument';
 import Approval from '../pages/Approval';
+import * as UserProfile from "../store/actions/UserProfile/index";
+import { connect } from "react-redux";
 
-
-const MainNavigation = ({ isKeyboardVisible }) => {
+const MainNavigation = ({ GetUserProfileReducer }) => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(true);
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -133,7 +134,7 @@ const MainNavigation = ({ isKeyboardVisible }) => {
           }} />
           <Tab.Screen name="Profile" component={ProfileStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
-              <Image source={!focused ? require('../assets/icons/homeTab/tabProfile.png') : require('../assets/icons/homeTab/tabProfile.png')} style={{ width: ResponsiveSize(30), height: ResponsiveSize(25), objectFit: 'contain' }} />
+              <Image source={GetUserProfileReducer?.data?.profile_picture_url == "" ? require('../assets/icons/avatar.png') : { uri: GetUserProfileReducer?.data?.profile_picture_url }} style={{ width: ResponsiveSize(30), height: ResponsiveSize(30), objectFit: 'cover',overflow:"hidden",borderRadius:ResponsiveSize(30)}} />
             ),
             headerShown: false,
             tabBarShowLabel: false,
@@ -172,6 +173,8 @@ const MainNavigation = ({ isKeyboardVisible }) => {
   )
 }
 
-export default MainNavigation
-
+function mapStateToProps({ GetUserProfileReducer }) {
+  return { GetUserProfileReducer };
+}
+export default connect(mapStateToProps, UserProfile)(MainNavigation);
 const styles = StyleSheet.create({})

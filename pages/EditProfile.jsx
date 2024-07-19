@@ -11,22 +11,32 @@ import * as UserProfile from "../store/actions/UserProfile/index";
 import { connect } from "react-redux";
 import PhoneInput from "react-native-phone-number-input";
 import DatePicker from 'react-native-date-picker';
-import SelectC from '../components/select';
+import ModalSelector from 'react-native-modal-selector';
+import { useToast } from '../components/Toast/ToastContext';
+import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
+import ButtonC from '../components/button';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 
 
-
-const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
+const EditProfile = ({ GetUserProfileReducer, UpdateProfileData, GetProfileData, UpdateProfile }) => {
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
     const scheme = useColorScheme();
     const navigation = useNavigation()
     const [dialCode, setDialCode] = useState("")
     const [dob, setDob] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [documentImage, setDocumentImage] = useState('')
+    const [document, setDocument] = useState('')
 
-
+    const data = [
+        { key: 1, label: 'Male' },
+        { key: 2, label: 'Female' },
+    ];
 
     useEffect(() => {
+        console.log()
         if (GetUserProfileReducer?.data) {
             reset({
                 name: GetUserProfileReducer?.data?.user_name,
@@ -41,20 +51,15 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
 
     const schema = yup.object().shape({
         name: yup
-            .string()
-            .required('name is required'),
+            .string(),
         phone: yup
-            .string()
-            .required('phone is required'),
+            .string(),
         gender: yup
-            .string()
-            .required('gender is required'),
+            .string(),
         dob: yup
-            .string()
-            .required('dob is required'),
+            .string(),
         description: yup
-            .string()
-            .required('description is required'),
+            .string(),
     });
 
     const {
@@ -102,9 +107,9 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
         },
         NextBtn: {
             backgroundColor: global.secondaryColor,
-            width: windowWidth * 0.6,
-            paddingVertical: ResponsiveSize(15),
-            borderRadius: ResponsiveSize(100),
+            width: ResponsiveSize(80),
+            paddingVertical: ResponsiveSize(10),
+            borderRadius: ResponsiveSize(20),
             alignItems: 'center',
             justifyContent: 'center',
         },
@@ -121,7 +126,7 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
             height: ResponsiveSize(70),
             width: ResponsiveSize(70),
             borderRadius: ResponsiveSize(70),
-            backgroundColor: 'red'
+            backgroundColor: global.description
         },
         bodyInitial: {
             paddingHorizontal: ResponsiveSize(15),
@@ -147,6 +152,7 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
         TextFeidContainerRight: {
             borderBottomWidth: 1,
             borderBottomColor: global.description,
+            color: global.placeholderColor,
             paddingHorizontal: ResponsiveSize(10),
             width: windowWidth * 0.6,
             fontFamily: 'Montserrat-Medium',
@@ -154,7 +160,11 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
             flexDirection: 'row',
             alignItems: 'center',
             color: global.placeholderColor,
-            fontSize: ResponsiveSize(12)
+            fontSize: ResponsiveSize(12),
+            borderLeftWidth: 0,
+            borderRightWidth: 0,
+            borderTopWidth: 0,
+            borderRadius: 0
         },
         TextFeidContainerRight1: {
             borderBottomWidth: 1,
@@ -166,8 +176,20 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
             fontSize: ResponsiveSize(12)
         }
     })
-    const onSubmit = (data) => {
-        const LoadUpdate = UpdateProfileData({
+    const { showToast } = useToast();
+
+    const onSubmit = async (data) => {
+        setLoading(true)
+        if (documentImage) {
+            const formData = new FormData();
+            formData.append('profile_picture', {
+                uri: document[0]?.uri,
+                name: 'photo.jpg',
+                type: 'image/jpeg',
+            });
+            const LoadUpdateImage = await UpdateProfile(formData)
+        }
+        const LoadUpdate = await UpdateProfileData({
             user_name: data.name,
             phone_number: data.phone,
             gender: data.gender,
@@ -175,14 +197,70 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
             bio: data.description,
             country_code: dialCode
         })
-        console.log(LoadUpdate)
+        if (LoadUpdate?.message == "User profile updated successfully") {
+            showToast({
+                message: "User profile updated successfully",
+                title: "Profile updated",
+                iconColor: "green",
+                iconName: "lock",
+                bg: "#abffdb"
+            })
+            navigation.navigate('ProfileMain')
+            GetProfileData();
+        }
+        else if (LoadUpdate?.message !== "User profile updated successfully") {
+            showToast({
+                message: "Something went wrong. please try again",
+                title: "Something went wrong",
+                iconColor: "red",
+                iconName: "lock",
+                bg: "#fff2f2"
+            })
+        }
+        setLoading(false)
     };
-    const SelectGender = [{
-        title: 'Male',
-    },
-    {
-        title: 'Female',
-    }]
+
+    const { openBottomSheet, closeBottomSheet } = useBottomSheet();
+
+    const handleOpenSheet = () => {
+        openBottomSheet(
+            <>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: ResponsiveSize(15) }}>
+                    <ButtonC onPress={openMobileCamera} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openCamera} title={"Open camera"}></ButtonC>
+                    <ButtonC onPress={openPhotoLibrary} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openLibrary} title={"Open library"}></ButtonC>
+                </View>
+            </>
+            , ["15%"]
+        );
+    };
+    const requestCameraPermission = async () => {
+        try {
+            const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                handleOpenSheet()
+            } else {
+                console.log("Camera permission denied");
+            }
+        } catch (err) {
+            console.warn(err);
+        }
+    };
+    const openPhotoLibrary = async () => {
+        const result = await launchImageLibrary();
+        if (result?.assets.length > 0) {
+            setDocument(result.assets)
+            setDocumentImage(result?.assets[0]?.uri)
+            closeBottomSheet()
+        }
+    }
+    const openMobileCamera = async () => {
+        const result = await launchCamera();
+        if (result?.assets.length > 0) {
+            setDocument(result.assets)
+            setDocumentImage(result?.assets[0]?.uri)
+            closeBottomSheet()
+        }
+    }
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <StatusBar backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : 'white'} barStyle={scheme === 'dark' ? "light-content" : 'dark-content'} />
@@ -194,12 +272,24 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                     <View style={styles.logoSide2}>
                         <TextC size={ResponsiveSize(12)} font={'Montserrat-Bold'} text={"Update Profile"} />
                     </View>
-                    <View style={styles.logoSide3}></View>
+                    <View style={styles.logoSide3}>
+                        <TouchableOpacity disabled={loading} onPress={handleSubmit(onSubmit)} style={styles.NextBtn}>
+                            {loading == true ?
+                                <ActivityIndicator size={ResponsiveSize(12)} color={global.white} />
+                                :
+                                <TextC size={ResponsiveSize(11)} text={'Update'} font={'Montserrat-SemiBold'} />
+                            }
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View style={styles.bodyWrapper}>
                     <View style={styles.updateImage}>
-                        <Image style={styles.ProfileImage} source={GetUserProfileReducer?.data?.profile_picture_url == "" ? require('../assets/icons/avatar.png') : { uri: GetUserProfileReducer?.data?.profile_picture_url }} />
-                        <TouchableOpacity style={{ paddingTop: ResponsiveSize(10) }}>
+                        {documentImage !== "" ?
+                            <Image style={styles.ProfileImage} src={documentImage} />
+                            :
+                            <Image style={styles.ProfileImage} source={GetUserProfileReducer?.data?.profile_picture_url == "" ? require('../assets/icons/avatar.png') : { uri: GetUserProfileReducer?.data?.profile_picture_url }} />
+                        }
+                        <TouchableOpacity onPress={requestCameraPermission} style={{ paddingTop: ResponsiveSize(10) }}>
                             <TextC size={ResponsiveSize(11)} style={{ color: global.secondaryColor }} text={"Update Profile Picture"} font={'Montserrat-Bold'} />
                         </TouchableOpacity>
                     </View>
@@ -212,10 +302,10 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                         <Controller
                             control={control}
                             rules={{
-                                required: true,
+                                required: false,
                             }}
                             render={({ field: { onChange, value } }) => (
-                                <TextInput onChangeText={onChange} value={value} style={styles.TextFeidContainerRight} />
+                                <TextInput placeholder='Name' onChangeText={onChange} value={value} style={styles.TextFeidContainerRight} />
                             )}
                             name="name"
                         />
@@ -227,7 +317,7 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                         <Controller
                             control={control}
                             rules={{
-                                required: true,
+                                required: false,
                             }}
                             render={({ field: { onChange, value } }) => {
                                 return (
@@ -256,12 +346,15 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                         <Controller
                             control={control}
                             rules={{
-                                required: true,
+                                required: false,
                             }}
                             render={({ field: { onChange, value } }) => (
-                                <TouchableOpacity onPress={() => setDob(true)} style={styles.TextFeidContainerRight}>
-                                    <TextC size={ResponsiveSize(12)} style={{ color: global.placeholderColor }} text={"Male"} font={'Montserrat-Medium'} />
-                                </TouchableOpacity>
+                                <ModalSelector
+                                    selectStyle={styles.TextFeidContainerRight}
+                                    data={data}
+                                    initValue={GetUserProfileReducer?.data?.gender || value}
+                                    onChange={(option) => { onChange(option?.label) }}
+                                />
                             )}
                             name="gender"
                         />
@@ -273,7 +366,7 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                         <Controller
                             control={control}
                             rules={{
-                                required: true,
+                                required: false,
                             }}
                             render={({ field: { onChange, value } }) => {
                                 const DateInitial = new Date(value).toDateString()
@@ -312,19 +405,13 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                         <Controller
                             control={control}
                             rules={{
-                                required: true,
+                                required: false,
                             }}
                             render={({ field: { onChange, value } }) => (
-                                <TextInput  onChangeText={onChange} value={value} style={styles.TextFeidContainerRight1} multiline={true} numberOfLines={5} />
+                                <TextInput placeholder='Description' onChangeText={onChange} value={value} style={styles.TextFeidContainerRight1} multiline={true} numberOfLines={5} />
                             )}
                             name="description"
                         />
-                    </View>
-
-                    <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(30) }}>
-                        <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.NextBtn}>
-                            <TextC size={15} text={'Update'} font={'Montserrat-Bold'} />
-                        </TouchableOpacity>
                     </View>
                 </View>
             </ScrollView>

@@ -145,6 +145,15 @@ const LogIn = ({ onLogin, LoginReducer, loginUser, CheckUserStatus }) => {
         bg: "#fff2f2"
       })
     }
+    else if (LoginStart?.message == "User not registered") {
+      showToast({
+        message: "Check your email and password, try again",
+        title: "User not registered",
+        iconColor: "red",
+        iconName: "mail",
+        bg: "#fff2f2"
+      })
+    }
   };
 
   return (

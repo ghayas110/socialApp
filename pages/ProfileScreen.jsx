@@ -1,4 +1,4 @@
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import TextC from '../components/text/text'
 import Entypo from 'react-native-vector-icons/Entypo'
@@ -13,6 +13,8 @@ import { connect } from "react-redux";
 
 
 const ProfileScreen = ({ GetUserProfileReducer }) => {
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
   const navigation = useNavigation()
   const styles = StyleSheet.create({
     ProfileHeader: {
@@ -174,9 +176,11 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
 
         <View style={styles.ProfileTitleDescription}>
           <TextC font={"Montserrat-SemiBold"} text={GetUserProfileReducer?.data?.user_name} size={16} />
+          {GetUserProfileReducer?.data?.bio &&
           <ReadMore seeLessStyle={{ fontFamily: "Montserrat-Bold", color: global.primaryColor }} seeMoreStyle={{ fontFamily: "Montserrat-Bold", color: global.primaryColor }} numberOfLines={3} style={styles.DescriptionStyle}>
             {GetUserProfileReducer?.data?.bio}
           </ReadMore>
+          }
         </View>
 
         <View style={styles.ProfileSettingBtn}>
@@ -191,7 +195,13 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
               <TouchableOpacity key={userPosts?.parent_id} style={styles.box}>
                 <Image style={{ resizeMode: 'cover', height: '100%', width: "100%" }} source={{ uri: userPosts?.attachment_thumbnail_url }} />
               </TouchableOpacity>
-            )) : ""}
+            )) :
+              <View style={{ paddingTop: ResponsiveSize(80), flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: windowWidth,borderTopColor:global.description,borderTopWidth:1}}>
+                <TextC text={"No Post Available Yet"} font={"Montserrat-Bold"} />
+                <TouchableOpacity style={{ backgroundColor: '#05348E', width: ResponsiveSize(150),flexDirection:'column',alignItems:'center',justifyContent:'center',paddingVertical:ResponsiveSize(10),borderRadius:ResponsiveSize(30),marginTop:ResponsiveSize(10)}} onPress={() => navigation.navigate('CreatePost')}>
+                  <TextC text={"Start Your First Post"} font={"Montserrat-Medium"} size={ResponsiveSize(11)} style={{color:'white'}} />
+                </TouchableOpacity>
+              </View>}
           </View>
 
         </ScrollView>

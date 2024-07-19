@@ -9,6 +9,8 @@ import EditProfile from '../pages/EditProfile';
 import EventDetailScreen from '../pages/EventDetailScreen';
 import Setting from '../pages/Setting';
 import ChangePassword from '../pages/changePassword';
+import ChangeAirline from '../pages/ChangeAirline';
+import DeleteAccount from '../pages/DeleteAccount';
 
 
 
@@ -19,9 +21,9 @@ const EventStackNavigation = () => {
       <Stack.Screen options={{
         headerShown: false,
         navigationBarHidden: true,
-      }} name="EventScreen" initialParams={{Tab:1}} component={EventScreen} />
+      }} name="EventScreen" initialParams={{ Tab: 1 }} component={EventScreen} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="AddEvent" component={AddEvent} />
-      <Stack.Screen  options={{ headerShown: false, navigationBarHidden: true }} name="EventDetail" component={EventDetailScreen} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="EventDetail" component={EventDetailScreen} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="UpdateEvent" component={UpdateEvent} />
     </Stack.Navigator>
   )
@@ -36,7 +38,8 @@ const ProfileStackNavigation = () => {
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="EditProfile" component={EditProfile} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Setting" component={Setting} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ChangePassword" component={ChangePassword} />
-      
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ChangeAirline" component={ChangeAirline} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="DeleteAccount" component={DeleteAccount} />
     </Stack.Navigator>
   )
 }

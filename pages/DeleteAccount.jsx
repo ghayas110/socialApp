@@ -1,6 +1,6 @@
 import { DarkTheme, useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
-import { StatusBar, StyleSheet, View, ScrollView, SafeAreaView, Dimensions, useColorScheme, Pressable, TouchableOpacity, Switch } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StatusBar, StyleSheet, View, ScrollView, SafeAreaView, Dimensions, useColorScheme, Pressable, TouchableOpacity, Switch, PermissionsAndroid, ImageBackground } from "react-native";
 import { global, ResponsiveSize } from "../components/constant";
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import TextC from "../components/text/text";
@@ -14,11 +14,14 @@ import { connect } from "react-redux";
 import { useToast } from "../components/Toast/ToastContext";
 
 
-const ChangePassword = ({ changePassword }) => {
+
+const DeleteAccount = ({ DeleteAccountAction }) => {
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
     const scheme = useColorScheme();
     const navigation = useNavigation()
+    const { showToast } = useToast();
+
     const styles = StyleSheet.create({
         wrapper: {
             flexDirection: 'row',
@@ -52,21 +55,34 @@ const ChangePassword = ({ changePassword }) => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
+        },
+        ImageInput: {
+            width: global.inputWidth,
+            height: global.inputHeight,
+            backgroundColor: "#EEEEEE",
+            borderRadius: ResponsiveSize(30),
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            paddingHorizontal: global.inputPaddingH,
+            fontFamily: 'Montserrat-Regular',
+            borderWidth: ResponsiveSize(1),
+            borderColor: global.description,
+            marginTop: ResponsiveSize(20)
+        },
+        inputImageProfile: {
+            height: ResponsiveSize(30),
+            width: ResponsiveSize(30),
+            backgroundColor: global.description,
+            borderRadius: ResponsiveSize(30),
+            overflow: 'hidden'
         }
     })
 
     const schema = yup.object().shape({
-        currentPassword: yup
-            .string()
-            .required('Current password is required'),
         password: yup
             .string()
             .required('Password is required')
-            .min(8, 'Password must be 8+ characters.'),
-        confirmPassword: yup
-            .string()
-            .required('Confirm password is required')
-            .oneOf([yup.ref('password'), null], 'Confirm passwords must match'),
     });
     const {
         control,
@@ -75,44 +91,39 @@ const ChangePassword = ({ changePassword }) => {
     } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
-            currentPassword: '',
             password: '',
-            confirmPassword: '',
         },
     });
 
-    const [loading, setLoading] = useState(false)
-    const { showToast } = useToast();
 
+    const [loading, setLoading] = useState(false)
     const onSubmit = async (data) => {
         setLoading(true)
-        const LoadChangePassword = await changePassword({
-            old_password: data?.currentPassword,
-            new_password: data?.password
-        })
-        if (LoadChangePassword == "Password Changed successfully") {
-            showToast({
-                message: "Password changed successfully. Your account is now secure.",
-                title: "Password Changed successfully",
-                iconColor: "green",
-                iconName: "lock",
-                bg: "#abffdb"
-            })
+        const LoadUpdate = await DeleteAccountAction(data.password)
+        console.log(LoadUpdate)
+        if (LoadUpdate == "Account Deleted") {
+            Logout()
             setLoading(false)
-            setTimeout(()=>{
-                navigation.goBack()
-            },3000)
         }
-        if (LoadChangePassword == "Old Password is Wrong") {
+        else if (LoadUpdate == "Wrong Password") {
             showToast({
-                message: "Current password is incorrect. please try again",
-                title: "Current password is incorrect",
+                message: "Wrong Password",
+                title: "Cannot delete account, check your password",
                 iconColor: "red",
                 iconName: "lock",
                 bg: "#fff2f2"
             })
             setLoading(false)
-
+        }
+        setLoading(false)
+    }
+    const Logout = async () => {
+        try {
+            await AsyncStorage.removeItem('Token');
+            setIsLoggedIn(false)
+            navigation.navigate('login')
+        } catch (e) {
+            console.error(e);
         }
     }
     return (
@@ -123,7 +134,7 @@ const ChangePassword = ({ changePassword }) => {
                         <AntDesign name='left' color={"#05348E"} size={ResponsiveSize(18)} />
                     </Pressable>
                     <View style={styles.logoSide2}>
-                        <TextC size={ResponsiveSize(13)} font={'Montserrat-Bold'} text={"Change Password"} />
+                        <TextC size={ResponsiveSize(13)} font={'Montserrat-Bold'} text={"Delete Account"} />
                     </View>
                     <View style={styles.logoSide3}>
                     </View>
@@ -137,24 +148,7 @@ const ChangePassword = ({ changePassword }) => {
                         }}
                         render={({ field: { onChange, value } }) => (
                             <View>
-                                <TextInputC disable={loading} error={errors?.currentPassword?.message} onChangeText={onChange} placeholder={"Current Password"} secureTextEntry={true} />
-                                {errors?.currentPassword?.message !== undefined &&
-                                    <TextC text={errors?.currentPassword?.message} size={ResponsiveSize(10)} style={{ color: global.red, marginTop: ResponsiveSize(2), marginLeft: ResponsiveSize(10) }} />
-                                }
-                            </View>
-                        )}
-                        name="currentPassword"
-                    />
-
-
-                    <Controller
-                        control={control}
-                        rules={{
-                            required: true,
-                        }}
-                        render={({ field: { onChange, value } }) => (
-                            <View>
-                                <TextInputC disable={loading} error={errors?.password?.message} onChangeText={onChange} placeholder={"New Password"} secureTextEntry={true} />
+                                <TextInputC disable={loading} label={"Position"} placeholder={'Current Password'} error={errors?.password?.message} value={value} onChangeText={onChange} secureTextEntry={true} />
                                 {errors?.password?.message !== undefined &&
                                     <TextC text={errors?.password?.message} size={ResponsiveSize(10)} style={{ color: global.red, marginTop: ResponsiveSize(2), marginLeft: ResponsiveSize(10) }} />
                                 }
@@ -162,26 +156,7 @@ const ChangePassword = ({ changePassword }) => {
                         )}
                         name="password"
                     />
-
-
-
-                    <Controller
-                        control={control}
-                        rules={{
-                            required: true,
-                        }}
-                        render={({ field: { onChange, value } }) => (
-                            <View>
-                                <TextInputC disable={loading} error={errors?.confirmPassword?.message} onChangeText={onChange} placeholder={"Confirm Password"} secureTextEntry={true} />
-                                {errors?.confirmPassword?.message !== undefined &&
-                                    <TextC text={errors?.confirmPassword?.message} size={ResponsiveSize(10)} style={{ color: global.red, marginTop: ResponsiveSize(2), marginLeft: ResponsiveSize(10) }} />
-                                }
-                            </View>
-                        )}
-                        name="confirmPassword"
-                    />
-
-                    <ButtonC disabled={loading} onPress={handleSubmit(onSubmit)} loading={loading} title={"Submit"} bgColor={global.secondaryColor} BtnStyle={{ marginTop: ResponsiveSize(15) }} />
+                    <ButtonC disabled={loading} onPress={handleSubmit(onSubmit)} loading={loading} title={"Delete"} TextStyle={{color:'white'}} bgColor={global.red} BtnStyle={{ marginTop: ResponsiveSize(15) }} />
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -191,5 +166,4 @@ const ChangePassword = ({ changePassword }) => {
 function mapStateToProps({ RegisterUserReducer }) {
     return { RegisterUserReducer };
 }
-export default connect(mapStateToProps, UserRegisterAction)(ChangePassword);
-
+export default connect(mapStateToProps, UserRegisterAction)(DeleteAccount);

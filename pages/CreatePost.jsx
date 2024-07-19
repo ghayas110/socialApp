@@ -1,26 +1,32 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { Platform, View, Image, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { request, PERMISSIONS } from 'react-native-permissions';
 import RNFS from 'react-native-fs';
 import { ScrollView } from 'react-native-gesture-handler';
 import TextC from '../components/text/text';
-import Video from 'react-native-video';
+import Video, { VideoRef } from 'react-native-video';
 import Entypo from 'react-native-vector-icons/Entypo';
+import { color } from '@rneui/base';
+
+
+
+
 
 const CreatePost = () => {
-    const [currentPreview, setCurrentPreview] = useState();
-    const [isImage, setIsImage] = useState(false);
+    const [currentPreview, setCurrentPreview] = useState()
+    const [isImage, setIsImage] = useState()
     const [content, setContent] = useState([]);
     const [selectMulti, setSelectMulti] = useState(false);
     const [multiContent, setMultiContent] = useState([]);
 
     const styles = StyleSheet.create({
         FirstImagePreview: {
-            height: '50%',
+            height: "50%",
             width: '100%',
             borderBottomWidth: 1,
             borderBottomColor: 'white',
-            backgroundColor: 'gray',
+            backgroundColor: 'gtay',
             position: 'relative',
         },
         uploadControls: {
@@ -32,11 +38,11 @@ const CreatePost = () => {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'flex-end',
-            paddingHorizontal: 20,
+            paddingHorizontal: 20
         },
         FirstImage: {
             width: '100%',
-            height: '100%',
+            height: "100%",
         },
         wrapper: {
             flex: 1,
@@ -49,10 +55,10 @@ const CreatePost = () => {
         },
         box: {
             height: 100,
-            width: '25%',
+            width: "25%",
             borderWidth: 0.5,
             borderColor: 'white',
-            position: 'relative',
+            position: 'relative'
         },
         absoluteBottomBar: {
             position: 'absolute',
@@ -62,7 +68,7 @@ const CreatePost = () => {
             width: '100%',
             backgroundColor: 'white',
             flexDirection: 'row',
-            alignItems: 'center',
+            alignItems: 'center'
         },
         library: {
             width: '33.33%',
@@ -104,86 +110,69 @@ const CreatePost = () => {
             left: 10,
             top: 10,
             borderRadius: 20,
-            borderColor: 'white',
-            backgroundColor: '#0052B4',
+            borderColor: "white",
+            backgroundColor: "#0052B4",
             borderWidth: 1,
             alignItems: 'center',
             justifyContent: 'center',
         },
         SelectMultiBtn: {
-            backgroundColor: '#0052B4',
+            backgroundColor: "#0052B4",
             paddingHorizontal: 20,
             paddingVertical: 8,
             borderRadius: 20,
             flexDirection: 'row',
             alignItems: 'center',
-        },
-    });
-
+        }
+    })
     useEffect(() => {
-        const requestPermissions = async () => {
-            if (Platform.OS === 'android') {
-                await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
-            } else {
-                await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-            }
+        request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES).then((result) => {
             loadImages();
-        };
-
-        requestPermissions();
+        });
     }, []);
 
     const loadImages = async () => {
-        try {
-            let imageFiles = [];
-            if (Platform.OS === 'android') {
-                imageFiles = await RNFS.readDir(RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera');
-            } else {
-                imageFiles = await RNFS.readDir("/var/mobile/Media/DCIM/100APPLE");
-            }
+        if (Platform.OS === 'android') {
+            const imageFiles = await RNFS.readDir(RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera');
             const imagePaths = imageFiles.map(file => file.path);
             setContent(imagePaths);
-        } catch (error) {
-            console.error('Error loading images:', error);
+        } else {
         }
     };
-
-    const selectedMedia = (path) => {
-        setCurrentPreview(path);
+    const selectedMedia = (r) => {
+        setCurrentPreview(r)
         const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-        const extension = path.split('.').pop().toLowerCase();
-        setIsImage(imageExtensions.includes(extension));
-    };
-
+        const extension = r.split('.').pop().toLowerCase();
+        setIsImage(imageExtensions.includes(extension))
+    }
     const typeChanger = async (type) => {
-        setMultiContent([]);
-        try {
-            let mediaFiles = [];
-            if (Platform.OS === 'android') {
-                mediaFiles = await RNFS.readDir(RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera');
-            } else {
-                mediaFiles = await RNFS.readDir("/var/mobile/Media/DCIM/100APPLE");
+        setMultiContent([])
+        if (Platform.OS === 'android') {
+            try {
+                const mediaFiles = await RNFS.readDir(RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera');
+                const filterExtensions = (extensions) => {
+                    return mediaFiles.filter(file => {
+                        const extension = file.name.split('.').pop().toLowerCase();
+                        return extensions.includes(extension);
+                    }).map(file => file.path);
+                };
+                if (type === 'Photo') {
+                    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                    setContent(filterExtensions(imageExtensions));
+                } else if (type === 'Video') {
+                    const videoExtensions = ['mp4', 'mov', 'avi', 'mkv'];
+                    setContent(filterExtensions(videoExtensions));
+                } else if (type === 'Library') {
+                    const imageFiles = await RNFS.readDir(RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera');
+                    const imagePaths = imageFiles.map(file => file.path);
+                    setContent(imagePaths);
+                }
+            } catch (error) {
+                console.error("Error reading media files", error);
             }
-            const filterExtensions = (extensions) => {
-                return mediaFiles.filter(file => {
-                    const extension = file.name.split('.').pop().toLowerCase();
-                    return extensions.includes(extension);
-                }).map(file => file.path);
-            };
-            if (type === 'Photo') {
-                const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-                setContent(filterExtensions(imageExtensions));
-            } else if (type === 'Video') {
-                const videoExtensions = ['mp4', 'mov', 'avi', 'mkv'];
-                setContent(filterExtensions(videoExtensions));
-            } else if (type === 'Library') {
-                const mediaPaths = mediaFiles.map(file => file.path);
-                setContent(mediaPaths);
-            }
-        } catch (error) {
-            console.error('Error reading media files:', error);
         }
     };
+
 
     const MultListAdder = (id, content) => {
         setMultiContent(prevMultiContent => {
@@ -191,99 +180,87 @@ const CreatePost = () => {
             const indexToDelete = prevMultiContent.findIndex(item => item.id === id);
             const updatedMultiContent = [...prevMultiContent];
             if (!exists) {
-                updatedMultiContent.push({ id, content });
+                updatedMultiContent.push({ id: id, content: content });
             } else {
                 updatedMultiContent.splice(indexToDelete, 1);
             }
             return updatedMultiContent;
         });
-    };
+    }
 
     return (
         <>
             <View style={styles.FirstImagePreview}>
-                {isImage ? (
+                {isImage ?
                     <Image style={styles.FirstImage} source={{ uri: 'file://' + currentPreview }} />
-                ) : (
-                   
-                    <Video source={{ uri: 'file://' + currentPreview }} style={styles.backgroundVideo}  controls={true}/>
-                )}
+                    :
+                    <Video
+                        source={{ uri: 'file://' + currentPreview }}
+                        style={styles.backgroundVideo}
+                    />}
                 <View style={styles.uploadControls}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            Vibration.vibrate(10);
-                            setSelectMulti(!selectMulti);
-                            setMultiContent([]);
-                        }}
-                        style={styles.SelectMultiBtn}
-                    >
-                        <Image
-                            style={{ height: 18, width: 18, marginRight: 5 }}
-                            source={require('../assets/icons/layesIcon.png')}
-                        />
-                        <TextC style={{ color: 'white' }} size={11} text="Select multiple" font="Montserrat-Regular" />
+                    <TouchableOpacity onPress={() => {
+                        Vibration.vibrate(10)
+                        setSelectMulti(!selectMulti)
+                        setMultiContent([])
+                    }} style={styles.SelectMultiBtn}>
+                        <Image style={{ height: 18, width: 18, marginRight: 5 }} source={require('../assets/icons/layesIcon.png')} />
+                        <TextC style={{ color: 'white' }} size={11} text={'Select multiple'} font={'Montserrat-Regular'} />
                     </TouchableOpacity>
                 </View>
             </View>
-            <ScrollView style={{ flexGrow: 1 }}>
+            <ScrollView style={{ flexGrow: 1, }}>
                 <View style={styles.wrapper}>
                     {content.length > 0 ? content.map((item, index) => {
-                        const inde = index + 1;
+                        const inde = index + 1
                         return (
-                            <TouchableOpacity
-                                key={inde}
-                                onLongPress={() => {
-                                    Vibration.vibrate(10);
-                                    setSelectMulti(!selectMulti);
-                                    setMultiContent([]);
-                                }}
+                            <TouchableOpacity key={inde} onLongPress={() => {
+                                Vibration.vibrate(10)
+                                setSelectMulti(!selectMulti)
+                                setMultiContent([])
+                            }}
                                 onPress={() => {
-                                    MultListAdder(inde, item);
-                                    selectedMedia(item);
+                                    MultListAdder(inde, item)
+                                    selectedMedia(item)
                                 }}
-                                style={styles.box}
-                            >
-                                <Image source={{ uri: item }} style={{ width: '100%', height: '100%' }} />
-                                {selectMulti && (
-                                    <TouchableOpacity style={styles.MultiIndicator}>
-                                        {multiContent.length > 0
-                                            ? multiContent
-                                                .filter(cont => cont.id === inde)
-                                                .map((item, index) => (
-                                                    <TextC
-                                                        key={index}
-                                                        style={{ color: 'white' }}
-                                                        size={11}
-                                                        text={multiContent.findIndex(item => item.id === inde) + 1}
-                                                        font="Montserrat-Regular"
-                                                    />
-                                                ))
-                                            : null}
-                                    </TouchableOpacity>
-                                )}
-                                {!['jpg', 'jpeg', 'png', 'gif'].includes(item.split('.').pop().toLowerCase()) && (
+                                style={styles.box}>
+                                <Image
+                                    source={{ uri: 'file://' + item }}
+                                    style={{ width: '100%', height: '100%' }}
+                                />
+                                {selectMulti &&
+                                    <>
+                                        <TouchableOpacity style={styles.MultiIndicator}>
+                                            {multiContent.length > 0 ? multiContent.filter(cont => cont.id == inde).map((item, index) => (
+                                                <TextC key={index} style={{ color: 'white' }} size={11} text={multiContent.findIndex(item => item.id === inde) + 1} font={'Montserrat-Regular'} />
+                                            )) : ""
+                                            }
+                                        </TouchableOpacity>
+                                    </>
+                                }
+                                {['jpg', 'jpeg', 'png', 'gif'].includes(item.split('.').pop().toLowerCase()) == false ?
                                     <View style={styles.videoIndicator}>
-                                        <Entypo name="controller-play" color="white" size={22} />
+                                        <Entypo name='controller-play' color={'white'} size={22} />
                                     </View>
-                                )}
+                                    : ""}
                             </TouchableOpacity>
-                        );
-                    }) : null}
+                        )
+                    }) : ""}
                 </View>
-            </ScrollView>
+            </ScrollView >
             <View style={styles.absoluteBottomBar}>
                 <TouchableOpacity onPress={() => typeChanger('Library')} style={styles.library}>
-                    <TextC text="Library" font="Montserrat-Bold" />
+                    <TextC text={'Library'} font={'Montserrat-Bold'} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => typeChanger('Photo')} style={styles.photos}>
-                    <TextC text="Photo" font="Montserrat-Bold" />
+                    <TextC text={'Photo'} font={'Montserrat-Bold'} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => typeChanger('Video')} style={styles.video}>
-                    <TextC text="Video" font="Montserrat-Bold" />
+                    <TextC text={'Video'} font={'Montserrat-Bold'} />
                 </TouchableOpacity>
             </View>
         </>
-    );
-};
+    )
+}
 
 export default CreatePost;
