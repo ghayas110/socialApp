@@ -30,17 +30,17 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
     const [documentImage, setDocumentImage] = useState('')
     const [document, setDocument] = useState('')
 
-    const handleOpenSheet = () => {
-        openBottomSheet(
-            <>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: ResponsiveSize(15) }}>
-                    <ButtonC onPress={openMobileCamera} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openCamera} title={"Open camera"}></ButtonC>
-                    <ButtonC onPress={openPhotoLibrary} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openLibrary} title={"Open library"}></ButtonC>
-                </View>
-            </>
-            , ["15%"]
-        );
-    };
+    // const handleOpenSheet = () => {
+    //     openBottomSheet(
+    //         <>
+    //             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: ResponsiveSize(15) }}>
+    //                 <ButtonC onPress={openMobileCamera} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openCamera} title={"Open camera"}></ButtonC>
+    //                 <ButtonC onPress={openPhotoLibrary} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openLibrary} title={"Open library"}></ButtonC>
+    //             </View>
+    //         </>
+    //         , ["15%"]
+    //     );
+    // };
     const requestCameraPermission = async () => {
         try {
             const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
@@ -216,8 +216,8 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
                 formData.append('event_title', data?.title);
                 formData.append('event_location', data?.location);
                 formData.append('event_details', data?.description);
-                formData.append('event_longitude', '66.990501');
-                formData.append('event_latitude', '24.860966');
+                formData.append('event_longitude', '-80.139198');
+                formData.append('event_latitude', '25.793449');
                 formData.append('event_start_time', data?.startTime);
                 formData.append('event_end_time', data?.endTime);
                 formData.append('event_date', data?.eventDate);

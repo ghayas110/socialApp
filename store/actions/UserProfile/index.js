@@ -61,3 +61,24 @@ export const UpdateProfileData = (data) => async (dispatch) => {
         console.log(error)
     }
 }
+
+export const UpdateProfile = (data) => async (dispatch) => {
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/users/update/profile-picture`, {
+            method: "PATCH",
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+            body: data
+        });
+        const res = await response.json()
+        console.log(res,'ok')
+        return res
+    }
+    catch (error) {
+        console.log(error)
+    }
+}

@@ -90,7 +90,7 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-    
+    }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug

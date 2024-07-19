@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity } from "rea
 const width = Dimensions.get('window').width;
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import TextC from '../text/text';
+import { useNavigation } from '@react-navigation/native';
 
 const CreatePostHeader = () => {
     const styles = StyleSheet.create({
@@ -40,12 +41,14 @@ const CreatePostHeader = () => {
             justifyContent:'center',
         }
     })
+    const navigation = useNavigation()
+
     return (
         <View style={styles.wrapper}>
-            <View style={styles.logoSide1}>
+            <TouchableOpacity onPress={()=>navigation.goBack()}  style={styles.logoSide1}>
                 <AntDesign name='left' color={"#05348E"} size={16}/>
                 <Image source={require('../../assets/icons/Logo.png')} style={{ objectFit: 'contain', width: 80, height: 22}} />
-            </View>
+            </TouchableOpacity>
             <View style={styles.logoSide2}>
                 <TextC font={'Montserrat-SemiBold'} text={"Recently"}/>
             </View>
