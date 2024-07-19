@@ -1,4 +1,4 @@
-package com.socialapp
+package com.Crewlink
 
 import android.app.Application
 import com.facebook.react.PackageList
