@@ -12,6 +12,9 @@ export const ToastProvider = ({ children }) => {
         setToastVisible(true);
         setToast({ title: title, message: message, visible: true, iconColor: iconColor, iconName: iconName, bg: bg });
     };
+    setTimeout(() => {
+        setToastVisible(false);
+    }, 3000);
     const handleDismiss = () => {
         setToastVisible(false);
     }

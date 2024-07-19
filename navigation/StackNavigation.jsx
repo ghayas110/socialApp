@@ -7,6 +7,8 @@ import ProfileScreen from '../pages/ProfileScreen';
 import UpdateEvent from '../pages/UpdateEvent';
 import EditProfile from '../pages/EditProfile';
 import EventDetailScreen from '../pages/EventDetailScreen';
+import Setting from '../pages/Setting';
+import ChangePassword from '../pages/changePassword';
 
 
 
@@ -32,6 +34,9 @@ const ProfileStackNavigation = () => {
     <Stack.Navigator>
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ProfileMain" component={ProfileScreen} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="EditProfile" component={EditProfile} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Setting" component={Setting} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ChangePassword" component={ChangePassword} />
+      
     </Stack.Navigator>
   )
 }

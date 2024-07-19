@@ -11,6 +11,7 @@ import * as UserProfile from "../store/actions/UserProfile/index";
 import { connect } from "react-redux";
 import PhoneInput from "react-native-phone-number-input";
 import DatePicker from 'react-native-date-picker';
+import SelectC from '../components/select';
 
 
 
@@ -132,6 +133,10 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
             flexDirection: 'row',
             alignItems: 'center',
         },
+        TextFeidContainer1: {
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+        },
         TextFeidContainerLeft: {
             flexDirection: 'column',
             alignItems: 'flex-start',
@@ -148,7 +153,8 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
             height: windowHeight * 0.07,
             flexDirection: 'row',
             alignItems: 'center',
-            color:'black'
+            color: global.placeholderColor,
+            fontSize: ResponsiveSize(12)
         },
         TextFeidContainerRight1: {
             borderBottomWidth: 1,
@@ -156,7 +162,8 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
             paddingHorizontal: ResponsiveSize(10),
             width: windowWidth * 0.6,
             fontFamily: 'Montserrat-Medium',
-            color:'black'
+            color: global.placeholderColor,
+            fontSize: ResponsiveSize(12)
         }
     })
     const onSubmit = (data) => {
@@ -170,6 +177,12 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
         })
         console.log(LoadUpdate)
     };
+    const SelectGender = [{
+        title: 'Male',
+    },
+    {
+        title: 'Female',
+    }]
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <StatusBar backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : 'white'} barStyle={scheme === 'dark' ? "light-content" : 'dark-content'} />
@@ -179,7 +192,7 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                         <AntDesign name='left' color={"#05348E"} size={ResponsiveSize(18)} />
                     </Pressable>
                     <View style={styles.logoSide2}>
-                        <TextC size={ResponsiveSize(13)} font={'Montserrat-Bold'} text={"Update Profile"} />
+                        <TextC size={ResponsiveSize(12)} font={'Montserrat-Bold'} text={"Update Profile"} />
                     </View>
                     <View style={styles.logoSide3}></View>
                 </View>
@@ -187,14 +200,14 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                     <View style={styles.updateImage}>
                         <Image style={styles.ProfileImage} source={GetUserProfileReducer?.data?.profile_picture_url == "" ? require('../assets/icons/avatar.png') : { uri: GetUserProfileReducer?.data?.profile_picture_url }} />
                         <TouchableOpacity style={{ paddingTop: ResponsiveSize(10) }}>
-                            <TextC size={ResponsiveSize(12)} style={{ color: global.secondaryColor }} text={"Update Profile Picture"} font={'Montserrat-Bold'} />
+                            <TextC size={ResponsiveSize(11)} style={{ color: global.secondaryColor }} text={"Update Profile Picture"} font={'Montserrat-Bold'} />
                         </TouchableOpacity>
                     </View>
                 </View>
                 <View style={styles.bodyInitial}>
                     <View style={styles.TextFeidContainer}>
                         <View style={styles.TextFeidContainerLeft}>
-                            <TextC size={ResponsiveSize(13)} text={"Name"} font={'Montserrat-Medium'} />
+                            <TextC size={ResponsiveSize(12)} text={"Name"} font={'Montserrat-Medium'} />
                         </View>
                         <Controller
                             control={control}
@@ -209,7 +222,7 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                     </View>
                     <View style={styles.TextFeidContainer}>
                         <View style={styles.TextFeidContainerLeft}>
-                            <TextC size={ResponsiveSize(13)} text={"Phone"} font={'Montserrat-Medium'} />
+                            <TextC size={ResponsiveSize(12)} text={"Phone"} font={'Montserrat-Medium'} />
                         </View>
                         <Controller
                             control={control}
@@ -223,7 +236,7 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                                         flagButtonStyle={{ height: windowHeight * 0.07, width: ResponsiveSize(45) }}
                                         textContainerStyle={{ padding: 0, height: windowHeight * 0.07, backgroundColor: 'white', paddingHorizontal: 0 }}
                                         codeTextStyle={{ display: 'none' }}
-                                        textInputStyle={{ height: windowHeight * 0.07,fontFamily:'Montserrat-Medium' }}
+                                        textInputStyle={{ height: windowHeight * 0.07, fontFamily: 'Montserrat-Medium', fontSize: ResponsiveSize(12), color: global.placeholderColor }}
                                         disableArrowIcon={true}
                                         defaultCode={GetUserProfileReducer?.data?.country_code || 'US'}
                                         defaultValue={GetUserProfileReducer?.data?.phone_number}
@@ -238,7 +251,7 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                     </View>
                     <View style={styles.TextFeidContainer}>
                         <View style={styles.TextFeidContainerLeft}>
-                            <TextC size={ResponsiveSize(13)} text={"Gender"} font={'Montserrat-Medium'} />
+                            <TextC size={ResponsiveSize(12)} text={"Gender"} font={'Montserrat-Medium'} />
                         </View>
                         <Controller
                             control={control}
@@ -246,47 +259,55 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                                 required: true,
                             }}
                             render={({ field: { onChange, value } }) => (
-                                <TextInput onChangeText={onChange} value={value} style={styles.TextFeidContainerRight} />
+                                <TouchableOpacity onPress={() => setDob(true)} style={styles.TextFeidContainerRight}>
+                                    <TextC size={ResponsiveSize(12)} style={{ color: global.placeholderColor }} text={"Male"} font={'Montserrat-Medium'} />
+                                </TouchableOpacity>
                             )}
                             name="gender"
                         />
                     </View>
                     <View style={styles.TextFeidContainer}>
                         <View style={styles.TextFeidContainerLeft}>
-                            <TextC size={ResponsiveSize(13)} text={"Date of birth"} font={'Montserrat-Medium'} />
+                            <TextC size={ResponsiveSize(12)} text={"Date of birth"} font={'Montserrat-Medium'} />
                         </View>
                         <Controller
                             control={control}
                             rules={{
                                 required: true,
                             }}
-                            render={({ field: { onChange, value } }) => (
-                                <>
-                                    <TouchableOpacity onPress={() => setDob(true)} style={styles.TextFeidContainerRight}>
-                                        <TextC size={ResponsiveSize(13)} style={{color:'black'}} text={value} font={'Montserrat-Medium'} />
-                                    </TouchableOpacity>
-                                    <DatePicker
-                                        modal
-                                        open={dob}
-                                        date={new Date(GetUserProfileReducer?.data?.date_of_birth)}
-                                        mode="date"
-                                        onConfirm={(date) => {
-                                            setDob(false)
-                                            onChange(date)
-                                        }}
-                                        onCancel={() => {
-                                            setDob(false)
-                                        }}
+                            render={({ field: { onChange, value } }) => {
+                                const DateInitial = new Date(value).toDateString()
+                                const timeDivide = DateInitial?.split(" ")
+                                const DateValue = `${timeDivide[1]} ${timeDivide[2]} ${timeDivide[3]}`
+                                const valueTime = new Date(GetUserProfileReducer?.data?.date_of_birth)
+                                return (
+                                    <>
+                                        <TouchableOpacity onPress={() => setDob(true)} style={styles.TextFeidContainerRight}>
+                                            <TextC size={ResponsiveSize(12)} style={{ color: global.placeholderColor }} text={DateValue} font={'Montserrat-Medium'} />
+                                        </TouchableOpacity>
+                                        <DatePicker
+                                            modal
+                                            open={dob}
+                                            date={valueTime}
+                                            mode="date"
+                                            onConfirm={(date) => {
+                                                setDob(false)
+                                                onChange(date)
+                                            }}
+                                            onCancel={() => {
+                                                setDob(false)
+                                            }}
 
-                                    />
-                                </>
-                            )}
+                                        />
+                                    </>
+                                )
+                            }}
                             name="dob"
                         />
                     </View>
-                    <View style={styles.TextFeidContainer}>
+                    <View style={styles.TextFeidContainer1}>
                         <View style={styles.TextFeidContainerLeft}>
-                            <TextC size={ResponsiveSize(13)} text={"Description"} font={'Montserrat-Medium'} />
+                            <TextC size={ResponsiveSize(12)} text={"Description"} font={'Montserrat-Medium'} />
                         </View>
                         <Controller
                             control={control}
@@ -294,7 +315,7 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData }) => {
                                 required: true,
                             }}
                             render={({ field: { onChange, value } }) => (
-                                <TextInput onChangeText={onChange} value={value} style={styles.TextFeidContainerRight1} multiline={true} numberOfLines={5} />
+                                <TextInput  onChangeText={onChange} value={value} style={styles.TextFeidContainerRight1} multiline={true} numberOfLines={5} />
                             )}
                             name="description"
                         />

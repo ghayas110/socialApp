@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import baseUrl from '../../config.json'
 import {
     TASK_REGISTER_START,
@@ -65,3 +66,28 @@ export const getAllAirline = () => async (dispatch) => {
         console.log(error)
     }
 }
+
+
+export const changePassword = (body) => async (dispatch) => {
+    const Token = await AsyncStorage.getItem('Token');
+    console.log(body)
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/users/change-password`, {
+            method: "PATCH",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+            body: JSON.stringify(body)
+        });
+        const res = await response.json()
+        console.log(res)
+        return res?.message
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
+

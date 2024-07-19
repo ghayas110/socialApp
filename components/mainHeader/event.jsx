@@ -28,9 +28,9 @@ const EventHeader = ({ backgroundColor }) => {
         <View style={styles.HeaderWrapper}>
             <Image source={require('../../assets/icons/Logo.png')} style={styles.HeaderLogo} />
             <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity onPress={() => {}} style={{ marginRight: ResponsiveSize(15) }}>
+                {/* <TouchableOpacity onPress={() => {}} style={{ marginRight: ResponsiveSize(15) }}>
                     <Feather name='search' color={global.primaryColor} size={ResponsiveSize(18)} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <TouchableOpacity onPress={() => navigation.navigate('AddEvent')}>
                     <Image source={require('../../assets/icons/addEventIcon.png')} style={{ objectFit: 'contain', width: 19, height: 21 }} />

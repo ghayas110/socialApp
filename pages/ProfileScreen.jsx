@@ -140,11 +140,11 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
           <View style={{ width: 25 }}>
           </View>
           <View>
-            <TextC font={"Montserrat-Bold"} text={GetUserProfileReducer?.data?.user_name} size={16} />
+            <TextC font={"Montserrat-Bold"} text={GetUserProfileReducer?.data?.user_name} size={ResponsiveSize(14)} />
           </View>
-          <View>
+          <TouchableOpacity>
             <Entypo name='menu' size={26} color={'#05348E'} />
-          </View>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.ProfileInfo}>
@@ -167,7 +167,7 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
 
             <View style={styles.ProfilePostInfoInnerCard}>
               <MaterialCommunityIcons name='timer-sand' size={ResponsiveSize(20)} color={'#69BE25'} />
-              <TextC text={'Honolulusdasd'} font={'Montserrat-SemiBold'} size={ResponsiveSize(12)} style={{ width: "100%" }} ellipsizeMode={"tail"} numberOfLines={1} />
+              <TextC text={'Honolulu'} font={'Montserrat-SemiBold'} size={ResponsiveSize(12)} style={{ width: "100%", textAlign: 'center' }} ellipsizeMode={"tail"} numberOfLines={1} />
             </View>
           </View>
         </View>
@@ -182,7 +182,7 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
         <View style={styles.ProfileSettingBtn}>
           <TouchableOpacity style={styles.SetttingBtn} onPress={() => navigation.navigate('EditProfile')}><Text style={styles.SetttingBtnText}>Edit Profile</Text></TouchableOpacity>
           <TouchableOpacity style={styles.SetttingBtn}><Text style={styles.SetttingBtnText}>Search</Text></TouchableOpacity>
-          <TouchableOpacity onPress={Logout} style={styles.SetttingBtn}><Text style={styles.SetttingBtnText}>Logout</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Setting')} style={styles.SetttingBtn}><Text style={styles.SetttingBtnText}>Setting</Text></TouchableOpacity>
         </View>
 
         <ScrollView style={{ flexGrow: 1 }}>
