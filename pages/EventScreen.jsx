@@ -123,7 +123,7 @@ const EventScreen = ({ route }) => {
   })
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : 'white'} barStyle={scheme === 'dark' ? "light-content" : 'dark-content'} />
+      <StatusBar backgroundColor={'white'} barStyle={'dark-content'}/>
       <EventHeader backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : 'white'} barStyle={scheme === 'dark' ? "light-content" : 'dark-content'} />
 
       <View style={styles.bodyWrapper}>

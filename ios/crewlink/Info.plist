@@ -112,5 +112,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSAppleMusicUsageDescription</key>
+<string>Play using while you are hiking</string>
 </dict>
 </plist>
