@@ -145,7 +145,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline }) => {
     },
     modalView: {
       width: windowWidth * 0.8,
-      height: windowHeight * 0.56,
+      height: windowHeight * 0.65,
       backgroundColor: '#7891C2',
       borderRadius: ResponsiveSize(20),
       shadowColor: '#000',

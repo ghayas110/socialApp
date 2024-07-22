@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, StatusBar, View, Modal, Text, Pressable, Dimensions, PermissionsAndroid, Image, ImageBackground } from 'react-native'
+import { SafeAreaView, StyleSheet, StatusBar, View, Modal, Text, Pressable, Dimensions, PermissionsAndroid, Image, ImageBackground, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import ButtonC from '../components/button/index';
 import * as yup from 'yup';
@@ -18,7 +18,7 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
 import Feather from 'react-native-vector-icons/Feather'
 import * as Progress from 'react-native-progress';
-
+import {check, PERMISSIONS, RESULTS,request} from 'react-native-permissions';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -236,12 +236,10 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline, route }) => {
     })
     const requestCameraPermission = async () => {
         try {
-            const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+     const granted    =   Platform.OS === 'android' ? await request(PERMISSIONS.ANDROID.CAMERA) : await request(PERMISSIONS.IOS.CAMERA);
+       
                 handleOpenSheet()
-            } else {
-                console.log("Camera permission denied");
-            }
+           
         } catch (err) {
             console.warn(err);
         }
