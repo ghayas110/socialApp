@@ -14,6 +14,7 @@ import DeleteAccount from '../pages/DeleteAccount';
 import HomeScreen from '../pages/HomeScreen';
 import ReelScreen from '../pages/ReelScreen';
 import CreatePost from '../pages/CreatePost';
+import CreatePostTwo from '../pages/CreatePostStepTwo';
 
 
 
@@ -35,7 +36,6 @@ const EventStackNavigation = () => {
 
 const ProfileStackNavigation = ({ onLogin }) => {
   const Stack = createNativeStackNavigator();
-
   return (
     <Stack.Navigator>
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ProfileMain" component={ProfileScreen} />
@@ -69,6 +69,7 @@ const PostStackNavigation = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="CreatePost" component={CreatePost} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="CreatePostTwo" component={CreatePostTwo} />
     </Stack.Navigator>
   )
 }

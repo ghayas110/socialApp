@@ -47,6 +47,7 @@ const EditProfile = ({ GetUserProfileReducer, UpdateProfileData, GetProfileData,
             })
             setDialCode(GetUserProfileReducer?.data?.country_code)
         }
+        return ()=> {closeBottomSheet()}
     }, [])
 
     const schema = yup.object().shape({

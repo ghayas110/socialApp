@@ -4,6 +4,8 @@ const width = Dimensions.get('window').width;
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import TextC from '../text/text';
 import { useNavigation } from '@react-navigation/native';
+import { ResponsiveSize, global } from '../constant';
+
 
 const CreatePostHeader = () => {
     const styles = StyleSheet.create({
@@ -11,49 +13,50 @@ const CreatePostHeader = () => {
             flexDirection: 'row',
             alignItems: "center",
             justifyContent: "center",
-            height: 60,
-            width: width - 30,
+            height: ResponsiveSize(55),
+            backgroundColor: global.white,
+            paddingHorizontal: ResponsiveSize(15)
         },
-        logoSide1:{
-            flexDirection:'row',
-            alignItems:'center',
-            justifyContent:'flex-start',
-            width:'33.33%',
+        logoSide1: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '33.33%',
         },
-        logoSide2:{
-            flexDirection:'row',
-            alignItems:'center',
-            justifyContent:'center',
-            width:'33.33%',
+        logoSide2: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '33.33%',
         },
-        logoSide3:{
-            flexDirection:'row',
-            alignItems:'center',
-            justifyContent:'flex-end',
-            width:'33.33%',
+        logoSide3: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            width: '33.33%',
         },
-        NextBtn:{
-            backgroundColor:'#69BE25',
-            paddingHorizontal:20,
-            paddingVertical:4,
-            borderRadius:20,
-            alignItems:'center',
-            justifyContent:'center',
+        NextBtn: {
+            backgroundColor: '#69BE25',
+            paddingHorizontal: ResponsiveSize(20),
+            paddingVertical: ResponsiveSize(4),
+            borderRadius: ResponsiveSize(20),
+            alignItems: 'center',
+            justifyContent: 'center',
         }
     })
     const navigation = useNavigation()
 
     return (
         <View style={styles.wrapper}>
-            <TouchableOpacity onPress={()=>navigation.goBack()}  style={styles.logoSide1}>
-                <AntDesign name='left' color={"#05348E"} size={16}/>
-                <Image source={require('../../assets/icons/Logo.png')} style={{ objectFit: 'contain', width: 80, height: 22}} />
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.logoSide1}>
+                <AntDesign name='left' color={"#05348E"} size={ResponsiveSize(16)} />
+                <Image source={require('../../assets/icons/Logo.png')} style={{ objectFit: 'contain', width: ResponsiveSize(70), height: ResponsiveSize(22) }} />
             </TouchableOpacity>
             <View style={styles.logoSide2}>
-                <TextC font={'Montserrat-SemiBold'} text={"Recently"}/>
+                <TextC font={'Montserrat-SemiBold'} text={"Recently"} />
             </View>
             <View style={styles.logoSide3}>
-                <TouchableOpacity style={styles.NextBtn}><TextC size={12} text={'Next'} font={'Montserrat-SemiBold'}/></TouchableOpacity>
+                <TouchableOpacity style={styles.NextBtn}><TextC size={ResponsiveSize(11)} text={'Next'} font={'Montserrat-SemiBold'} /></TouchableOpacity>
             </View>
         </View>
     )

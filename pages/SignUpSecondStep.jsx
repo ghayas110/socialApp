@@ -37,6 +37,10 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline, route }) => {
     const [isImageSave, setIsImageSave] = useState(true)
     const [isImageSaveExist, setIsImageSaveExist] = useState(false)
 
+    useEffect(() => {
+        return () => { closeBottomSheet() }
+    })
+
     const schema = yup.object().shape({
         dob: yup
             .string()
@@ -61,7 +65,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline, route }) => {
         if (!documentImage == "") {
             try {
                 await AsyncStorage.removeItem('email');
-                await AsyncStorage.setItem('email',email);
+                await AsyncStorage.setItem('email', email);
                 const formData = new FormData();
                 formData.append('user_name', userName);
                 formData.append('email', email);

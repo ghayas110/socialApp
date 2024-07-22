@@ -30,6 +30,10 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
     const [documentImage, setDocumentImage] = useState('')
     const [document, setDocument] = useState('')
 
+
+    useEffect(() => {
+        return () => { closeBottomSheet() }
+    })
     const handleOpenSheet = () => {
         openBottomSheet(
             <>

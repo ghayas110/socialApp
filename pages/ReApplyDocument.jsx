@@ -186,6 +186,7 @@ const ReApplyDocument = ({ ReApplyDocReducer, getAllAirline }) => {
 
   useEffect(() => {
     LoadAirLine()
+    return () => { closeBottomSheet() }
   }, [])
   const LoadAirLine = async () => {
     const loadAllAirLineDetail = await getAllAirline()

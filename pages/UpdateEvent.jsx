@@ -37,7 +37,6 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
     const [isImage, setIsImage] = useState("")
     const { cache } = useSWRConfig()
 
-
     useEffect(() => {
         if (eventDetail) {
             reset({
@@ -56,6 +55,7 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
         else {
             loadEventDetail()
         }
+        return () => { closeBottomSheet() }
     }, [eventDetail])
 
     const loadEventDetail = async () => {
