@@ -20,7 +20,7 @@ import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
 import ButtonC from '../components/button';
 import { useToast } from '../components/Toast/ToastContext';
 import { useSWRConfig } from 'swr';
-
+import {check, PERMISSIONS, RESULTS,request} from 'react-native-permissions';
 
 const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail, route,getJoinedEvents,getAllEvents}) => {
     const { id } = route.params;
@@ -36,6 +36,7 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
     const { showToast } = useToast();
     const [isImage, setIsImage] = useState("")
     const { cache } = useSWRConfig()
+
 
     useEffect(() => {
         if (eventDetail) {
@@ -55,7 +56,6 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
         else {
             loadEventDetail()
         }
-        return () => { closeBottomSheet() }
     }, [eventDetail])
 
     const loadEventDetail = async () => {
@@ -84,12 +84,9 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
     };
     const requestCameraPermission = async () => {
         try {
-            const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            const granted    =   Platform.OS === 'android' ? await request(PERMISSIONS.ANDROID.CAMERA) : await request(PERMISSIONS.IOS.CAMERA);
                 handleOpenSheet()
-            } else {
-                console.log("Camera permission denied");
-            }
+      
         } catch (err) {
             console.warn(err);
         }

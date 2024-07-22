@@ -35,7 +35,7 @@ export const loginUser = (body) => async (dispatch) => {
             type: TASK_LOGIN_END,
             loading: false,
         });
-        console.log(error,'ok')
+        console.log(error,'ok error login')
     }
 }
 

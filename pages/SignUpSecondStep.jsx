@@ -18,7 +18,7 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
 import Feather from 'react-native-vector-icons/Feather'
 import * as Progress from 'react-native-progress';
-
+import {check, PERMISSIONS, RESULTS,request} from 'react-native-permissions';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -36,10 +36,6 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline, route }) => {
     const [document, setDocument] = useState('')
     const [isImageSave, setIsImageSave] = useState(true)
     const [isImageSaveExist, setIsImageSaveExist] = useState(false)
-
-    useEffect(() => {
-        return () => { closeBottomSheet() }
-    })
 
     const schema = yup.object().shape({
         dob: yup
@@ -65,7 +61,7 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline, route }) => {
         if (!documentImage == "") {
             try {
                 await AsyncStorage.removeItem('email');
-                await AsyncStorage.setItem('email', email);
+                await AsyncStorage.setItem('email',email);
                 const formData = new FormData();
                 formData.append('user_name', userName);
                 formData.append('email', email);
@@ -240,12 +236,12 @@ const SignUp = ({ insertUser, RegisterUserReducer, getAllAirline, route }) => {
     })
     const requestCameraPermission = async () => {
         try {
-            const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            const granted =
+            Platform.OS === 'android'
+              ? await request(PERMISSIONS.ANDROID.CAMERA)
+              : await request(PERMISSIONS.IOS.CAMERA);
                 handleOpenSheet()
-            } else {
-                console.log("Camera permission denied");
-            }
+          
         } catch (err) {
             console.warn(err);
         }

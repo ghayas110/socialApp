@@ -949,7 +949,7 @@ PODS:
   - React-Mapbuffer (0.74.1):
     - glog
     - React-debug
-  - react-native-cameraroll (7.8.1):
+  - react-native-cameraroll (7.8.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1651,7 +1651,7 @@ SPEC CHECKSUMS:
   React-jsitracing: 233d1a798fe0ff33b8e630b8f00f62c4a8115fbc
   React-logger: 7e7403a2b14c97f847d90763af76b84b152b6fce
   React-Mapbuffer: 11029dcd47c5c9e057a4092ab9c2a8d10a496a33
-  react-native-cameraroll: a9138c165c9975da773d26945591d313992c799b
+  react-native-cameraroll: 4f313ab09aeaf42ac5f72dec840641da7656f104
   react-native-date-picker: 6891317e850deae5b53d51355226e07a495aba61
   react-native-image-picker: c3afe5472ef870d98a4b28415fc0b928161ee5f7
   react-native-maps: 7b2c2cee95271592a92ba485eea1dec66a363a6e
