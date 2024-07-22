@@ -265,13 +265,11 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
             <>
                 <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={{ ...styles.Wrapper, borderColor: global.description, borderWidth: 1, }}>
                     <View style={{ backgroundColor: "#d5d5d5", borderRadius: ResponsiveSize(20) }}>
-                        <FastImage
-                            style={{ width: ResponsiveSize(100), height: ResponsiveSize(100), borderRadius: ResponsiveSize(20) }}
+                        <Image
+                            style={{ width: ResponsiveSize(100), height: ResponsiveSize(100), borderRadius: ResponsiveSize(20),transform: [{rotate: '270deg'}]}}
                             source={{
                                 uri: items?.item?.event_cover_image_thumbnail,
-                                priority: FastImage.priority.high,
                             }}
-                            resizeMode={FastImage.resizeMode.cover}
                         />
                     </View>
                     <View style={styles.UpcomingContent}>

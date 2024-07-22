@@ -127,14 +127,7 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
   })
 
 
-  const Logout = async () => {
-    try {
-      await AsyncStorage.removeItem('Token');
-      navigation.navigate('login')
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  console.log(GetUserProfileReducer?.data?.last_checkin)
   return (
     <SafeAreaView style={{ flexGrow: 1 }}>
       <ScrollView style={{ backgroundColor: 'white' }}>
@@ -169,7 +162,7 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
 
             <View style={styles.ProfilePostInfoInnerCard}>
               <MaterialCommunityIcons name='timer-sand' size={ResponsiveSize(20)} color={'#69BE25'} />
-              <TextC text={'Honolulu'} font={'Montserrat-SemiBold'} size={ResponsiveSize(12)} style={{ width: "100%", textAlign: 'center' }} ellipsizeMode={"tail"} numberOfLines={1} />
+              <TextC text={GetUserProfileReducer?.data?.last_checkin == "No last check-in available" ? "No Check-in" : GetUserProfileReducer?.data?.last_checkin} font={'Montserrat-SemiBold'} size={ResponsiveSize(12)} style={{ width: "100%", textAlign: 'center' }} ellipsizeMode={"tail"} numberOfLines={1} />
             </View>
           </View>
         </View>
@@ -177,9 +170,9 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
         <View style={styles.ProfileTitleDescription}>
           <TextC font={"Montserrat-SemiBold"} text={GetUserProfileReducer?.data?.user_name} size={16} />
           {GetUserProfileReducer?.data?.bio &&
-          <ReadMore seeLessStyle={{ fontFamily: "Montserrat-Bold", color: global.primaryColor }} seeMoreStyle={{ fontFamily: "Montserrat-Bold", color: global.primaryColor }} numberOfLines={3} style={styles.DescriptionStyle}>
-            {GetUserProfileReducer?.data?.bio}
-          </ReadMore>
+            <ReadMore seeLessStyle={{ fontFamily: "Montserrat-Bold", color: global.primaryColor }} seeMoreStyle={{ fontFamily: "Montserrat-Bold", color: global.primaryColor }} numberOfLines={3} style={styles.DescriptionStyle}>
+              {GetUserProfileReducer?.data?.bio}
+            </ReadMore>
           }
         </View>
 
@@ -196,10 +189,10 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
                 <Image style={{ resizeMode: 'cover', height: '100%', width: "100%" }} source={{ uri: userPosts?.attachment_thumbnail_url }} />
               </TouchableOpacity>
             )) :
-              <View style={{ paddingTop: ResponsiveSize(80), flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: windowWidth,borderTopColor:global.description,borderTopWidth:1}}>
+              <View style={{ paddingTop: ResponsiveSize(80), flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: windowWidth, borderTopColor: global.description, borderTopWidth: 1 }}>
                 <TextC text={"No Post Available Yet"} font={"Montserrat-Bold"} />
-                <TouchableOpacity style={{ backgroundColor: '#05348E', width: ResponsiveSize(150),flexDirection:'column',alignItems:'center',justifyContent:'center',paddingVertical:ResponsiveSize(10),borderRadius:ResponsiveSize(30),marginTop:ResponsiveSize(10)}} onPress={() => navigation.navigate('CreatePost')}>
-                  <TextC text={"Start Your First Post"} font={"Montserrat-Medium"} size={ResponsiveSize(11)} style={{color:'white'}} />
+                <TouchableOpacity style={{ backgroundColor: '#05348E', width: ResponsiveSize(150), flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingVertical: ResponsiveSize(10), borderRadius: ResponsiveSize(30), marginTop: ResponsiveSize(10) }} onPress={() => navigation.navigate('CreatePost')}>
+                  <TextC text={"Start Your First Post"} font={"Montserrat-Medium"} size={ResponsiveSize(11)} style={{ color: 'white' }} />
                 </TouchableOpacity>
               </View>}
           </View>

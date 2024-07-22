@@ -12,10 +12,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as UserRegisterAction from "../store/actions/UserRegister/index";
 import { connect } from "react-redux";
 import { useToast } from "../components/Toast/ToastContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
-const DeleteAccount = ({ DeleteAccountAction }) => {
+const DeleteAccount = ({ DeleteAccountAction, onLogin }) => {
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
     const scheme = useColorScheme();
@@ -102,7 +103,8 @@ const DeleteAccount = ({ DeleteAccountAction }) => {
         const LoadUpdate = await DeleteAccountAction(data.password)
         console.log(LoadUpdate)
         if (LoadUpdate == "Account Deleted") {
-            Logout()
+            await AsyncStorage.removeItem('Token');
+            onLogin();
             setLoading(false)
         }
         else if (LoadUpdate == "Wrong Password") {
@@ -116,15 +118,6 @@ const DeleteAccount = ({ DeleteAccountAction }) => {
             setLoading(false)
         }
         setLoading(false)
-    }
-    const Logout = async () => {
-        try {
-            await AsyncStorage.removeItem('Token');
-            setIsLoggedIn(false)
-            navigation.navigate('login')
-        } catch (e) {
-            console.error(e);
-        }
     }
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -156,7 +149,7 @@ const DeleteAccount = ({ DeleteAccountAction }) => {
                         )}
                         name="password"
                     />
-                    <ButtonC disabled={loading} onPress={handleSubmit(onSubmit)} loading={loading} title={"Delete"} TextStyle={{color:'white'}} bgColor={global.red} BtnStyle={{ marginTop: ResponsiveSize(15) }} />
+                    <ButtonC disabled={loading} onPress={handleSubmit(onSubmit)} loading={loading} title={"Delete"} TextStyle={{ color: 'white' }} bgColor={global.red} BtnStyle={{ marginTop: ResponsiveSize(15) }} />
                 </View>
             </ScrollView>
         </SafeAreaView>

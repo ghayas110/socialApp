@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DarkTheme, useNavigation } from "@react-navigation/native";
 
 
-const Setting = ({setIsLoggedIn}) => {
+const Setting = ({ onLogin }) => {
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
     const scheme = useColorScheme();
@@ -73,7 +73,7 @@ const Setting = ({setIsLoggedIn}) => {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginTop:ResponsiveSize(15)
+            marginTop: ResponsiveSize(15)
         },
         DeleteBtn: {
             backgroundColor: global.red,
@@ -88,13 +88,12 @@ const Setting = ({setIsLoggedIn}) => {
 
     const Logout = async () => {
         try {
-          await AsyncStorage.removeItem('Token');
-          setIsLoggedIn(false)
-          navigation.navigate('login')
+            await AsyncStorage.removeItem('Token');
+            onLogin();
         } catch (e) {
-          console.error(e);
+            console.error(e);
         }
-      }
+    }
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <StatusBar backgroundColor={scheme === 'dark' ? DarkTheme.colors.background : 'white'} barStyle={scheme === 'dark' ? "light-content" : 'dark-content'} />
@@ -121,7 +120,7 @@ const Setting = ({setIsLoggedIn}) => {
                             <TextC text={"Edit Profile"} font={'Montserrat-Medium'} />
                             <AntDesign name='right' size={ResponsiveSize(15)} color={global.primaryColor} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={()=>navigation.navigate("ChangePassword")} style={styles.ListWrapper}>
+                        <TouchableOpacity onPress={() => navigation.navigate("ChangePassword")} style={styles.ListWrapper}>
                             <TextC text={"Change Password"} font={'Montserrat-Medium'} />
                             <AntDesign name='right' size={ResponsiveSize(15)} color={global.primaryColor} />
                         </TouchableOpacity>
@@ -168,7 +167,7 @@ const Setting = ({setIsLoggedIn}) => {
                         </View>
                     </View>
                     <View style={{ paddingTop: ResponsiveSize(20) }}>
-                        <TouchableOpacity style={styles.DeleteBtn} onPress={()=>navigation.navigate('DeleteAccount')}>
+                        <TouchableOpacity style={styles.DeleteBtn} onPress={() => navigation.navigate('DeleteAccount')}>
                             <TextC size={ResponsiveSize(14)} style={{ color: global.white }} font={'Montserrat-Medium'} text={"Account Delete"} />
                             <AntDesign name='delete' size={ResponsiveSize(16)} color={global.white} />
                         </TouchableOpacity>

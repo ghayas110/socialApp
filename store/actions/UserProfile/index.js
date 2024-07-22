@@ -3,7 +3,9 @@ import baseUrl from '../../config.json'
 import {
     TASK_GET_PROFILE_DETAIL_START,
     TASK_GET_PROFILE_DETAIL_END,
-    TASK_GET_PROFILE_DETAIL_ERROR
+    TASK_GET_PROFILE_DETAIL_ERROR,
+    LOGOUT,
+    LOGIN
 } from '../types'
 
 
@@ -81,4 +83,19 @@ export const UpdateProfile = (data) => async (dispatch) => {
     catch (error) {
         console.log(error)
     }
+}
+
+
+export const Logout = () => async (dispatch) => {
+    dispatch({
+        type: LOGOUT,
+        payloads: false,
+    });
+}
+
+export const Login = () => async (dispatch) => {
+    dispatch({
+        type: LOGIN,
+        payloads: true,
+    });
 }

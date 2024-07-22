@@ -8,6 +8,7 @@ import { CheckInReducer, CityReducer,CountryReducer,StatesReducer} from "./reduc
 import ReApplyDocReducer from "./reducers/ReApplyDoc";
 import { AllEventReducer, JoinedEventReducer, MyEventReducer } from "./reducers/Events";
 import { GetUserProfileReducer } from "./reducers/UserProfile";
+import AuthReducerGlobal from "./reducers/Auth";
 
 
 const reducers = combineReducers({
@@ -23,7 +24,8 @@ const reducers = combineReducers({
   AllEventReducer,
   JoinedEventReducer,
   MyEventReducer,
-  GetUserProfileReducer
+  GetUserProfileReducer,
+  AuthReducerGlobal
 });
 
 const composeEnhancers = window.REDUX_DEVTOOLS_EXTENSION_COMPOSE || compose;

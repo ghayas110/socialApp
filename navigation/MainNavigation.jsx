@@ -23,7 +23,7 @@ import CreatePostHeader from '../components/mainHeader/createPostHeader'
 import EventHeader from '../components/mainHeader/event';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
-import { ProfileStackNavigation, EventStackNavigation } from './StackNavigation';
+import { ProfileStackNavigation, EventStackNavigation, PostStackNavigation, HomeStackNavigation, GroupStackNavigation } from './StackNavigation';
 import LoginSwitcher from '../pages/LoginSwitcher';
 import { ResponsiveSize, global } from '../components/constant';
 import SignUpSecondStep from '../pages/SignUpSecondStep';
@@ -71,9 +71,9 @@ const MainNavigation = ({ GetUserProfileReducer }) => {
         <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarStyle: { backgroundColor: '#69BE25', borderTopLeftRadius: ResponsiveSize(20), borderTopRightRadius: ResponsiveSize(20) },
-            tabBarHideOnKeyboard:true
+            tabBarHideOnKeyboard: true
           })}>
-          <Tab.Screen name="Home" component={HomeScreen}
+          <Tab.Screen name="Home" component={HomeStackNavigation}
             options={{
               navigationBarColor: '#69BE25',
               tabBarIcon: ({ color, size, focused }) => (
@@ -105,7 +105,7 @@ const MainNavigation = ({ GetUserProfileReducer }) => {
 
 
 
-          <Tab.Screen name="CreatePost" component={CreatePost} options={{
+          <Tab.Screen name="CreatePost" component={PostStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <View style={styles.centerTab}>
                 <Image source={require('../assets/icons/homeTab/centerTab.png')} style={{ width: ResponsiveSize(25), height: ResponsiveSize(20), objectFit: 'contain' }} />
@@ -120,7 +120,7 @@ const MainNavigation = ({ GetUserProfileReducer }) => {
               ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: "white" }),
             }
           }} />
-          <Tab.Screen name="Reel" component={ReelScreen} options={{
+          <Tab.Screen name="Reel" component={GroupStackNavigation} options={{
             tabBarIcon: ({ color, size, focused }) => (
               <Image source={!focused ? require('../assets/icons/homeTab/tabChatLight.png') : require('../assets/icons/homeTab/tabChatFill.png')} style={{ width: ResponsiveSize(25), height: ResponsiveSize(20), objectFit: 'contain' }} />
             ),
@@ -132,16 +132,33 @@ const MainNavigation = ({ GetUserProfileReducer }) => {
               ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: "white" }),
             }
           }} />
-          <Tab.Screen name="Profile" component={ProfileStackNavigation} options={{
+          {/* <Tab.Screen name="Profile" component={ProfileStackNavigation}  {...props} onLogin={() => setIsLoggedIn(false)} options={{
             tabBarIcon: ({ color, size, focused }) => (
-              <Image source={GetUserProfileReducer?.data?.profile_picture_url == "" ? require('../assets/icons/avatar.png') : { uri: GetUserProfileReducer?.data?.profile_picture_url }} style={{ width: ResponsiveSize(30), height: ResponsiveSize(30), objectFit: 'cover',overflow:"hidden",borderRadius:ResponsiveSize(30)}} />
+              <Image source={GetUserProfileReducer?.data?.profile_picture_url == "" ? require('../assets/icons/avatar.png') : { uri: GetUserProfileReducer?.data?.profile_picture_url }} style={{ width: ResponsiveSize(30), height: ResponsiveSize(30), objectFit: 'cover', overflow: "hidden", borderRadius: ResponsiveSize(30) }} />
             ),
             headerShown: false,
             tabBarShowLabel: false,
             headerStyle: {
               ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: "white" }),
             }
-          }} />
+          }} /> */}
+          <Tab.Screen
+            name="Profile"
+            component={(props) => <ProfileStackNavigation {...props} onLogin={() => setIsLoggedIn(false)} />}
+            options={{
+              tabBarIcon: ({ color, size, focused }) => (
+                <Image
+                  source={GetUserProfileReducer?.data?.profile_picture_url === "" ? require('../assets/icons/avatar.png') : { uri: GetUserProfileReducer?.data?.profile_picture_url }}
+                  style={{ width: ResponsiveSize(30), height: ResponsiveSize(30), objectFit: 'cover', overflow: "hidden", borderRadius: ResponsiveSize(30) }}
+                />
+              ),
+              headerShown: false,
+              tabBarShowLabel: false,
+              headerStyle: {
+                ...(scheme === 'dark' ? { backgroundColor: DarkTheme.colors.background } : { backgroundColor: "white" }),
+              }
+            }}
+          />
         </Tab.Navigator>
         :
         <Stack.Navigator screenOptions={{

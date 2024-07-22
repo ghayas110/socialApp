@@ -11,6 +11,9 @@ import Setting from '../pages/Setting';
 import ChangePassword from '../pages/changePassword';
 import ChangeAirline from '../pages/ChangeAirline';
 import DeleteAccount from '../pages/DeleteAccount';
+import HomeScreen from '../pages/HomeScreen';
+import ReelScreen from '../pages/ReelScreen';
+import CreatePost from '../pages/CreatePost';
 
 
 
@@ -30,17 +33,51 @@ const EventStackNavigation = () => {
 }
 
 
-const ProfileStackNavigation = () => {
+const ProfileStackNavigation = ({ onLogin }) => {
   const Stack = createNativeStackNavigator();
+
   return (
     <Stack.Navigator>
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ProfileMain" component={ProfileScreen} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="EditProfile" component={EditProfile} />
-      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Setting" component={Setting} />
+      <Stack.Screen
+        options={{ headerShown: false, navigationBarHidden: true }}
+        name="Setting"
+        component={(props) => <Setting {...props} onLogin={onLogin} />}
+      />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ChangePassword" component={ChangePassword} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ChangeAirline" component={ChangeAirline} />
-      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="DeleteAccount" component={DeleteAccount} />
+      <Stack.Screen
+        options={{ headerShown: false, navigationBarHidden: true }}
+        name="DeleteAccount"
+        component={(props) => <DeleteAccount {...props} onLogin={onLogin} />}
+      />
     </Stack.Navigator>
   )
 }
-export { EventStackNavigation, ProfileStackNavigation }
+
+const HomeStackNavigation = () => {
+  const Stack = createNativeStackNavigator();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Home" component={HomeScreen} />
+    </Stack.Navigator>
+  )
+}
+const PostStackNavigation = () => {
+  const Stack = createNativeStackNavigator();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="CreatePost" component={CreatePost} />
+    </Stack.Navigator>
+  )
+}
+const GroupStackNavigation = () => {
+  const Stack = createNativeStackNavigator();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Reel" component={ReelScreen} />
+    </Stack.Navigator>
+  )
+}
+export { EventStackNavigation, ProfileStackNavigation, HomeStackNavigation, PostStackNavigation, GroupStackNavigation }

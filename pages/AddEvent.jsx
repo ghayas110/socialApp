@@ -30,17 +30,17 @@ const AddEvent = ({ AllEventReducer, CreateEvent, getMyEvents, getJoinedEvents, 
     const [documentImage, setDocumentImage] = useState('')
     const [document, setDocument] = useState('')
 
-    // const handleOpenSheet = () => {
-    //     openBottomSheet(
-    //         <>
-    //             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: ResponsiveSize(15) }}>
-    //                 <ButtonC onPress={openMobileCamera} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openCamera} title={"Open camera"}></ButtonC>
-    //                 <ButtonC onPress={openPhotoLibrary} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openLibrary} title={"Open library"}></ButtonC>
-    //             </View>
-    //         </>
-    //         , ["15%"]
-    //     );
-    // };
+    const handleOpenSheet = () => {
+        openBottomSheet(
+            <>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: ResponsiveSize(15) }}>
+                    <ButtonC onPress={openMobileCamera} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openCamera} title={"Open camera"}></ButtonC>
+                    <ButtonC onPress={openPhotoLibrary} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openLibrary} title={"Open library"}></ButtonC>
+                </View>
+            </>
+            , ["15%"]
+        );
+    };
     const requestCameraPermission = async () => {
         try {
             const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);

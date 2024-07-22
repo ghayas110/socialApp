@@ -40,7 +40,7 @@ const Approval = ({ route }) => {
         }
         {status == "IN_REVIEW" ?
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(18) }}>
-            <ButtonC bgColor={global.secondaryColor} title={"Contact Us"} onPress={() => Linking.openURL(`tel:${'03168880417'}`)} />
+            <ButtonC bgColor={global.secondaryColor} title={"Contact Us"} onPress={() => Linking.openURL(`tel:${'00000000000'}`)} />
           </View> :
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(18) }}>
             <ButtonC bgColor={global.secondaryColor} title={"Apply again"} onPress={() => navigation.navigate('Reapply')} />

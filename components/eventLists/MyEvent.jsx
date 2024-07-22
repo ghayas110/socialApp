@@ -275,13 +275,11 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
     const renderItem = useCallback((items) => {
         return (
             <Pressable onPress={() => navigation.navigate('EventDetail', { id: items?.item?.event_id })} style={{ ...styles.Wrapper, borderColor: global.description, borderWidth: 1, }}>
-                <FastImage
-                    style={{ width: ResponsiveSize(100), height: ResponsiveSize(100), borderRadius: ResponsiveSize(20) }}
+                <Image
+                    style={{ width: ResponsiveSize(100), height: ResponsiveSize(100), borderRadius: ResponsiveSize(20),transform: [{rotate: '270deg'}]}}
                     source={{
                         uri: items?.item?.event_cover_image_thumbnail,
-                        priority: FastImage.priority.high,
                     }}
-                    resizeMode={FastImage.resizeMode.cover}
                 />
                 <View style={styles.UpcomingContent}>
                     <View style={styles.timeAgoJoinedV}>
