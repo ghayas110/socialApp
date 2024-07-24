@@ -164,13 +164,8 @@ const MainNavigation = ({GetUserProfileReducer}) => {
                 </View>
               ),
               tabBarStyle: {display: 'none'},
+              headerShown: false,
               tabBarShowLabel: false,
-              headerTitle: () => <CreatePostHeader />,
-              headerStyle: {
-                ...(scheme === 'dark'
-                  ? {backgroundColor: DarkTheme.colors.background}
-                  : {backgroundColor: 'white'}),
-              },
             }}
           />
           <Tab.Screen

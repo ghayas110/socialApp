@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ResponsiveSize, global } from '../constant';
 
 
-const CreatePostHeader = () => {
+const CreatePostHeader = (post,isMultiple) => {
     const styles = StyleSheet.create({
         wrapper: {
             flexDirection: 'row',
@@ -53,10 +53,10 @@ const CreatePostHeader = () => {
                 <Image source={require('../../assets/icons/Logo.png')} style={{ objectFit: 'contain', width: ResponsiveSize(70), height: ResponsiveSize(22) }} />
             </TouchableOpacity>
             <View style={styles.logoSide2}>
-                <TextC font={'Montserrat-SemiBold'} text={"Recently"} />
+                <TextC font={'Montserrat-SemiBold'} text={"Library"} />
             </View>
             <View style={styles.logoSide3}>
-                <TouchableOpacity style={styles.NextBtn}><TextC size={ResponsiveSize(11)} text={'Next'} font={'Montserrat-SemiBold'} /></TouchableOpacity>
+                <TouchableOpacity onPress={()=>navigation.navigate('CreatePostTwo',post,isMultiple)} style={styles.NextBtn}><TextC size={ResponsiveSize(11)} text={'Next'} font={'Montserrat-SemiBold'} /></TouchableOpacity>
             </View>
         </View>
     )

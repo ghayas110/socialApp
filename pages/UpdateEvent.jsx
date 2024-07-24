@@ -20,9 +20,9 @@ import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
 import ButtonC from '../components/button';
 import { useToast } from '../components/Toast/ToastContext';
 import { useSWRConfig } from 'swr';
-import {check, PERMISSIONS, RESULTS,request} from 'react-native-permissions';
+import { check, PERMISSIONS, RESULTS, request } from 'react-native-permissions';
 
-const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail, route,getJoinedEvents,getAllEvents}) => {
+const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail, route, getJoinedEvents, getAllEvents }) => {
     const { id } = route.params;
     const windowWidth = Dimensions.get('window').width;
     const scheme = useColorScheme();
@@ -56,6 +56,7 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
         else {
             loadEventDetail()
         }
+        return()=>{closeBottomSheet()}
     }, [eventDetail])
 
     const loadEventDetail = async () => {
@@ -74,7 +75,13 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
     const handleOpenSheet = () => {
         openBottomSheet(
             <>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: ResponsiveSize(15) }}>
+                <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    height: '100%',
+                    paddingHorizontal: ResponsiveSize(15),
+                }}>
                     <ButtonC onPress={openMobileCamera} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openCamera} title={"Open camera"}></ButtonC>
                     <ButtonC onPress={openPhotoLibrary} BtnStyle={{ width: windowWidth * 0.45 }} TextStyle={{ color: global.white }} bgColor={global.primaryColor} style={styles.openLibrary} title={"Open library"}></ButtonC>
                 </View>
@@ -84,9 +91,9 @@ const UpdateEvent = ({ AllEventReducer, UpdateEvent, getMyEvents, getEventDetail
     };
     const requestCameraPermission = async () => {
         try {
-            const granted    =   Platform.OS === 'android' ? await request(PERMISSIONS.ANDROID.CAMERA) : await request(PERMISSIONS.IOS.CAMERA);
-                handleOpenSheet()
-      
+            const granted = Platform.OS === 'android' ? await request(PERMISSIONS.ANDROID.CAMERA) : await request(PERMISSIONS.IOS.CAMERA);
+            handleOpenSheet()
+
         } catch (err) {
             console.warn(err);
         }

@@ -34,11 +34,6 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent, AllEventReducer, Join
   });
 
   useEffect(() => {
-
-  }, []);
-
-
-  useEffect(() => {
     loadEventDetail()
     const parent = getParent();
     parent?.setOptions({
