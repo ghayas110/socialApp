@@ -34,7 +34,7 @@ const CreatePost = () => {
     const [isEditAvailable, setIsEditAvailable] = useState(false);
     const [selectMulti, setSelectMulti] = useState(false);
     const [multiContent, setMultiContent] = useState([]);
-    const {openBottomSheet, closeBottomSheet } = useBottomSheet();
+    const { openBottomSheet, closeBottomSheet } = useBottomSheet();
     const [temp, setTemp] = useState();
 
     const styles = StyleSheet.create({
@@ -294,7 +294,7 @@ const CreatePost = () => {
     return (
         <>
             <SafeAreaView style={styles.container}>
-                <CreatePostHeader isMultiple={selectMulti} post={selectMulti?multiContent:currentPreview}/>
+                <CreatePostHeader isImage={isImage} isMultiple={selectMulti} post={selectMulti ? multiContent : currentPreview} />
                 <View style={styles.FirstImagePreview}>
                     {isImage ?
                         <>

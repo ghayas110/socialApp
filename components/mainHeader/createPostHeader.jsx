@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ResponsiveSize, global } from '../constant';
 
 
-const CreatePostHeader = (post,isMultiple) => {
+const CreatePostHeader = (post,isMultiple,isImage) => {
     const styles = StyleSheet.create({
         wrapper: {
             flexDirection: 'row',
@@ -45,7 +45,7 @@ const CreatePostHeader = (post,isMultiple) => {
         }
     })
     const navigation = useNavigation()
-
+    console.log(post,'post')
     return (
         <View style={styles.wrapper}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.logoSide1}>
@@ -56,7 +56,7 @@ const CreatePostHeader = (post,isMultiple) => {
                 <TextC font={'Montserrat-SemiBold'} text={"Library"} />
             </View>
             <View style={styles.logoSide3}>
-                <TouchableOpacity onPress={()=>navigation.navigate('CreatePostTwo',post,isMultiple)} style={styles.NextBtn}><TextC size={ResponsiveSize(11)} text={'Next'} font={'Montserrat-SemiBold'} /></TouchableOpacity>
+                <TouchableOpacity onPress={()=>navigation.navigate('CreatePostTwo',post,isMultiple,isImage)} style={styles.NextBtn}><TextC size={ResponsiveSize(11)} text={'Next'} font={'Montserrat-SemiBold'} /></TouchableOpacity>
             </View>
         </View>
     )

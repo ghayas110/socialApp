@@ -1,8 +1,9 @@
-import React, { useState } from "react"
-import { Dimensions, ImageBackground, SafeAreaView, StyleSheet, View, Image, StatusBar, ActivityIndicator } from "react-native"
+import React, { useRef, useState } from "react"
+import { Dimensions, ImageBackground, SafeAreaView, StyleSheet, View, Image, StatusBar, ActivityIndicator, Pressable } from "react-native"
 import { global, ResponsiveSize } from "../components/constant"
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import AntDesign from 'react-native-vector-icons/AntDesign'
+import Entypo from 'react-native-vector-icons/Entypo'
 import TextC from "../components/text/text";
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons"
@@ -10,15 +11,16 @@ import ModalSelector from "react-native-modal-selector";
 import Carousel from "react-native-reanimated-carousel";
 import * as PostCreationAction from '../store/actions/PostCreation/index';
 import { connect } from 'react-redux';
+import Video from "react-native-video";
 
 
-const CreatePostTwo = ({ route, PostCreationReducer, CreatePostFunction }) => {
+const CreatePostTwo = ({ route, PostCreationReducer, CreatePostFunction, ExludeConnection }) => {
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
     const ScreenHeight = Dimensions.get('screen').height;
     const navigation = useNavigation()
     const ref = React.useRef(null);
-    const [privacy, setPrivacy] = useState("All")
+    const [privacy, setPrivacy] = useState("Public")
     const [caption, setCaption] = useState("")
     const [loading, setLoading] = useState(false)
     const styles = StyleSheet.create({
@@ -121,6 +123,35 @@ const CreatePostTwo = ({ route, PostCreationReducer, CreatePostFunction }) => {
             flexDirection: "column",
             alignItems: 'center',
             justifyContent: 'center',
+        },
+        tagCapsule: {
+            backgroundColor: "#EEEEEE",
+            flexDirection: "row",
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingLeft: ResponsiveSize(10),
+            paddingRight: ResponsiveSize(5),
+            paddingVertical: ResponsiveSize(3),
+            borderRadius: ResponsiveSize(5),
+            marginLeft: ResponsiveSize(5),
+        },
+        TagedPeople: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            position: 'relative',
+        },
+        playPaused: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            borderWidth: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: windowHeight * 0.30,
+            width: windowWidth * 0.7,
+            flexDirection: 'row'
         }
     })
     const data = [
@@ -128,14 +159,16 @@ const CreatePostTwo = ({ route, PostCreationReducer, CreatePostFunction }) => {
         { key: "PRIVATE", label: 'Private' },
         { key: "FOLLOWERS", label: 'Connections only' },
     ];
-    console.log(route?.params?.post)
+    console.log(route?.params?.isImage)
     const CreatePostFinalStep = async () => {
+        const Tags = PostCreationReducer?.searchConnectionData?.map(item => item.user_id)
+        const stringNumbers = Tags.map(String);
         try {
             setLoading(true)
             const formData = new FormData();
             formData.append('caption', caption);
             formData.append('privacy_setting', data?.filter(d => d.label == privacy).map(b => { return b?.key })[0]);
-            formData.append('tags', PostCreationReducer?.searchConnectionData[0]?.user_id?.toString());
+            formData.append('tags', JSON.stringify(stringNumbers));
             formData.append('comments_show_flag', PostCreationReducer?.isCommentCount == true ? "Y" : "N");
             formData.append('likes_show_flag', PostCreationReducer?.isLikeCount == true ? "Y" : "N");
             formData.append('allow_comments_flag', PostCreationReducer?.isCommentOff == true ? "Y" : "N");
@@ -146,15 +179,27 @@ const CreatePostTwo = ({ route, PostCreationReducer, CreatePostFunction }) => {
                     type: 'image/jpeg',
                 });
             }
+            console.log(formData?._parts)
             const result = await CreatePostFunction(formData)
-            console.log(result)
-            setLoading(false)
+            if (result == "Post Created") {
+                setLoading(false)
+                navigation.navigate('Home')
+            }
+            else {
+                setLoading(false)
+            }
         }
         catch (error) {
             console.log(error)
             setLoading(false)
         }
     }
+    const excludeConections = async (r) => {
+        ExludeConnection(r)
+    }
+    const [paused, setPause] = useState(paused)
+    const videoRef = useRef(null);
+
     return (
         <>
             {loading ?
@@ -176,7 +221,7 @@ const CreatePostTwo = ({ route, PostCreationReducer, CreatePostFunction }) => {
                             <TextC font={'Montserrat-SemiBold'} text={"Post"} />
                         </View>
                         <View style={styles.logoSide3}>
-                            <TouchableOpacity onPress={()=>CreatePostFinalStep()} style={styles.NextBtn}><TextC size={ResponsiveSize(11)} text={'Post'} font={'Montserrat-SemiBold'} /></TouchableOpacity>
+                            <TouchableOpacity onPress={() => CreatePostFinalStep()} style={styles.NextBtn}><TextC size={ResponsiveSize(11)} text={'Post'} font={'Montserrat-SemiBold'} /></TouchableOpacity>
                         </View>
                     </View>
                     <View style={styles.singlePostContainer}>
@@ -198,9 +243,27 @@ const CreatePostTwo = ({ route, PostCreationReducer, CreatePostFunction }) => {
 
                                 }
                             />
-
                             :
-                            <ImageBackground style={styles.singlePostInner} source={{ uri: `file://${route.params?.post}` }} />
+                            <>
+                                {route?.params?.isImage == false ?
+                                    <Pressable onPress={() => setPause(!paused)} style={{ position: 'relative' }}>
+                                        <Video
+                                            repeat={true}
+                                            source={{ uri: 'file://' + route.params?.post }}
+                                            ref={videoRef}
+                                            style={styles.singlePostInner}
+                                            paused={paused}
+                                        />
+                                        {paused &&
+                                            <View style={styles.playPaused}>
+                                                <Entypo size={ResponsiveSize(50)} name='controller-play' color={"white"} />
+                                            </View>
+                                        }
+                                    </Pressable>
+                                    :
+                                    <ImageBackground style={styles.singlePostInner} source={{ uri: `file://${route.params?.post}` }} />
+                                }
+                            </>
                         }
                     </View>
                     <View style={styles.descriptionCenter}>
@@ -212,6 +275,16 @@ const CreatePostTwo = ({ route, PostCreationReducer, CreatePostFunction }) => {
                             textAlignVertical="top"
                             onChangeText={(text) => setCaption(text)}
                         />
+                        <View style={styles.TagedPeople}>
+                            {PostCreationReducer?.searchConnectionData?.map(date => (
+                                <View style={styles.tagCapsule}>
+                                    <TextC text={`@${date?.user_name}`} font={"Montserrat-Medium"} size={ResponsiveSize(11)} style={{ color: global.black }} />
+                                    <TouchableOpacity onPress={() => excludeConections(date)} style={{ marginLeft: ResponsiveSize(5) }}>
+                                        <Entypo name="cross" color={global.black} size={ResponsiveSize(18)} />
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
+                        </View>
                     </View>
                     <TouchableOpacity onPress={() => navigation.navigate('TagPeople')} style={styles.SettingList}>
                         <View style={{ flexDirection: "row", alignItems: 'center' }}>

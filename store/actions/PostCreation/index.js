@@ -92,9 +92,9 @@ export const LikeCountSwitch = (body) => async (dispatch, getState) => {
 
 export const CreatePostFunction = (FormData) => async (dispatch) => {
     const Token = await AsyncStorage.getItem('Token');
-    console.log(Token,FormData?.post_attachments);
+    console.log(Token, FormData?.post_attachments);
     try {
-        const response = await fetch(`${baseUrl.baseUrl}/events/create-event`, {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/createPost`, {
             method: "POST",
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -103,10 +103,14 @@ export const CreatePostFunction = (FormData) => async (dispatch) => {
             },
             body: FormData
         });
-        console.log(response,'beeelastic');
+        const res = await response.json();
+        console.log(res, "ok")
+        return res?.message
     }
+
+
     catch (error) {
-        console.log(error,"oken")
+        console.log(error, "oken")
         return "Internal Server Error"
     }
 }
