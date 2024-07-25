@@ -165,7 +165,7 @@ const MainNavigation = ({GetUserProfileReducer}) => {
               ),
               tabBarStyle: {display: 'none'},
               tabBarShowLabel: false,
-              headerTitle: () => <CreatePostHeader />,
+              headerTitle: () => <MainHeader />,
               headerStyle: {
                 ...(scheme === 'dark'
                   ? {backgroundColor: DarkTheme.colors.background}

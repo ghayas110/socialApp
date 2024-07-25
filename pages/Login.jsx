@@ -22,12 +22,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import TextC from '../components/text/text';
 import {ResponsiveSize, global} from '../components/constant';
 import {useToast} from '../components/Toast/ToastContext';
+import { useHeaderHeight } from "@react-navigation/elements";
+import {
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+
+
 
 const LogIn = ({onLogin, LoginReducer, loginUser, CheckUserStatus}) => {
   const navigation = useNavigation();
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const {showToast} = useToast();
+
 
   const schema = yup.object().shape({
     email: yup.string().required('Email is required').email('Invalid email'),
@@ -156,8 +164,15 @@ const LogIn = ({onLogin, LoginReducer, loginUser, CheckUserStatus}) => {
       });
     }
   };
+  const headerHeight = useHeaderHeight();
 
   return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={{flexGrow:1}}
+      keyboardVerticalOffset={
+        Platform.OS === 'ios' ? headerHeight + StatusBar.currentHeight : 0
+      }>
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{flexGrow: 1}}>
         <StatusBar backgroundColor={global.primaryColor} />
@@ -258,6 +273,7 @@ const LogIn = ({onLogin, LoginReducer, loginUser, CheckUserStatus}) => {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

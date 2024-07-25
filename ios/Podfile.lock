@@ -1016,6 +1016,15 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-photo-editor (1.1.6):
+    - React-Core
+    - react-native-photo-editor/ZLImageEditor (= 1.1.6)
+    - SDWebImage (~> 5.11.1)
+    - SDWebImageWebPCoder (~> 0.8.4)
+  - react-native-photo-editor/ZLImageEditor (1.1.6):
+    - React-Core
+    - SDWebImage (~> 5.11.1)
+    - SDWebImageWebPCoder (~> 0.8.4)
   - react-native-safe-area-context (4.10.8):
     - React-Core
   - react-native-video (6.4.2):
@@ -1433,6 +1442,7 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
+  - "react-native-photo-editor (from `../node_modules/@baronha/react-native-photo-editor`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
@@ -1466,6 +1476,8 @@ DEPENDENCIES:
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - SDWebImage
+  - SDWebImageWebPCoder
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1549,6 +1561,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-maps"
   react-native-pager-view:
     :path: "../node_modules/react-native-pager-view"
+  react-native-photo-editor:
+    :path: "../node_modules/@baronha/react-native-photo-editor"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-video:
@@ -1656,6 +1670,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: c3afe5472ef870d98a4b28415fc0b928161ee5f7
   react-native-maps: 7b2c2cee95271592a92ba485eea1dec66a363a6e
   react-native-pager-view: f848f89049a8e888d38f10ff31588eb63292a95f
+  react-native-photo-editor: df7a23b0f31379ca5f64671f7d9fc42dbdd68722
   react-native-safe-area-context: b7daa1a8df36095a032dff095a1ea8963cb48371
   react-native-video: 142a54631c8c3e49bb2f0a3c90d05e729a3f15e3
   React-nativeconfig: b0073a590774e8b35192fead188a36d1dca23dec
@@ -1694,6 +1709,6 @@ SPEC CHECKSUMS:
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: 348f8b538c3ed4423eb58a8e5730feec50bce372
 
-PODFILE CHECKSUM: d19f23e14a59f30eb94d863474e4f6fe0010ff63
+PODFILE CHECKSUM: 0563788cc44c3fb78d6b9a9e536531c9c736fc9a
 
 COCOAPODS: 1.14.3

@@ -237,7 +237,7 @@ const ChangeAirline = ({ getAllAirline, ChangeAirline }) => {
                         }}
                         render={({ field: { onChange, value } }) => (
                             <View>
-                                <InAppSelect label={"Air line"} data={allAirLine} placeholder={'Select position'} error={errors?.position?.message} value={value} onChangeText={onChange} secureTextEntry={false} />
+                                <InAppSelect label={"Air line"} data={allAirLine} placeholder={'Select airline'} error={errors?.position?.message} value={value} onChangeText={onChange} secureTextEntry={false} />
                                 {errors?.password?.message !== undefined &&
                                     <TextC text={errors?.password?.message} size={ResponsiveSize(10)} style={{ color: global.red, marginTop: ResponsiveSize(2), marginLeft: ResponsiveSize(10) }} />
                                 }

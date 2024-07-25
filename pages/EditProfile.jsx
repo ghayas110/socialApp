@@ -33,6 +33,8 @@ import {useBottomSheet} from '../components/bottomSheet/BottomSheet';
 import ButtonC from '../components/button';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+import {useHeaderHeight} from '@react-navigation/elements';
+import {KeyboardAvoidingView, Platform} from 'react-native';
 
 const EditProfile = ({
   GetUserProfileReducer,
@@ -49,6 +51,7 @@ const EditProfile = ({
   const [loading, setLoading] = useState(false);
   const [documentImage, setDocumentImage] = useState('');
   const [document, setDocument] = useState('');
+  const headerHeight = useHeaderHeight();
 
   const data = [
     {key: 1, label: 'Male'},
@@ -297,282 +300,289 @@ const EditProfile = ({
     }
   };
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <StatusBar
-        backgroundColor={'white'}
-        barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
-      />
-      <ScrollView
-        style={{
-          flexGrow: 1,
-          ...(scheme === 'dark'
-            ? {backgroundColor: DarkTheme.colors.background}
-            : {backgroundColor: 'white'}),
-        }}>
-        <View style={styles.wrapper}>
-          <Pressable
-            onPress={() => navigation.goBack()}
-            style={styles.logoSide1}>
-            <AntDesign
-              name="left"
-              color={'#05348E'}
-              size={ResponsiveSize(18)}
-            />
-          </Pressable>
-          <View style={styles.logoSide2}>
-            <TextC
-              size={ResponsiveSize(12)}
-              font={'Montserrat-Bold'}
-              text={'Update Profile'}
-            />
-          </View>
-          <View style={styles.logoSide3}>
-            <TouchableOpacity
-              disabled={loading}
-              onPress={handleSubmit(onSubmit)}
-              style={styles.NextBtn}>
-              {loading == true ? (
-                <ActivityIndicator
-                  size={ResponsiveSize(12)}
-                  color={global.white}
-                />
-              ) : (
-                <TextC
-                  size={ResponsiveSize(11)}
-                  text={'Update'}
-                  font={'Montserrat-SemiBold'}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.bodyWrapper}>
-          <View style={styles.updateImage}>
-            {documentImage !== '' ? (
-              <Image style={styles.ProfileImage} src={documentImage} />
-            ) : (
-              <Image
-                style={styles.ProfileImage}
-                source={
-                  GetUserProfileReducer?.data?.profile_picture_url == ''
-                    ? require('../assets/icons/avatar.png')
-                    : {uri: GetUserProfileReducer?.data?.profile_picture_url}
-                }
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={{flexGrow: 1}}
+      keyboardVerticalOffset={
+        Platform.OS === 'ios' ? headerHeight + StatusBar.currentHeight : 0
+      }>
+      <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+        <StatusBar
+          backgroundColor={'white'}
+          barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
+        />
+        <ScrollView
+          style={{
+            flexGrow: 1,
+            ...(scheme === 'dark'
+              ? {backgroundColor: DarkTheme.colors.background}
+              : {backgroundColor: 'white'}),
+          }}>
+          <View style={styles.wrapper}>
+            <Pressable
+              onPress={() => navigation.goBack()}
+              style={styles.logoSide1}>
+              <AntDesign
+                name="left"
+                color={'#05348E'}
+                size={ResponsiveSize(18)}
               />
-            )}
-            <TouchableOpacity
-              onPress={requestCameraPermission}
-              style={{paddingTop: ResponsiveSize(10)}}>
+            </Pressable>
+            <View style={styles.logoSide2}>
               <TextC
-                size={ResponsiveSize(11)}
-                style={{color: global.secondaryColor}}
-                text={'Update Profile Picture'}
+                size={ResponsiveSize(12)}
                 font={'Montserrat-Bold'}
+                text={'Update Profile'}
               />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.bodyInitial}>
-          <View style={styles.TextFeidContainer}>
-            <View style={styles.TextFeidContainerLeft}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <TextC
-                  size={ResponsiveSize(12)}
-                  text={'Name'}
-                  font={'Montserrat-Medium'}
-                />
-                {errors?.name?.message !== undefined && (
-                  <TextC
+            </View>
+            <View style={styles.logoSide3}>
+              <TouchableOpacity
+                disabled={loading}
+                onPress={handleSubmit(onSubmit)}
+                style={styles.NextBtn}>
+                {loading == true ? (
+                  <ActivityIndicator
                     size={ResponsiveSize(12)}
-                    text={'*'}
-                    font={'Montserrat-Medium'}
-                    style={{color: global.red, marginLeft: ResponsiveSize(5)}}
+                    color={global.white}
+                  />
+                ) : (
+                  <TextC
+                    size={ResponsiveSize(11)}
+                    text={'Update'}
+                    font={'Montserrat-SemiBold'}
                   />
                 )}
-              </View>
+              </TouchableOpacity>
             </View>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({field: {onChange, value}}) => (
-                <TextInput
-                  placeholder="Name"
-                  onChangeText={onChange}
-                  value={value}
-                  style={styles.TextFeidContainerRight}
-                />
-              )}
-              name="name"
-            />
           </View>
-          <View style={styles.TextFeidContainer}>
-            <View style={styles.TextFeidContainerLeft}>
-              <TextC
-                size={ResponsiveSize(12)}
-                text={'Phone'}
-                font={'Montserrat-Medium'}
-              />
-            </View>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({field: {onChange, value}}) => {
-                return (
-                  <PhoneInput
-                    containerStyle={{
-                      borderBottomWidth: 1,
-                      borderBottomColor: global.description,
-                      width: windowWidth * 0.6,
-                    }}
-                    flagButtonStyle={{
-                      height: windowHeight * 0.07,
-                      width: ResponsiveSize(45),
-                    }}
-                    textContainerStyle={{
-                      padding: 0,
-                      height: windowHeight * 0.07,
-                      backgroundColor: 'white',
-                      paddingHorizontal: 0,
-                    }}
-                    codeTextStyle={{display: 'none'}}
-                    textInputStyle={{
-                      height: windowHeight * 0.07,
-                      fontFamily: 'Montserrat-Medium',
-                      fontSize: ResponsiveSize(12),
-                      color: global.placeholderColor,
-                    }}
-                    disableArrowIcon={true}
-                    defaultCode={
-                      GetUserProfileReducer?.data?.country_code == 0
-                        ? 'US'
-                        : GetUserProfileReducer?.data?.country_code
-                    }
-                    defaultValue={GetUserProfileReducer?.data?.phone_number}
-                    onChangeText={text => {
-                      onChange(text);
-                    }}
-                    onChangeCountry={text => {
-                      setDialCode(text.cca2);
-                    }}
-                  />
-                );
-              }}
-              name="phone"
-            />
-          </View>
-          <View style={styles.TextFeidContainer}>
-            <View style={styles.TextFeidContainerLeft}>
-              <TextC
-                size={ResponsiveSize(12)}
-                text={'Gender'}
-                font={'Montserrat-Medium'}
-              />
-            </View>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({field: {onChange, value}}) => (
-                <ModalSelector
-                  selectStyle={styles.TextFeidContainerRight}
-                  data={data}
-                  initValue={
-                    GetUserProfileReducer?.data?.gender || 'Select gender'
+          <View style={styles.bodyWrapper}>
+            <View style={styles.updateImage}>
+              {documentImage !== '' ? (
+                <Image style={styles.ProfileImage} src={documentImage} />
+              ) : (
+                <Image
+                  style={styles.ProfileImage}
+                  source={
+                    GetUserProfileReducer?.data?.profile_picture_url == ''
+                      ? require('../assets/icons/avatar.png')
+                      : {uri: GetUserProfileReducer?.data?.profile_picture_url}
                   }
-                  onChange={option => {
-                    onChange(option?.label);
-                  }}
-                  selectTextStyle={{color: global.placeholderColor}}
                 />
               )}
-              name="gender"
-            />
+              <TouchableOpacity
+                onPress={requestCameraPermission}
+                style={{paddingTop: ResponsiveSize(10)}}>
+                <TextC
+                  size={ResponsiveSize(11)}
+                  style={{color: global.secondaryColor}}
+                  text={'Update Profile Picture'}
+                  font={'Montserrat-Bold'}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.TextFeidContainer}>
-            <View style={styles.TextFeidContainerLeft}>
-              <TextC
-                size={ResponsiveSize(12)}
-                text={'Date of birth'}
-                font={'Montserrat-Medium'}
+          <View style={styles.bodyInitial}>
+            <View style={styles.TextFeidContainer}>
+              <View style={styles.TextFeidContainerLeft}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <TextC
+                    size={ResponsiveSize(12)}
+                    text={'Name'}
+                    font={'Montserrat-Medium'}
+                  />
+                  {errors?.name?.message !== undefined && (
+                    <TextC
+                      size={ResponsiveSize(12)}
+                      text={'*'}
+                      font={'Montserrat-Medium'}
+                      style={{color: global.red, marginLeft: ResponsiveSize(5)}}
+                    />
+                  )}
+                </View>
+              </View>
+              <Controller
+                control={control}
+                rules={{
+                  required: true,
+                }}
+                render={({field: {onChange, value}}) => (
+                  <TextInput
+                    placeholder="Name"
+                    onChangeText={onChange}
+                    value={value}
+                    style={styles.TextFeidContainerRight}
+                  />
+                )}
+                name="name"
               />
             </View>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({field: {onChange, value}}) => {
-                const DateInitial = new Date(value).toDateString();
-                const timeDivide = DateInitial?.split(' ');
-                const DateValue = `${timeDivide[1]} ${timeDivide[2]} ${timeDivide[3]}`;
-                const valueTime = new Date(
-                  GetUserProfileReducer?.data?.date_of_birth,
-                );
-                return (
-                  <>
-                    <TouchableOpacity
-                      onPress={() => setDob(true)}
-                      style={styles.TextFeidContainerRight}>
-                      <TextC
-                        size={ResponsiveSize(12)}
-                        style={{color: global.placeholderColor}}
-                        text={DateValue}
-                        font={'Montserrat-Medium'}
-                      />
-                    </TouchableOpacity>
-                    <DatePicker
-                      modal
-                      open={dob}
-                      date={valueTime}
-                      mode="date"
-                      onConfirm={date => {
-                        setDob(false);
-                        onChange(date);
+            <View style={styles.TextFeidContainer}>
+              <View style={styles.TextFeidContainerLeft}>
+                <TextC
+                  size={ResponsiveSize(12)}
+                  text={'Phone'}
+                  font={'Montserrat-Medium'}
+                />
+              </View>
+              <Controller
+                control={control}
+                rules={{
+                  required: false,
+                }}
+                render={({field: {onChange, value}}) => {
+                  return (
+                    <PhoneInput
+                      containerStyle={{
+                        borderBottomWidth: 1,
+                        borderBottomColor: global.description,
+                        width: windowWidth * 0.6,
                       }}
-                      onCancel={() => {
-                        setDob(false);
+                      flagButtonStyle={{
+                        height: windowHeight * 0.07,
+                        width: ResponsiveSize(45),
+                      }}
+                      textContainerStyle={{
+                        padding: 0,
+                        height: windowHeight * 0.07,
+                        backgroundColor: 'white',
+                        paddingHorizontal: 0,
+                      }}
+                      codeTextStyle={{display: 'none'}}
+                      textInputStyle={{
+                        height: windowHeight * 0.07,
+                        fontFamily: 'Montserrat-Medium',
+                        fontSize: ResponsiveSize(12),
+                        color: global.placeholderColor,
+                      }}
+                      disableArrowIcon={true}
+                      defaultCode={
+                        GetUserProfileReducer?.data?.country_code == 0
+                          ? 'US'
+                          : GetUserProfileReducer?.data?.country_code
+                      }
+                      defaultValue={GetUserProfileReducer?.data?.phone_number}
+                      onChangeText={text => {
+                        onChange(text);
+                      }}
+                      onChangeCountry={text => {
+                        setDialCode(text.cca2);
                       }}
                     />
-                  </>
-                );
-              }}
-              name="dob"
-            />
-          </View>
-          <View style={styles.TextFeidContainer1}>
-            <View style={styles.TextFeidContainerLeft}>
-              <TextC
-                size={ResponsiveSize(12)}
-                text={'Description'}
-                font={'Montserrat-Medium'}
+                  );
+                }}
+                name="phone"
               />
             </View>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({field: {onChange, value}}) => (
-                <TextInput
-                  placeholder="Description"
-                  onChangeText={onChange}
-                  value={value}
-                  style={styles.TextFeidContainerRight1}
-                  multiline={true}
-                  numberOfLines={5}
+            <View style={styles.TextFeidContainer}>
+              <View style={styles.TextFeidContainerLeft}>
+                <TextC
+                  size={ResponsiveSize(12)}
+                  text={'Gender'}
+                  font={'Montserrat-Medium'}
                 />
-              )}
-              name="description"
-            />
+              </View>
+              <Controller
+                control={control}
+                rules={{
+                  required: false,
+                }}
+                render={({field: {onChange, value}}) => (
+                  <ModalSelector
+                    selectStyle={styles.TextFeidContainerRight}
+                    data={data}
+                    initValue={
+                      GetUserProfileReducer?.data?.gender || 'Select gender'
+                    }
+                    onChange={option => {
+                      onChange(option?.label);
+                    }}
+                    selectTextStyle={{color: global.placeholderColor}}
+                  />
+                )}
+                name="gender"
+              />
+            </View>
+            <View style={styles.TextFeidContainer}>
+              <View style={styles.TextFeidContainerLeft}>
+                <TextC
+                  size={ResponsiveSize(12)}
+                  text={'Date of birth'}
+                  font={'Montserrat-Medium'}
+                />
+              </View>
+              <Controller
+                control={control}
+                rules={{
+                  required: false,
+                }}
+                render={({field: {onChange, value}}) => {
+                  const DateInitial = new Date(value).toDateString();
+                  const timeDivide = DateInitial?.split(' ');
+                  const DateValue = `${timeDivide[1]} ${timeDivide[2]} ${timeDivide[3]}`;
+                  const valueTime = new Date(
+                    GetUserProfileReducer?.data?.date_of_birth,
+                  );
+                  return (
+                    <>
+                      <TouchableOpacity
+                        onPress={() => setDob(true)}
+                        style={styles.TextFeidContainerRight}>
+                        <TextC
+                          size={ResponsiveSize(12)}
+                          style={{color: global.placeholderColor}}
+                          text={DateValue}
+                          font={'Montserrat-Medium'}
+                        />
+                      </TouchableOpacity>
+                      <DatePicker
+                        modal
+                        open={dob}
+                        date={valueTime}
+                        mode="date"
+                        onConfirm={date => {
+                          setDob(false);
+                          onChange(date);
+                        }}
+                        onCancel={() => {
+                          setDob(false);
+                        }}
+                      />
+                    </>
+                  );
+                }}
+                name="dob"
+              />
+            </View>
+            <View style={styles.TextFeidContainer1}>
+              <View style={styles.TextFeidContainerLeft}>
+                <TextC
+                  size={ResponsiveSize(12)}
+                  text={'Description'}
+                  font={'Montserrat-Medium'}
+                />
+              </View>
+              <Controller
+                control={control}
+                rules={{
+                  required: false,
+                }}
+                render={({field: {onChange, value}}) => (
+                  <TextInput
+                    placeholder="Description"
+                    onChangeText={onChange}
+                    value={value}
+                    style={styles.TextFeidContainerRight1}
+                    multiline={true}
+                    numberOfLines={5}
+                  />
+                )}
+                name="description"
+              />
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

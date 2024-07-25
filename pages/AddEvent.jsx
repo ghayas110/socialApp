@@ -26,7 +26,6 @@ import {useNavigation} from '@react-navigation/native';
 import {ResponsiveSize, global} from '../components/constant';
 import * as AllEventAction from '../store/actions/Events/index';
 import {connect} from 'react-redux';
-
 import * as yup from 'yup';
 import {useForm, Controller} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
@@ -35,7 +34,9 @@ import {useBottomSheet} from '../components/bottomSheet/BottomSheet';
 import ButtonC from '../components/button';
 import {useToast} from '../components/Toast/ToastContext';
 import {useSWRConfig} from 'swr';
-import {check, PERMISSIONS, RESULTS,request} from 'react-native-permissions';
+import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+import {useHeaderHeight} from '@react-navigation/elements';
+import {KeyboardAvoidingView, Platform} from 'react-native';
 
 const AddEvent = ({
   AllEventReducer,
@@ -283,397 +284,414 @@ const AddEvent = ({
   const noFunction = () => {
     return;
   };
+  const headerHeight = useHeaderHeight();
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={'white'} barStyle={'dark-content'} />
-      <View style={styles.wrapper}>
-        <Pressable onPress={() => navigation.goBack()} style={styles.logoSide1}>
-          <AntDesign name="left" color={'#05348E'} size={ResponsiveSize(16)} />
-          <Image
-            source={require('../assets/icons/Logo.png')}
-            style={{
-              objectFit: 'contain',
-              width: ResponsiveSize(70),
-              height: ResponsiveSize(22),
-            }}
-          />
-        </Pressable>
-        <View style={styles.logoSide2}>
-          <TextC
-            size={ResponsiveSize(12)}
-            font={'Montserrat-Bold'}
-            text={'New Event'}
-          />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={{flexGrow: 1}}
+      keyboardVerticalOffset={
+        Platform.OS === 'ios' ? headerHeight + StatusBar.currentHeight : 0
+      }>
+      <SafeAreaView style={styles.container}>
+        <StatusBar backgroundColor={'white'} barStyle={'dark-content'} />
+        <View style={styles.wrapper}>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            style={styles.logoSide1}>
+            <AntDesign
+              name="left"
+              color={'#05348E'}
+              size={ResponsiveSize(16)}
+            />
+            <Image
+              source={require('../assets/icons/Logo.png')}
+              style={{
+                objectFit: 'contain',
+                width: ResponsiveSize(70),
+                height: ResponsiveSize(22),
+              }}
+            />
+          </Pressable>
+          <View style={styles.logoSide2}>
+            <TextC
+              size={ResponsiveSize(12)}
+              font={'Montserrat-Bold'}
+              text={'New Event'}
+            />
+          </View>
+          <View style={styles.logoSide3}>
+            <TouchableOpacity
+              disabled={AllEventReducer?.EventCreateLoading}
+              onPress={handleSubmit(onSubmit)}
+              style={styles.NextBtn}>
+              {AllEventReducer?.EventCreateLoading == true ? (
+                <ActivityIndicator
+                  size={ResponsiveSize(12)}
+                  color={global.white}
+                />
+              ) : (
+                <TextC
+                  size={ResponsiveSize(11)}
+                  text={'Create'}
+                  font={'Montserrat-SemiBold'}
+                />
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.logoSide3}>
-          <TouchableOpacity
-            disabled={AllEventReducer?.EventCreateLoading}
-            onPress={handleSubmit(onSubmit)}
-            style={styles.NextBtn}>
-            {AllEventReducer?.EventCreateLoading == true ? (
-              <ActivityIndicator
-                size={ResponsiveSize(12)}
-                color={global.white}
-              />
-            ) : (
+        <ScrollView
+          style={{
+            flexGrow: 1,
+            padding: ResponsiveSize(15),
+            ...(scheme === 'dark'
+              ? {backgroundColor: DarkTheme.colors.background}
+              : {backgroundColor: 'white'}),
+          }}>
+          <View
+            style={{
+              paddingHorizontal: ResponsiveSize(15),
+              paddingBottom: ResponsiveSize(5),
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <TextC text={'Event title'} font={'Montserrat-Bold'} />
+            {errors?.title?.message !== undefined && (
               <TextC
-                size={ResponsiveSize(11)}
-                text={'Create'}
-                font={'Montserrat-SemiBold'}
+                text={'*'}
+                font={'Montserrat-Bold'}
+                style={{color: global.red, marginLeft: ResponsiveSize(3)}}
               />
+            )}
+          </View>
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({field: {onChange, value}}) => (
+              <TextInputC
+                disable={AllEventReducer?.EventCreateLoading}
+                value={value}
+                placeholder={'Event title'}
+                onChangeText={onChange}
+              />
+            )}
+            name="title"
+          />
+          <View style={{paddingTop: ResponsiveSize(12)}}>
+            <View
+              style={{
+                paddingHorizontal: ResponsiveSize(15),
+                paddingBottom: ResponsiveSize(5),
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <TextC text={'Event location'} font={'Montserrat-Bold'} />
+              {errors?.location?.message !== undefined && (
+                <TextC
+                  text={'*'}
+                  font={'Montserrat-Bold'}
+                  style={{color: global.red, marginLeft: ResponsiveSize(3)}}
+                />
+              )}
+            </View>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({field: {onChange, value}}) => (
+                <TextInputC
+                  disable={AllEventReducer?.EventCreateLoading}
+                  value={value}
+                  placeholder={'Event location'}
+                  onChangeText={onChange}
+                />
+              )}
+              name="location"
+            />
+          </View>
+          <View style={{paddingTop: ResponsiveSize(12)}}>
+            <View
+              style={{
+                paddingHorizontal: ResponsiveSize(15),
+                paddingBottom: ResponsiveSize(5),
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <TextC text={'Select description'} font={'Montserrat-Bold'} />
+              {errors?.description?.message !== undefined && (
+                <TextC
+                  text={'*'}
+                  font={'Montserrat-Bold'}
+                  style={{color: global.red, marginLeft: ResponsiveSize(3)}}
+                />
+              )}
+            </View>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({field: {onChange, value}}) => (
+                <TextInputC
+                  disable={AllEventReducer?.EventCreateLoading}
+                  value={value}
+                  style={{paddingTop: ResponsiveSize(15)}}
+                  textAlignVertical={'top'}
+                  height={ResponsiveSize(100)}
+                  multiline={true}
+                  numberOfLines={4}
+                  placeholder={'Event description'}
+                  onChangeText={onChange}
+                />
+              )}
+              name="description"
+            />
+          </View>
+          <View
+            style={{
+              paddingHorizontal: ResponsiveSize(15),
+              paddingTop: ResponsiveSize(12),
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <TextC text={'Select Date'} font={'Montserrat-Bold'} />
+            {errors?.eventDate?.message !== undefined && (
+              <TextC
+                text={'*'}
+                font={'Montserrat-Bold'}
+                style={{color: global.red, marginLeft: ResponsiveSize(3)}}
+              />
+            )}
+          </View>
+          <View style={{position: 'relative', paddingTop: ResponsiveSize(10)}}>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({field: {onChange, value}}) => (
+                <Calendar
+                  disabledByDefault={AllEventReducer?.EventCreateLoading}
+                  style={{
+                    padding: 0,
+                    margin: 0,
+                    borderRadius: 25,
+                    overflow: 'hidden',
+                  }}
+                  onDayPress={day => {
+                    onChange(day.dateString);
+                    setSelected(day.dateString);
+                  }}
+                  minDate={today?.toISOString()?.split('T')[0]}
+                  markedDates={{
+                    [selected]: {
+                      selected: true,
+                      disableTouchEvent: true,
+                      selectedDotColor: 'red',
+                    },
+                  }}
+                  enableSwipeMonths={true}
+                  monthFormat="MMM, yyyy"
+                  theme={{
+                    arrowColor: '#05348E',
+                    selectedDayBackgroundColor: '#05348E',
+                    selectedDayTextColor: 'white',
+                    textDayFontFamily: 'Montserrat-Medium',
+                    textMonthFontFamily: 'Montserrat-Medium',
+                    textDayHeaderFontFamily: 'Montserrat-Bold',
+                    todayTextColor: '#05348E',
+                    dayTextColor: '#05348E',
+                    textDisabledColor: 'white',
+                    calendarBackground: '#A8B8D8',
+                    textSectionTitleColor: '#05348E',
+                  }}
+                />
+              )}
+              name="eventDate"
+            />
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingTop: ResponsiveSize(5),
+            }}>
+            <View style={styles.StartDateWrapper}>
+              <View
+                style={{
+                  paddingHorizontal: ResponsiveSize(15),
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <TextC text={'Start Hour'} font={'Montserrat-Bold'} />
+                {errors?.startTime?.message !== undefined && (
+                  <TextC
+                    text={'*'}
+                    font={'Montserrat-Bold'}
+                    style={{color: global.red, marginLeft: ResponsiveSize(3)}}
+                  />
+                )}
+              </View>
+
+              <TouchableOpacity
+                onPress={() =>
+                  setStartTimeModal(
+                    !AllEventReducer?.EventCreateLoading && true,
+                  )
+                }
+                style={styles.InputTimeStyle}>
+                <TextC
+                  isTime={true}
+                  font={'Montserrat-Medium'}
+                  text={startTime}
+                  size={ResponsiveSize(11)}
+                  style={{color: '#666666'}}
+                />
+                <FeatherIcon
+                  name="clock"
+                  color={'#05348E'}
+                  size={ResponsiveSize(16)}
+                />
+              </TouchableOpacity>
+              <Controller
+                control={control}
+                rules={{
+                  required: true,
+                }}
+                render={({field: {onChange, value}}) => (
+                  <DatePicker
+                    modal
+                    open={startTimeModal}
+                    date={startTime}
+                    mode="time"
+                    onConfirm={date => {
+                      setStartTime(date);
+                      setStartTimeModal(false);
+                      onChange(date);
+                    }}
+                    onCancel={() => {
+                      setStartTimeModal(false);
+                    }}
+                  />
+                )}
+                name="startTime"
+              />
+            </View>
+            <View style={styles.EndDateWrapper}>
+              <View
+                style={{
+                  paddingHorizontal: ResponsiveSize(15),
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <TextC text={'End Hour'} font={'Montserrat-Bold'} />
+                {errors?.endTime?.message !== undefined && (
+                  <TextC
+                    text={'*'}
+                    font={'Montserrat-Bold'}
+                    style={{color: global.red, marginLeft: ResponsiveSize(3)}}
+                  />
+                )}
+              </View>
+              <TouchableOpacity
+                onPress={() =>
+                  setEndTimeModal(!AllEventReducer?.EventCreateLoading && true)
+                }
+                style={styles.InputTimeStyle}>
+                <TextC
+                  isTime={true}
+                  font={'Montserrat-Medium'}
+                  text={endTime}
+                  size={ResponsiveSize(11)}
+                  style={{color: '#666666'}}
+                />
+                <FeatherIcon
+                  name="clock"
+                  color={'#05348E'}
+                  size={ResponsiveSize(16)}
+                />
+              </TouchableOpacity>
+              <Controller
+                control={control}
+                rules={{
+                  required: true,
+                }}
+                render={({field: {onChange, value}}) => (
+                  <DatePicker
+                    modal
+                    open={endTimeModal}
+                    date={endTime}
+                    minimumDate={startTime}
+                    mode="time"
+                    onConfirm={date => {
+                      setEndTime(date);
+                      setEndTimeModal(false);
+                      onChange(date);
+                    }}
+                    onCancel={() => {
+                      setEndTimeModal(false);
+                    }}
+                  />
+                )}
+                name="endTime"
+              />
+            </View>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'column',
+              paddingHorizontal: ResponsiveSize(15),
+              paddingVertical: ResponsiveSize(10),
+            }}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <TextC text={'Cover Image'} font={'Montserrat-Bold'} />
+              {documentImage == '' && (
+                <TextC
+                  text={'*'}
+                  font={'Montserrat-Bold'}
+                  style={{color: global.red, marginLeft: ResponsiveSize(3)}}
+                />
+              )}
+            </View>
+          </View>
+          <TouchableOpacity
+            onPress={
+              !AllEventReducer?.EventCreateLoading
+                ? requestCameraPermission
+                : noFunction
+            }
+            style={styles.ImageGroup}>
+            {documentImage ? (
+              <>
+                <ImageBackground
+                  style={styles.ImageGroupInner}
+                  src={documentImage}
+                  resizeMode="cover"
+                />
+              </>
+            ) : (
+              <>
+                <TextC
+                  text={'Add Image'}
+                  font={'Montserrat-Bold'}
+                  style={{marginRight: ResponsiveSize(5)}}
+                />
+                <FeatherIcon
+                  name="file-plus"
+                  color={global.primaryColor}
+                  size={ResponsiveSize(22)}
+                />
+              </>
             )}
           </TouchableOpacity>
-        </View>
-      </View>
-      <ScrollView
-        style={{
-          flexGrow: 1,
-          padding: ResponsiveSize(15),
-          ...(scheme === 'dark'
-            ? {backgroundColor: DarkTheme.colors.background}
-            : {backgroundColor: 'white'}),
-        }}>
-        <View
-          style={{
-            paddingHorizontal: ResponsiveSize(15),
-            paddingBottom: ResponsiveSize(5),
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <TextC text={'Event title'} font={'Montserrat-Bold'} />
-          {errors?.title?.message !== undefined && (
-            <TextC
-              text={'*'}
-              font={'Montserrat-Bold'}
-              style={{color: global.red, marginLeft: ResponsiveSize(3)}}
-            />
-          )}
-        </View>
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({field: {onChange, value}}) => (
-            <TextInputC
-              disable={AllEventReducer?.EventCreateLoading}
-              value={value}
-              placeholder={'Event title'}
-              onChangeText={onChange}
-            />
-          )}
-          name="title"
-        />
-        <View style={{paddingTop: ResponsiveSize(12)}}>
-          <View
-            style={{
-              paddingHorizontal: ResponsiveSize(15),
-              paddingBottom: ResponsiveSize(5),
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <TextC text={'Event location'} font={'Montserrat-Bold'} />
-            {errors?.location?.message !== undefined && (
-              <TextC
-                text={'*'}
-                font={'Montserrat-Bold'}
-                style={{color: global.red, marginLeft: ResponsiveSize(3)}}
-              />
-            )}
-          </View>
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({field: {onChange, value}}) => (
-              <TextInputC
-                disable={AllEventReducer?.EventCreateLoading}
-                value={value}
-                placeholder={'Event location'}
-                onChangeText={onChange}
-              />
-            )}
-            name="location"
-          />
-        </View>
-        <View style={{paddingTop: ResponsiveSize(12)}}>
-          <View
-            style={{
-              paddingHorizontal: ResponsiveSize(15),
-              paddingBottom: ResponsiveSize(5),
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <TextC text={'Select description'} font={'Montserrat-Bold'} />
-            {errors?.description?.message !== undefined && (
-              <TextC
-                text={'*'}
-                font={'Montserrat-Bold'}
-                style={{color: global.red, marginLeft: ResponsiveSize(3)}}
-              />
-            )}
-          </View>
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({field: {onChange, value}}) => (
-              <TextInputC
-                disable={AllEventReducer?.EventCreateLoading}
-                value={value}
-                style={{paddingTop: ResponsiveSize(15)}}
-                textAlignVertical={'top'}
-                height={ResponsiveSize(100)}
-                multiline={true}
-                numberOfLines={4}
-                placeholder={'Event description'}
-                onChangeText={onChange}
-              />
-            )}
-            name="description"
-          />
-        </View>
-        <View
-          style={{
-            paddingHorizontal: ResponsiveSize(15),
-            paddingTop: ResponsiveSize(12),
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <TextC text={'Select Date'} font={'Montserrat-Bold'} />
-          {errors?.eventDate?.message !== undefined && (
-            <TextC
-              text={'*'}
-              font={'Montserrat-Bold'}
-              style={{color: global.red, marginLeft: ResponsiveSize(3)}}
-            />
-          )}
-        </View>
-        <View style={{position: 'relative', paddingTop: ResponsiveSize(10)}}>
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({field: {onChange, value}}) => (
-              <Calendar
-                disabledByDefault={AllEventReducer?.EventCreateLoading}
-                style={{
-                  padding: 0,
-                  margin: 0,
-                  borderRadius: 25,
-                  overflow: 'hidden',
-                }}
-                onDayPress={day => {
-                  onChange(day.dateString);
-                  setSelected(day.dateString);
-                }}
-                minDate={today?.toISOString()?.split('T')[0]}
-                markedDates={{
-                  [selected]: {
-                    selected: true,
-                    disableTouchEvent: true,
-                    selectedDotColor: 'red',
-                  },
-                }}
-                enableSwipeMonths={true}
-                monthFormat="MMM, yyyy"
-                theme={{
-                  arrowColor: '#05348E',
-                  selectedDayBackgroundColor: '#05348E',
-                  selectedDayTextColor: 'white',
-                  textDayFontFamily: 'Montserrat-Medium',
-                  textMonthFontFamily: 'Montserrat-Medium',
-                  textDayHeaderFontFamily: 'Montserrat-Bold',
-                  todayTextColor: '#05348E',
-                  dayTextColor: '#05348E',
-                  textDisabledColor: 'white',
-                  calendarBackground: '#A8B8D8',
-                  textSectionTitleColor: '#05348E',
-                }}
-              />
-            )}
-            name="eventDate"
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingTop: ResponsiveSize(5),
-          }}>
-          <View style={styles.StartDateWrapper}>
-            <View
-              style={{
-                paddingHorizontal: ResponsiveSize(15),
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <TextC text={'Start Hour'} font={'Montserrat-Bold'} />
-              {errors?.startTime?.message !== undefined && (
-                <TextC
-                  text={'*'}
-                  font={'Montserrat-Bold'}
-                  style={{color: global.red, marginLeft: ResponsiveSize(3)}}
-                />
-              )}
-            </View>
-
-            <TouchableOpacity
-              onPress={() =>
-                setStartTimeModal(!AllEventReducer?.EventCreateLoading && true)
-              }
-              style={styles.InputTimeStyle}>
-              <TextC
-                isTime={true}
-                font={'Montserrat-Medium'}
-                text={startTime}
-                size={ResponsiveSize(11)}
-                style={{color: '#666666'}}
-              />
-              <FeatherIcon
-                name="clock"
-                color={'#05348E'}
-                size={ResponsiveSize(16)}
-              />
-            </TouchableOpacity>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({field: {onChange, value}}) => (
-                <DatePicker
-                  modal
-                  open={startTimeModal}
-                  date={startTime}
-                  mode="time"
-                  onConfirm={date => {
-                    setStartTime(date);
-                    setStartTimeModal(false);
-                    onChange(date);
-                  }}
-                  onCancel={() => {
-                    setStartTimeModal(false);
-                  }}
-                />
-              )}
-              name="startTime"
-            />
-          </View>
-          <View style={styles.EndDateWrapper}>
-            <View
-              style={{
-                paddingHorizontal: ResponsiveSize(15),
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <TextC text={'End Hour'} font={'Montserrat-Bold'} />
-              {errors?.endTime?.message !== undefined && (
-                <TextC
-                  text={'*'}
-                  font={'Montserrat-Bold'}
-                  style={{color: global.red, marginLeft: ResponsiveSize(3)}}
-                />
-              )}
-            </View>
-            <TouchableOpacity
-              onPress={() =>
-                setEndTimeModal(!AllEventReducer?.EventCreateLoading && true)
-              }
-              style={styles.InputTimeStyle}>
-              <TextC
-                isTime={true}
-                font={'Montserrat-Medium'}
-                text={endTime}
-                size={ResponsiveSize(11)}
-                style={{color: '#666666'}}
-              />
-              <FeatherIcon
-                name="clock"
-                color={'#05348E'}
-                size={ResponsiveSize(16)}
-              />
-            </TouchableOpacity>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({field: {onChange, value}}) => (
-                <DatePicker
-                  modal
-                  open={endTimeModal}
-                  date={endTime}
-                  minimumDate={startTime}
-                  mode="time"
-                  onConfirm={date => {
-                    setEndTime(date);
-                    setEndTimeModal(false);
-                    onChange(date);
-                  }}
-                  onCancel={() => {
-                    setEndTimeModal(false);
-                  }}
-                />
-              )}
-              name="endTime"
-            />
-          </View>
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'column',
-            paddingHorizontal: ResponsiveSize(15),
-            paddingVertical: ResponsiveSize(10),
-          }}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TextC text={'Cover Image'} font={'Montserrat-Bold'} />
-            {documentImage == '' && (
-              <TextC
-                text={'*'}
-                font={'Montserrat-Bold'}
-                style={{color: global.red, marginLeft: ResponsiveSize(3)}}
-              />
-            )}
-          </View>
-        </View>
-        <TouchableOpacity
-          onPress={
-            !AllEventReducer?.EventCreateLoading
-              ? requestCameraPermission
-              : noFunction
-          }
-          style={styles.ImageGroup}>
-          {documentImage ? (
-            <>
-              <ImageBackground
-                style={styles.ImageGroupInner}
-                src={documentImage}
-                resizeMode="cover"
-              />
-            </>
-          ) : (
-            <>
-              <TextC
-                text={'Add Image'}
-                font={'Montserrat-Bold'}
-                style={{marginRight: ResponsiveSize(5)}}
-              />
-              <FeatherIcon
-                name="file-plus"
-                color={global.primaryColor}
-                size={ResponsiveSize(22)}
-              />
-            </>
-          )}
-        </TouchableOpacity>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
