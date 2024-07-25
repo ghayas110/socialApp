@@ -31,7 +31,7 @@ export const BottomSheetProvider = ({ children }) => {
       {children}
 
       <BottomSheet
-        handleStyle={{ height: 50, borderTopLeftRadius: 15, borderTopRightRadius: 15, backgroundColor: scheme == "dark" ? DarkTheme.colors.background : DefaultTheme.colors.background }}
+        handleStyle={{ height: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15, backgroundColor: scheme == "dark" ? DarkTheme.colors.background : DefaultTheme.colors.background }}
         handleIndicatorStyle={{ backgroundColor: scheme == "dark" ? DefaultTheme.colors.background : DarkTheme.colors.background }}
         ref={bottomSheetRef}
         backgroundStyle={{ backgroundColor: scheme == "dark" ? DarkTheme.colors.background : DefaultTheme.colors.background }}

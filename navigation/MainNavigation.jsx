@@ -164,6 +164,7 @@ const MainNavigation = ({GetUserProfileReducer}) => {
                 </View>
               ),
               tabBarStyle: {display: 'none'},
+              headerShown: false,
               tabBarShowLabel: false,
               headerTitle: () => <MainHeader />,
               headerStyle: {

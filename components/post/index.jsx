@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ImageBackground, StyleSheet, View, Dimensions, Image, TouchableOpacity, Pressable } from 'react-native'
 import TextC from '../text/text';
 import EntypoFont from "react-native-vector-icons/Entypo";
@@ -93,6 +93,9 @@ const Post = ({ userName, profileImage, id, likeCount, commnetCount, description
             paddingVertical: 5
         }
     })
+    useEffect(()=>{
+        return ()=>{closeBottomSheet()}
+    },[])
     const { openBottomSheet, closeBottomSheet } = useBottomSheet();
     const handleOpenSheet = () => {
         openBottomSheet(

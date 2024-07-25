@@ -13,7 +13,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {DefaultTheme, DarkTheme} from '@react-navigation/native';
 import {useColorScheme} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -52,6 +52,9 @@ const AddEvent = ({
   const [documentImage, setDocumentImage] = useState('');
   const [document, setDocument] = useState('');
 
+    useEffect(()=>{
+      return ()=>{closeBottomSheet()}
+    },[])
   const handleOpenSheet = () => {
     openBottomSheet(
       <>
@@ -60,6 +63,7 @@ const AddEvent = ({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
+            height:'100%',
             paddingHorizontal: ResponsiveSize(15),
           }}>
           <ButtonC
@@ -239,6 +243,7 @@ const AddEvent = ({
       endTime: '',
     },
   });
+  console.log(document[0]?.uri)
   const onSubmit = async data => {
     if (!documentImage == '') {
       try {

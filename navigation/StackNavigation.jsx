@@ -15,8 +15,8 @@ import HomeScreen from '../pages/HomeScreen';
 import ReelScreen from '../pages/ReelScreen';
 import CreatePost from '../pages/CreatePost';
 import CreatePostTwo from '../pages/CreatePostStepTwo';
-
-
+import TagPeople from '../pages/PostTagPeople';
+import PostSetting from '../pages/PostSetting';
 
 const EventStackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -70,6 +70,8 @@ const PostStackNavigation = () => {
     <Stack.Navigator>
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="CreatePost" component={CreatePost} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="CreatePostTwo" component={CreatePostTwo} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="TagPeople" component={TagPeople} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="PostSetting" component={PostSetting} />
     </Stack.Navigator>
   )
 }
