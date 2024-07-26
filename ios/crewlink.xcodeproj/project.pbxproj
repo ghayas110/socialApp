@@ -35,6 +35,8 @@
 		92F2A5EE14F444E3898176FC /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 89B443B0D42F4CD896C38BCE /* Inter-Medium.ttf */; };
 		93419EC2EE04441BA4C10551 /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 71646B3039754E85BA27A99E /* Montserrat-Medium.ttf */; };
 		98D54691533F4FA7BCC9DF28 /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E5BA5E7CC3314C94A56C7019 /* Inter-SemiBold.ttf */; };
+		9E1583F12C53ED6E0087723E /* Stickers.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9E1583F02C53ED6E0087723E /* Stickers.bundle */; };
+		9E1583F32C53EE170087723E /* LUTs.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9E1583F22C53EE170087723E /* LUTs.bundle */; };
 		9EC5C6402C1917F000373A89 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9EC5C62C2C1917F000373A89 /* AntDesign.ttf */; };
 		9EC5C6412C1917F000373A89 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9EC5C62D2C1917F000373A89 /* Entypo.ttf */; };
 		9EC5C6422C1917F000373A89 /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9EC5C62E2C1917F000373A89 /* EvilIcons.ttf */; };
@@ -106,6 +108,8 @@
 		92D22A51ADDD4173B766C5E6 /* Inter-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.ttf"; path = "../assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; };
 		9834D7AB8AD244249A37602E /* Montserrat-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Light.ttf"; path = "../assets/fonts/Montserrat-Light.ttf"; sourceTree = "<group>"; };
 		99C7828E6A9F4565BBD14AB8 /* Montserrat-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ExtraLightItalic.ttf"; path = "../assets/fonts/Montserrat-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		9E1583F02C53ED6E0087723E /* Stickers.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Stickers.bundle; sourceTree = "<group>"; };
+		9E1583F22C53EE170087723E /* LUTs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = LUTs.bundle; sourceTree = "<group>"; };
 		9E640ECA2C4A652A00FB4F82 /* Crewlink.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Crewlink.entitlements; path = Crewlink/Crewlink.entitlements; sourceTree = "<group>"; };
 		9EC5C62C2C1917F000373A89 /* AntDesign.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AntDesign.ttf; sourceTree = "<group>"; };
 		9EC5C62D2C1917F000373A89 /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Entypo.ttf; sourceTree = "<group>"; };
@@ -215,6 +219,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				9E1583F22C53EE170087723E /* LUTs.bundle */,
+				9E1583F02C53ED6E0087723E /* Stickers.bundle */,
 				9EC5C63F2C1917F000373A89 /* Fonts */,
 				13B07FAE1A68108700A75B9A /* Crewlink */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -373,7 +379,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Crewlink" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "crewlink" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -435,12 +441,14 @@
 				9EC5C6452C1917F000373A89 /* FontAwesome5_Brands.ttf in Resources */,
 				4BD32F11B82342D995F92FFA /* Montserrat-Regular.ttf in Resources */,
 				9EC5C6512C1917F000373A89 /* SimpleLineIcons.ttf in Resources */,
+				9E1583F32C53EE170087723E /* LUTs.bundle in Resources */,
 				38D2A0438583451FB20A1849 /* Montserrat-SemiBold.ttf in Resources */,
 				8E7A56DAFCDF4FA790C56B73 /* Montserrat-SemiBoldItalic.ttf in Resources */,
 				9EC5C64C2C1917F000373A89 /* Foundation.ttf in Resources */,
 				EB528431162E4568BBC33BB4 /* Montserrat-Thin.ttf in Resources */,
 				6B4CCF0941D94CB08A120248 /* Montserrat-ThinItalic.ttf in Resources */,
 				9EC5C6472C1917F000373A89 /* FontAwesome5_Solid.ttf in Resources */,
+				9E1583F12C53ED6E0087723E /* Stickers.bundle in Resources */,
 				8FE571BFC846463EAA1B2EE4 /* Inter-Black.ttf in Resources */,
 				073F8E848F684863839C3E04 /* Inter-Bold.ttf in Resources */,
 				C092E69C6B684D7D997D2801 /* Inter-ExtraBold.ttf in Resources */,
@@ -805,7 +813,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -878,7 +889,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -907,7 +921,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Crewlink" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "crewlink" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

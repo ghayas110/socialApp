@@ -1,5 +1,5 @@
 {
-    "baseUrl": "https://crewlink.backend.digitalmobix.com",
+    "baseUrl": "https://dev.crewlink.digitalmobix.com",
     "baseUrl3": "https://fz3rqbgd-3000.euw.devtunnels.ms",
     "baseUrl2": "http:192.168.88.51:3000",
     "CountryBaseUrl": "https://countriesnow.space",
