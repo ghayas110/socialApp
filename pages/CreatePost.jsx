@@ -43,12 +43,15 @@ const CreatePost = () => {
   const [globalType, setGlobalType] = useState(true);
   const [imageResize, setImageResize] = useState('cover');
   const [content, setContent] = useState([]);
-  const [isEditAvailable, setIsEditAvailable] = useState(false);
+  const [isEditAvailable, setIsEditAvailable] = useState({
+    value: false,
+    content: 'Image',
+  });
   const [selectMulti, setSelectMulti] = useState(false);
   const [multiContent, setMultiContent] = useState([]);
   const {openBottomSheet, closeBottomSheet} = useBottomSheet();
   const [temp, setTemp] = useState();
-  const [vidoeContnt, setVieoConter] = useState();
+  const [multiVideoId, isMultiVideoId] = useState();
   const [paused, setPause] = useState(paused);
 
   const styles = StyleSheet.create({
@@ -63,6 +66,8 @@ const CreatePost = () => {
       borderBottomColor: 'white',
       backgroundColor: 'gtay',
       position: 'relative',
+      borderBottomWidth: 1,
+      borderBottomColor: global.description,
     },
     uploadControls: {
       height: 60,
@@ -91,7 +96,6 @@ const CreatePost = () => {
       justifyContent: 'flex-start',
       alignItems: 'center',
       position: 'relative',
-      paddingBottom: ResponsiveSize(50),
     },
     box: {
       height: ResponsiveSize(90),
@@ -192,13 +196,17 @@ const CreatePost = () => {
           <View>
             <TextC
               font={'Montserrat-Bold'}
-              text={'Change image?'}
+              text={`Change ${isEditAvailable?.content}?`}
               size={ResponsiveSize(16)}
               style={{color: global.black}}
             />
             <TextC
               font={'Montserrat-Medium'}
-              text={'if you change this image now, you will lost edited image.'}
+              text={`if you change this ${
+                isEditAvailable?.content == 'Video' ? 'video' : 'image'
+              } now, you will lost edited ${
+                isEditAvailable?.content == 'Video' ? 'video' : 'image'
+              }.`}
               size={ResponsiveSize(11)}
               style={{color: global.placeholderColor}}
             />
@@ -226,7 +234,9 @@ const CreatePost = () => {
               }}>
               <TextC
                 font={'Montserrat-Medium'}
-                text={'change image'}
+                text={`change ${
+                  isEditAvailable?.content == 'Video' ? 'video' : 'image'
+                }`}
                 size={ResponsiveSize(14)}
                 style={{color: global.red}}
               />
@@ -256,7 +266,6 @@ const CreatePost = () => {
   }, []);
 
   const ImageEditorContain = async path => {
-    console.log(path?.content, 'patthhthht');
     const result = await PhotoEditor.open({
       path: `file://${path?.content}`,
     });
@@ -264,7 +273,7 @@ const CreatePost = () => {
       ...prev,
       content: result?.split('file://')[1],
     }));
-    setIsEditAvailable(true);
+    setIsEditAvailable({value: true, content: 'Image'});
   };
   const ImageEditorContainMulti = async (path, id) => {
     const result = await PhotoEditor.open({
@@ -272,20 +281,44 @@ const CreatePost = () => {
     });
     setMultiContent(prev =>
       prev?.map(item =>
-        item.id == id
-          ? {...item, content: `${result?.split('file://')[1]}`}
-          : item,
+        item.id == id ? {...item, content: result?.split('file://')[1]} : item,
       ),
     );
     setIsEditAvailable(true);
   };
+
   const loadImages = async () => {
     if (Platform.OS === 'android') {
+      setMediaChangeLoader(true);
       const imageFiles = await RNFS.readDir(
         RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera',
       );
-      const imagePaths = imageFiles.map(file => file.path);
-      setContent(imagePaths);
+      const allMedia = [...imageFiles];
+      const videoContentPromises = allMedia.map(async item => {
+        const isVideo =
+          item.name.endsWith('.mp4') || item.name.endsWith('.mov');
+        if (isVideo) {
+          const thumbnail = await createThumbnail({
+            url: `file://${item.path}`,
+          });
+          return {
+            id: item.name,
+            content: thumbnail?.path,
+            type: 'video',
+            origionalPath: item.path,
+          };
+        } else {
+          return {
+            id: item.name,
+            content: item.path,
+            type: 'image',
+            origionalPath: item.path,
+          };
+        }
+      });
+      const videoContent = await Promise.all(videoContentPromises);
+      setContent(videoContent);
+      setMediaChangeLoader(false);
     } else if (Platform.OS === 'ios') {
       setMediaChangeLoader(true);
       imageFiles = await RNFS.readDir('/var/mobile/Media/DCIM/100APPLE');
@@ -339,20 +372,38 @@ const CreatePost = () => {
     const subscription = eventEmitter.addListener('VideoTrim', event => {
       switch (event.name) {
         case 'onFinishTrimming': {
-          console.log(event,'posytyt');
+          console.log(multiVideoId,'alllll')
+          setMultiContent(prev =>
+            prev?.map(item =>
+              item.id == multiVideoId
+                ? {...item, content: event?.outputPath?.split('file://')[1]}
+                : item,
+            ),
+          );
           setCurrentPreview(prev => ({
             ...prev,
-            content: event?.outputPath?.split('file://')[1],
+            origionalPath: event?.outputPath,
           }));
+          setIsEditAvailable({value: true, content: 'Video'});
+          setPause(true);
           break;
         }
       }
     });
-
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [multiVideoId]);
+
+  const VideoEditorMultiple = async (path, id) => {
+    isMultiVideoId(id);
+    showEditor(path, {
+      saveToPhoto: true,
+    });
+    
+  };
+
+
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -363,7 +414,7 @@ const CreatePost = () => {
         />
         <View style={styles.FirstImagePreview}>
           <>
-            {multiContent.length > 1 ? (
+            {selectMulti ? (
               <Carousel
                 loop
                 width={windowWidth}
@@ -372,7 +423,6 @@ const CreatePost = () => {
                 data={multiContent}
                 scrollAnimationDuration={1000}
                 renderItem={items => {
-                  console.log(items?.item?.type, 'typellll');
                   return (
                     <>
                       {items?.item.type == 'video' ? (
@@ -392,6 +442,10 @@ const CreatePost = () => {
                                 onPress={() => {
                                   setSelectMulti(!selectMulti);
                                   setMultiContent([]);
+                                  setIsEditAvailable({
+                                    value: false,
+                                    content: 'Image',
+                                  });
                                 }}
                                 style={styles.ImageResizeBtn}>
                                 <MaterialCommunityIcons
@@ -416,6 +470,21 @@ const CreatePost = () => {
                                   size={15}
                                 />
                               </TouchableOpacity>
+
+                              <TouchableOpacity
+                                onPress={() => {
+                                  VideoEditorMultiple(
+                                    `file://${items?.item?.content}`,
+                                    items?.item?.id,
+                                  );
+                                }}
+                                style={styles.ImageResizeBtn}>
+                                <AntDesign
+                                  name="edit"
+                                  color={'white'}
+                                  size={15}
+                                />
+                              </TouchableOpacity>
                             </View>
                             {paused && (
                               <View style={styles.playPaused}>
@@ -429,46 +498,62 @@ const CreatePost = () => {
                           </Pressable>
                         </>
                       ) : (
-                        <Image
-                          ref={CurrentIndex}
-                          key={'1'}
-                          style={styles.FirstImage}
-                          source={{uri: 'file://' + items?.item?.content}}
-                        />
-                      )}
-                      <View style={styles.uploadControls}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setSelectMulti(!selectMulti);
-                            setMultiContent([]);
-                          }}
-                          style={styles.ImageResizeBtn}>
-                          <MaterialCommunityIcons
-                            name="checkbox-multiple-blank-outline"
-                            color={'white'}
-                            size={15}
+                        <>
+                          <Image
+                            ref={CurrentIndex}
+                            key={'1'}
+                            style={styles.FirstImage}
+                            source={{uri: 'file://' + items?.item?.content}}
                           />
-                        </TouchableOpacity>
+                          <View style={styles.uploadControls}>
+                            <TouchableOpacity
+                              onPress={() => {
+                                setSelectMulti(!selectMulti);
+                                setMultiContent([]);
+                                setIsEditAvailable({
+                                  value: false,
+                                  content: 'Image',
+                                });
+                              }}
+                              style={styles.ImageResizeBtn}>
+                              <MaterialCommunityIcons
+                                name="checkbox-multiple-blank-outline"
+                                color={'white'}
+                                size={15}
+                              />
+                            </TouchableOpacity>
 
-                        <TouchableOpacity
-                          onPress={() =>
-                            setImageResize(
-                              imageResize == 'cover' ? 'contain' : 'cover',
-                            )
-                          }
-                          style={styles.ImageResizeBtn}>
-                          <Ionicons name="resize" color={'white'} size={15} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            ImageEditorContain(
-                              `file://${items?.item?.content}`,
-                            );
-                          }}
-                          style={styles.ImageResizeBtn}>
-                          <AntDesign name="edit" color={'white'} size={15} />
-                        </TouchableOpacity>
-                      </View>
+                            <TouchableOpacity
+                              onPress={() =>
+                                setImageResize(
+                                  imageResize == 'cover' ? 'contain' : 'cover',
+                                )
+                              }
+                              style={styles.ImageResizeBtn}>
+                              <Ionicons
+                                name="resize"
+                                color={'white'}
+                                size={15}
+                              />
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                              onPress={() => {
+                                ImageEditorContainMulti(
+                                  `file://${items?.item?.content}`,
+                                  items?.item?.id,
+                                );
+                              }}
+                              style={styles.ImageResizeBtn}>
+                              <AntDesign
+                                name="edit"
+                                color={'white'}
+                                size={15}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        </>
+                      )}
                     </>
                   );
                 }}
@@ -478,11 +563,7 @@ const CreatePost = () => {
                 {currentPreview?.type == 'video' ? (
                   <>
                     <Pressable
-                      onPress={() => {
-                        showEditor(`file://${currentPreview?.origionalPath}`, {
-                          saveToPhoto: true,
-                        });
-                      }}
+                      onPress={() => setPause(!paused)}
                       style={{position: 'relative'}}>
                       <Video
                         repeat={true}
@@ -498,6 +579,10 @@ const CreatePost = () => {
                           onPress={() => {
                             setSelectMulti(!selectMulti);
                             setMultiContent([]);
+                            setIsEditAvailable({
+                              value: false,
+                              content: 'Image',
+                            });
                           }}
                           style={styles.ImageResizeBtn}>
                           <MaterialCommunityIcons
@@ -515,6 +600,18 @@ const CreatePost = () => {
                           style={styles.ImageResizeBtn}>
                           <Ionicons name="resize" color={'white'} size={15} />
                         </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            showEditor(
+                              `file://${currentPreview?.origionalPath}`,
+                              {
+                                saveToPhoto: true,
+                              },
+                            );
+                          }}
+                          style={styles.ImageResizeBtn}>
+                          <AntDesign name="edit" color={'white'} size={15} />
+                        </TouchableOpacity>
                       </View>
                       {paused && (
                         <View style={styles.playPaused}>
@@ -528,44 +625,47 @@ const CreatePost = () => {
                     </Pressable>
                   </>
                 ) : (
-                  <Image
-                    ref={CurrentIndex}
-                    key={'1'}
-                    style={styles.FirstImage}
-                    source={{uri: 'file://' + currentPreview?.content}}
-                  />
-                )}
-                <View style={styles.uploadControls}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectMulti(!selectMulti);
-                      setMultiContent([]);
-                    }}
-                    style={styles.ImageResizeBtn}>
-                    <MaterialCommunityIcons
-                      name="checkbox-multiple-blank-outline"
-                      color={'white'}
-                      size={15}
+                  <>
+                    <Image
+                      ref={CurrentIndex}
+                      key={'1'}
+                      style={styles.FirstImage}
+                      source={{uri: 'file://' + currentPreview?.content}}
                     />
-                  </TouchableOpacity>
+                    <View style={styles.uploadControls}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSelectMulti(!selectMulti);
+                          setMultiContent([]);
+                          setIsEditAvailable({value: false, content: 'Image'});
+                        }}
+                        style={styles.ImageResizeBtn}>
+                        <MaterialCommunityIcons
+                          name="checkbox-multiple-blank-outline"
+                          color={'white'}
+                          size={15}
+                        />
+                      </TouchableOpacity>
 
-                  <TouchableOpacity
-                    onPress={() =>
-                      setImageResize(
-                        imageResize == 'cover' ? 'contain' : 'cover',
-                      )
-                    }
-                    style={styles.ImageResizeBtn}>
-                    <Ionicons name="resize" color={'white'} size={15} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      ImageEditorContain(currentPreview);
-                    }}
-                    style={styles.ImageResizeBtn}>
-                    <AntDesign name="edit" color={'white'} size={15} />
-                  </TouchableOpacity>
-                </View>
+                      <TouchableOpacity
+                        onPress={() =>
+                          setImageResize(
+                            imageResize == 'cover' ? 'contain' : 'cover',
+                          )
+                        }
+                        style={styles.ImageResizeBtn}>
+                        <Ionicons name="resize" color={'white'} size={15} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          ImageEditorContain(currentPreview);
+                        }}
+                        style={styles.ImageResizeBtn}>
+                        <AntDesign name="edit" color={'white'} size={15} />
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                )}
               </>
             )}
           </>
@@ -586,7 +686,6 @@ const CreatePost = () => {
               {content.length > 0
                 ? content.map((item, index) => {
                     const inde = index + 1;
-                    console.log(item, 'broo');
                     return (
                       <TouchableOpacity
                         key={inde}
@@ -595,9 +694,9 @@ const CreatePost = () => {
                           setMultiContent([]);
                         }}
                         onPress={() => {
-                          if (isEditAvailable) {
-                            handleOpenSheet();
+                          if (isEditAvailable?.value) {
                             setTemp(item);
+                            handleOpenSheet();
                           } else {
                             if (selectMulti == true) {
                               MultListAdder(
@@ -641,7 +740,7 @@ const CreatePost = () => {
                           <View style={styles.videoIndicator}>
                             <Entypo
                               name="controller-play"
-                              color={global.red}
+                              color={global.white}
                               size={22}
                             />
                           </View>

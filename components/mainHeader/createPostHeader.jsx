@@ -45,7 +45,6 @@ const CreatePostHeader = (post,isMultiple,isImage) => {
         }
     })
     const navigation = useNavigation()
-    console.log(post,'post')
     return (
         <View style={styles.wrapper}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.logoSide1}>

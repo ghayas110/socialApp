@@ -81,8 +81,8 @@ const CreatePostTwo = ({
       paddingVertical: ResponsiveSize(15),
       height: windowHeight * 0.3,
       width: windowWidth,
-      overflow:'hidden',
-      borderRadius:ResponsiveSize(10)
+      overflow: 'hidden',
+      borderRadius: ResponsiveSize(10),
     },
     singlePostInner: {
       height: windowHeight * 0.3,
@@ -193,7 +193,8 @@ const CreatePostTwo = ({
     {key: 'PRIVATE', label: 'Private'},
     {key: 'FOLLOWERS', label: 'Connections only'},
   ];
-  console.log(route?.params?.isImage);
+
+  console.log(route?.params?.post, 'blue');
   const CreatePostFinalStep = async () => {
     const Tags = PostCreationReducer?.searchConnectionData?.map(
       item => item.user_id,
@@ -225,13 +226,24 @@ const CreatePostTwo = ({
         PostCreationReducer?.isCommentOff == true ? 'Y' : 'N',
       );
       if (route?.params?.post) {
-        formData.append('post_attachments', {
-          uri: `file://${route?.params?.post}`,
-          name: 'photo.jpg',
-          type: 'image/jpeg',
+        route?.params?.post?.map(dev => {
+          if (dev.type == 'image') {
+            formData.append('post_attachments', {
+              uri: `file://${dev?.content}`,
+              name: 'photo.jpg',
+              type: 'image/jpeg',
+            });
+          }
+          else{
+            formData.append('post_attachments', {
+              uri: `file://${dev?.content}`,
+              name: 'video.mp4',
+              type: 'video/mp4',
+            });
+          }
         });
       }
-      console.log(formData?._parts);
+      console.log(formData._parts, 'formData');
       const result = await CreatePostFunction(formData);
       if (result == 'Post Created') {
         setLoading(false);
@@ -249,7 +261,6 @@ const CreatePostTwo = ({
   };
   const [paused, setPause] = useState(paused);
   const videoRef = useRef(null);
-  console.log(route?.params?.post?.type, 'koko');
   return (
     <>
       {loading ? (
@@ -387,13 +398,13 @@ const CreatePostTwo = ({
                     </Pressable>
                   </>
                 ) : (
-                 <>
-                  <Image
-                    ref={CurrentIndex}
-                    key={'1'}
-                    style={styles.singlePostInner}
-                    source={{uri: 'file://' + route?.params?.post?.content}}
-                  />
+                  <>
+                    <Image
+                      ref={CurrentIndex}
+                      key={'1'}
+                      style={styles.singlePostInner}
+                      source={{uri: 'file://' + route?.params?.post?.content}}
+                    />
                   </>
                 )}
               </>
@@ -498,7 +509,8 @@ const CreatePostTwo = ({
                       backgroundColor: global.description,
                       paddingHorizontal: ResponsiveSize(10),
                       paddingVertical: ResponsiveSize(5),
-                      borderRadius: ResponsiveSize(30),
+                      borderRadius: ResponsiveSize(10),
+                      overflow: 'hidden',
                     }}
                   />
                 </View>

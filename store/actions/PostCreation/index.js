@@ -92,7 +92,7 @@ export const LikeCountSwitch = (body) => async (dispatch, getState) => {
 
 export const CreatePostFunction = (FormData) => async (dispatch) => {
     const Token = await AsyncStorage.getItem('Token');
-    console.log(Token, FormData?.post_attachments);
+    console.log(Token, FormData,'blueyuil');
     try {
         const response = await fetch(`${baseUrl.baseUrl}/posts/createPost`, {
             method: "POST",
@@ -103,8 +103,8 @@ export const CreatePostFunction = (FormData) => async (dispatch) => {
             },
             body: FormData
         });
+        console.log(response, "56789")
         const res = await response.json();
-        console.log(res, "ok")
         return res?.message
     }
 
