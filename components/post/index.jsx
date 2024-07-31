@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ImageBackground, StyleSheet, View, Dimensions, Image, TouchableOpacity, Pressable } from 'react-native'
 import TextC from '../text/text';
 import EntypoFont from "react-native-vector-icons/Entypo";
@@ -6,96 +6,102 @@ import { useColorScheme } from 'react-native';
 import LikeLight from '../../assets/icons/Like.png';
 import CommnetLight from '../../assets/icons/Comment.png';
 import ShareLight from '../../assets/icons/Share.png';
-// import LikeDark from '../../assets/icons/LikeLight.png';
-// import CommnetDark from '../../assets/icons/CommentLight.png';
-// import ShareDark from '../../assets/icons/MessangerLight.png';
 import { useBottomSheet } from '../bottomSheet/BottomSheet';
 import { ScrollView } from 'react-native-gesture-handler';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
+import Carousel from 'react-native-reanimated-carousel';
+import { ResponsiveSize, global } from '../constant';
+import TimeAgo from '@manu_omg/react-native-timeago';
+import * as PostCreationAction from '../../store/actions/PostCreation/index';
+import { connect } from 'react-redux';
+import Video, { VideoRef } from 'react-native-video';
 
 
-const Post = ({ userName, profileImage, id, likeCount, commnetCount, description, content, userLocation }) => {
+const Post = ({ userName, profileImage, postId, likeCount, commnetCount, description, content, userLocation, timeAgo, LikeDisLikeFunc }) => {
+    console.log(content, 'asdasd')
+    const windowWidth = Dimensions.get('window').width;
+    const windowHeight = Dimensions.get('window').height;
     const scheme = useColorScheme();
-    const width = Dimensions.get('window').width;
+    const videoRef = useRef(null);
     const style = StyleSheet.create({
         PostHeader: {
             flexDirection: 'row',
-            paddingVertical: 12,
-            paddingHorizontal: 20,
-            width: width - 40
+            paddingVertical: ResponsiveSize(10),
+            paddingHorizontal: ResponsiveSize(15),
+            width: windowWidth,
         },
         PostProfileImage: {
-            height: 45,
-            width: 45,
-            borderRadius: 32,
+            height: ResponsiveSize(40),
+            width: ResponsiveSize(40),
+            borderRadius: ResponsiveSize(40),
             backgroundColor: 'blue',
-            marginRight: 8,
+            marginRight: ResponsiveSize(10),
             overflow: 'hidden',
         },
         PostProfileImageBox: {
             flexDirection: "column",
             alignItems: 'flex-start',
-            justifyContent:'center'
+            justifyContent: 'center'
         },
         PostActionDot: {
             flexDirection: "row",
             alignItems: 'center',
         },
         ActuallPost: {
-            height: 231,
-            width: width - 40,
-            borderRadius: 30
+            height: windowHeight * 0.40,
+            width: windowWidth,
+            borderRadius: 0
         },
         postActionSection: {
             flexDirection: 'row',
-            paddingVertical: 10,
-            paddingHorizontal: 20,
-            width: width - 40
+            paddingVertical: ResponsiveSize(12),
+            paddingHorizontal: ResponsiveSize(15),
+            width: windowWidth,
         },
         PostDetail: {
             textAlign: "left",
-            paddingHorizontal: 20,
+            paddingHorizontal: ResponsiveSize(15),
         },
         commentSectionProfile: {
-            height: 40,
-            width: 40,
+            height: ResponsiveSize(40),
+            width: ResponsiveSize(40),
             backgroundColor: 'red',
-            borderRadius: 32,
+            borderRadius: ResponsiveSize(40),
             overflow: 'hidden',
-            marginTop: 6,
+            marginTop: ResponsiveSize(5),
         },
         PostIcons: {
-            paddingHorizontal: 5
+            paddingHorizontal: ResponsiveSize(5)
         },
         PostIcons1: {
             paddingLeft: 0,
-            paddingRight: 5
+            paddingRight: ResponsiveSize(5)
         },
         CommnetAdd: {
             flexDirection: 'row',
             alignItems: 'center',
-            paddingHorizontal: 20,
-            paddingVertical: 5
+            paddingHorizontal: ResponsiveSize(20),
+            paddingVertical: ResponsiveSize(5)
         },
         CommenterProfile: {
-            height: 21,
-            width: 21,
+            height: ResponsiveSize(21),
+            width: ResponsiveSize(21),
             backgroundColor: 'blue',
-            borderRadius: 32,
+            borderRadius: ResponsiveSize(40),
             overflow: 'hidden',
         },
         CommenterProfileImage: {
-            height: 21,
-            width: 21
+            height: ResponsiveSize(21),
+            width: ResponsiveSize(21)
         },
         PostDate: {
-            paddingHorizontal: 20,
-            paddingVertical: 5
-        }
+            paddingHorizontal: ResponsiveSize(15),
+            paddingVertical: ResponsiveSize(5)
+        },
     })
-    useEffect(()=>{
-        return ()=>{closeBottomSheet()}
-    },[])
+    useEffect(() => {
+        return () => { closeBottomSheet() }
+    }, [])
     const { openBottomSheet, closeBottomSheet } = useBottomSheet();
     const handleOpenSheet = () => {
         openBottomSheet(
@@ -231,60 +237,95 @@ const Post = ({ userName, profileImage, id, likeCount, commnetCount, description
             , ["100%", "70%"]
         );
     };
+
+    const HandleLikes = ({ id }) => {
+        const [likedPostId, setLikePostId] = useState([])
+        return (
+            <Pressable onPress={() => {
+                LikeDisLikeFunc({
+                    post_id: id
+                })
+                setLikePostId(prev => [...prev, id])
+            }} style={style.PostIcons1}>
+                <Image source={LikeLight} style={{ height: ResponsiveSize(22), width: ResponsiveSize(22) }} />
+            </Pressable>
+        )
+    }
     return (
         <>
             <View style={style.PostHeader}>
-                <ImageBackground source={profileImage} style={style.PostProfileImage} resizeMode="cover"></ImageBackground>
+                <ImageBackground source={{ uri: profileImage }} style={style.PostProfileImage} resizeMode="cover"></ImageBackground>
                 <View style={style.PostProfileImageBox}>
-                    <TextC size={13} text={userName} font={'Montserrat-Bold'} />
-                    <TextC size={12} text={userLocation} font={'Montserrat-Medium'} />
+                    <TextC size={ResponsiveSize(12)} text={userName} font={'Montserrat-Bold'} />
+                    <TextC size={ResponsiveSize(10)} text={userLocation} font={'Montserrat-Medium'} />
                 </View>
             </View>
 
-
-            <Image source={content} style={style.ActuallPost} />
-
+            {content?.length > 1 ?
+                <Carousel
+                    loop={false}
+                    width={windowWidth}
+                    height={windowHeight * 0.40}
+                    autoPlay={false}
+                    data={content}
+                    scrollAnimationDuration={1000}
+                    renderItem={items => {
+                        return (
+                            <Image source={{ uri: items.item?.attachment_thumbnail_url }} style={style.ActuallPost} />
+                        )
+                    }
+                    }
+                />
+                :
+                <>
+                    {content[0]?.attachment_url.endsWith('.mp4') ?
+                        <Video
+                            repeat={true}
+                            source={{
+                                uri: content[0]?.attachment_url,
+                            }}
+                            ref={videoRef}
+                            paused={false}
+                        />
+                        :
+                        <Image source={{ uri: content[0]?.attachment_thumbnail_url }} style={style.ActuallPost} />
+                    }
+                </>
+            }
 
             <View style={style.postActionSection}>
-                <Pressable style={style.PostIcons1}>
-                    <Image source={LikeLight} style={{ height: 25, width: 25 }} />
+                <HandleLikes id={postId} />
+                <Pressable style={style.PostIcons}>
+                    <Image source={CommnetLight} style={{ height: ResponsiveSize(20), width: ResponsiveSize(20) }} />
                 </Pressable>
                 <Pressable style={style.PostIcons}>
-                    <Image source={CommnetLight} style={{ height: 22, width: 22 }} />
-                </Pressable>
-                <Pressable style={style.PostIcons}>
-                    <Image source={ShareLight} style={{ height: 22, width: 22, marginTop: 1 }} />
+                    <Image source={ShareLight} style={{ height: ResponsiveSize(20), width: ResponsiveSize(20), marginTop: 1 }} />
                 </Pressable>
             </View>
 
 
             <View style={style.PostDetail}>
-                <TextC size={12} text={`${likeCount} likes`} font={'Montserrat-Medium'} />
+                <TextC size={ResponsiveSize(10)} text={`${likeCount} likes`} font={'Montserrat-Medium'} />
 
-                <View style={{ paddingVertical: 3 }}>
-                    <TextC size={12} style={{...(scheme === 'dark' ? { color: DarkTheme.colors.text } : { color: DefaultTheme.colors.text })}} text={description} font={'Montserrat-Medium'} />
+                <View style={{ paddingVertical: ResponsiveSize(3) }}>
+                    <TextC size={ResponsiveSize(11)} style={{ ...(scheme === 'dark' ? { color: DarkTheme.colors.text } : { color: DefaultTheme.colors.text }) }} text={description} font={'Montserrat-Medium'} />
                 </View>
 
-                <TouchableOpacity onPress={handleOpenSheet} style={{ paddingVertical: 3 }}>
-                    <TextC size={12} text={`View all ${commnetCount} comments`} font={'Montserrat-Medium'} />
+                <TouchableOpacity onPress={handleOpenSheet} style={{ paddingVertical: ResponsiveSize(3) }}>
+                    <TextC size={ResponsiveSize(11)} text={`View all ${commnetCount} comments`} font={'Montserrat-Medium'} />
                 </TouchableOpacity>
             </View>
-
-            <View style={style.CommnetAdd}>
-                <View style={style.CommenterProfile}>
-                    <ImageBackground source={profileImage} style={style.CommenterProfileImage} resizeMode="cover"></ImageBackground>
-                </View>
-                <View style={{ paddingHorizontal: 8 }}>
-                    <TextC text={'Add a comment'} font={'Montserrat-Medium'} size={11} />
-                </View>
-            </View>
             <View style={style.PostDate}>
-                <TextC text={'2 days ago'} font={'Montserrat-Medium'} size={11} style={{ color: '#DADADA' }} />
+                <TimeAgo
+                    style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(10), color: '#DADADA' }}
+                    time={timeAgo}
+                />
             </View>
         </>
     )
 }
 
-export default Post;
-
-const styles = StyleSheet.create({})
+function mapStateToProps({ PostCreationReducer }) {
+    return { PostCreationReducer };
+}
+export default connect(mapStateToProps, PostCreationAction)(Post);

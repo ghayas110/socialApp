@@ -42,7 +42,6 @@ export const GetProfileData = () => async (dispatch) => {
     }
 }
 
-
 export const UpdateProfileData = (data) => async (dispatch) => {
     const Token = await AsyncStorage.getItem('Token');
     try {
@@ -56,7 +55,7 @@ export const UpdateProfileData = (data) => async (dispatch) => {
             body: JSON.stringify(data)
         });
         const res = await response.json()
-        console.log(res,'ok')
+        console.log(res, 'ok')
         return res
     }
     catch (error) {
@@ -77,14 +76,13 @@ export const UpdateProfile = (data) => async (dispatch) => {
             body: data
         });
         const res = await response.json()
-        console.log(res,'ok')
+        console.log(res, 'ok')
         return res
     }
     catch (error) {
         console.log(error)
     }
 }
-
 
 export const Logout = () => async (dispatch) => {
     dispatch({
@@ -98,4 +96,25 @@ export const Login = () => async (dispatch) => {
         type: LOGIN,
         payloads: true,
     });
+}
+
+
+export const GetUserPosts = () => async (dispatch) => {
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/get-posts-created-by-user/1/50000`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+        });
+        const res = await response.json()
+        console.log(res)
+        return res?.data
+    }
+    catch (error) {
+        console.log(error)
+    }
 }

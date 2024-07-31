@@ -90,9 +90,8 @@ export const LikeCountSwitch = (body) => async (dispatch, getState) => {
     });
 }
 
-export const CreatePostFunction = (FormData) => async (dispatch) => {
+export const CreatePostFunction = (FormData) => async () => {
     const Token = await AsyncStorage.getItem('Token');
-    console.log(Token, FormData,'blueyuil');
     try {
         const response = await fetch(`${baseUrl.baseUrl}/posts/createPost`, {
             method: "POST",
@@ -103,14 +102,35 @@ export const CreatePostFunction = (FormData) => async (dispatch) => {
             },
             body: FormData
         });
-        console.log(response, "56789")
-        const res = await response.json();
+        console.log(FormData,'gloooooooooooooooo')
+        const res = await response?.json();
         return res?.message
     }
-
-
     catch (error) {
-        console.log(error, "oken")
+        console.log(error.message, "oken")
+        return "Internal Server Error"
+    }
+}
+
+
+export const LikeDisLikeFunc = (body) => async () => {
+    console.log(JSON.stringify(body), "like")
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/like-post`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+            body: JSON.stringify(body)
+
+        });
+        const res = await response?.json();
+    }
+    catch (error) {
+        console.log(error.message, "oken")
         return "Internal Server Error"
     }
 }

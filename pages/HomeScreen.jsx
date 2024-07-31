@@ -1,5 +1,5 @@
 import { DarkTheme } from '@react-navigation/native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StatusBar, useColorScheme, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import CityScroll from '../components/citiesScroll';
@@ -9,13 +9,18 @@ import { connect } from "react-redux";
 
 
 
-const HomeScreen = ({GetUserProfileReducer,GetProfileData}) => {
+const HomeScreen = ({ GetUserProfileReducer, GetProfileData, GetUserPosts }) => {
   const scheme = useColorScheme();
+  const [post, setPost] = useState([]);
+  const getFeeds = async () => {
+    const result = await GetUserPosts();
+    setPost(result)
+  }
   useEffect(() => {
     GetProfileData();
+    getFeeds()
   }, []);
 
-  
   return (
     <>
       <SafeAreaView>
@@ -24,11 +29,10 @@ const HomeScreen = ({GetUserProfileReducer,GetProfileData}) => {
           <View>
             <CityScroll />
           </View>
-          <View style={{ paddingHorizontal: 20 }}>
-            <Post userLocation={'DL | P'} userName={"David J. Vega"} profileImage={require("../assets/icons/profile.png")} likeCount={'16,345'} commnetCount={'643'} description={"Lorem Ipsum is simply dummy text of the printing and typesetting industry"} content={require('../assets/icons/postImage.jpg')} />
-            <Post userLocation={'DL | P'} userName={"David J. Vega"} profileImage={require("../assets/icons/profile.png")} likeCount={'16,345'} commnetCount={'643'} description={"Lorem Ipsum is simply dummy text of the printing and typesetting industry"} content={require('../assets/icons/postImage.jpg')} />
-            <Post userLocation={'DL | P'} userName={"David J. Vega"} profileImage={require("../assets/icons/profile.png")} likeCount={'16,345'} commnetCount={'643'} description={"Lorem Ipsum is simply dummy text of the printing and typesetting industry"} content={require('../assets/icons/postImage.jpg')} />
-            <Post userLocation={'DL | P'} userName={"David J. Vega"} profileImage={require("../assets/icons/profile.png")} likeCount={'16,345'} commnetCount={'643'} description={"Lorem Ipsum is simply dummy text of the printing and typesetting industry"} content={require('../assets/icons/postImage.jpg')} />
+          <View>
+            {post !== undefined && post !== null && post !== "" && post.length > 0 && post.map(data =>
+              <Post postId={data?.post_id} timeAgo={data?.created_at} userLocation={`${data?.lastCheckin?.city} | ${data?.lastCheckin?.state}`} userName={data?.userDetails?.user_name} profileImage={data?.userDetails?.profile_picture_url} likeCount={data?.likes_count} commnetCount={data?.comments_count} description={data?.caption} content={data?.attachments} />
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>

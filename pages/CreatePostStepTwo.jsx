@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -10,17 +10,17 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native';
-import {global, ResponsiveSize} from '../components/constant';
-import {TextInput, TouchableOpacity} from 'react-native-gesture-handler';
+import { global, ResponsiveSize } from '../components/constant';
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import TextC from '../components/text/text';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ModalSelector from 'react-native-modal-selector';
 import Carousel from 'react-native-reanimated-carousel';
 import * as PostCreationAction from '../store/actions/PostCreation/index';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Video from 'react-native-video';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -34,6 +34,7 @@ const CreatePostTwo = ({
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const ScreenHeight = Dimensions.get('screen').height;
+  const [videoLink, setVideoLink] = useState(route?.params?.post?.origionalPath)
   const navigation = useNavigation();
   const ref = React.useRef(null);
   const [privacy, setPrivacy] = useState('Public');
@@ -91,7 +92,7 @@ const CreatePostTwo = ({
       borderRadius: ResponsiveSize(10),
       overflow: 'hidden',
       shadowColor: 'black',
-      shadowOffset: {width: 0, height: 3},
+      shadowOffset: { width: 0, height: 3 },
       borderWidth: 1,
       borderColor: global.description,
       backgroundColor: 'white',
@@ -109,7 +110,7 @@ const CreatePostTwo = ({
       borderWidth: 1,
       borderColor: global.description,
       shadowColor: 'black',
-      shadowOffset: {width: 0, height: 3},
+      shadowOffset: { width: 0, height: 3 },
       backgroundColor: 'white',
       shadowOpacity: 0.2,
       shadowRadius: 5,
@@ -176,25 +177,36 @@ const CreatePostTwo = ({
       alignItems: 'center',
       position: 'relative',
     },
+    playPausedSingle: {
+      height: windowHeight * 0.3,
+      width: windowWidth * 0.7,
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      borderWidth: 0,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     playPaused: {
       position: 'absolute',
       top: 0,
       left: 0,
       borderWidth: 0,
+      flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
       height: windowHeight * 0.3,
       width: windowWidth,
-      flexDirection: 'row',
     },
   });
   const data = [
-    {key: 'PUBLIC', label: 'Public'},
-    {key: 'PRIVATE', label: 'Private'},
-    {key: 'FOLLOWERS', label: 'Connections only'},
+    { key: 'PUBLIC', label: 'Public' },
+    { key: 'PRIVATE', label: 'Private' },
+    { key: 'FOLLOWERS', label: 'Connections only' },
   ];
 
-  console.log(route?.params?.post, 'blue');
+  console.log()
   const CreatePostFinalStep = async () => {
     const Tags = PostCreationReducer?.searchConnectionData?.map(
       item => item.user_id,
@@ -225,7 +237,23 @@ const CreatePostTwo = ({
         'allow_comments_flag',
         PostCreationReducer?.isCommentOff == true ? 'Y' : 'N',
       );
-      if (route?.params?.post) {
+      if (route?.params?.isMultiple == false) {
+        if (route?.params?.post?.type == 'image') {
+          formData.append('post_attachments', {
+            uri: `file://${route?.params?.post?.content}`,
+            name: 'photo.jpg',
+            type: 'image/jpeg',
+          });
+        }
+        else {
+          formData.append('post_attachments', {
+            uri: `file://${route?.params?.post?.content}`,
+            name: 'video.mp4',
+            type: 'video/mp4',
+          });
+        }
+      }
+      else {
         route?.params?.post?.map(dev => {
           if (dev.type == 'image') {
             formData.append('post_attachments', {
@@ -234,7 +262,7 @@ const CreatePostTwo = ({
               type: 'image/jpeg',
             });
           }
-          else{
+          else {
             formData.append('post_attachments', {
               uri: `file://${dev?.content}`,
               name: 'video.mp4',
@@ -243,7 +271,6 @@ const CreatePostTwo = ({
           }
         });
       }
-      console.log(formData._parts, 'formData');
       const result = await CreatePostFunction(formData);
       if (result == 'Post Created') {
         setLoading(false);
@@ -259,8 +286,9 @@ const CreatePostTwo = ({
   const excludeConections = async r => {
     ExludeConnection(r);
   };
-  const [paused, setPause] = useState(paused);
-  const videoRef = useRef(null);
+  const videoRef1 = useRef(null);
+  const videoRef2 = useRef(null);
+  console.log(videoLink, 'video21')
   return (
     <>
       {loading ? (
@@ -335,35 +363,21 @@ const CreatePostTwo = ({
                     <>
                       {items?.item?.type == 'video' ? (
                         <>
-                          <Pressable
-                            onPress={() => setPause(!paused)}
-                            style={{position: 'relative'}}>
-                            <Video
-                              repeat={true}
-                              source={{
-                                uri: 'file://' + items?.item?.content,
-                              }}
-                              ref={videoRef}
-                              style={styles.singlePostInnerCarousel}
-                              paused={paused}
-                            />
-                            {paused && (
-                              <View style={styles.playPaused}>
-                                <Entypo
-                                  size={ResponsiveSize(50)}
-                                  name="controller-play"
-                                  color={'white'}
-                                />
-                              </View>
-                            )}
-                          </Pressable>
+                          <Video
+                            repeat={true}
+                            source={{
+                              uri: 'file://' + items?.item?.content,
+                            }}
+                            ref={videoRef1}
+                            style={styles.singlePostInnerCarousel}
+                          />
                         </>
                       ) : (
                         <Image
                           ref={CurrentIndex}
                           key={'1'}
                           style={styles.singlePostInnerCarousel}
-                          source={{uri: 'file://' + items?.item?.content}}
+                          source={{ uri: 'file://' + items?.item?.content }}
                         />
                       )}
                     </>
@@ -374,28 +388,16 @@ const CreatePostTwo = ({
               <>
                 {route?.params?.post?.type == 'video' ? (
                   <>
-                    <Pressable
-                      onPress={() => setPause(!paused)}
-                      style={{position: 'relative'}}>
+                    {videoLink &&
                       <Video
-                        repeat={true}
+                        controls={true}
                         source={{
-                          uri: 'file://' + route?.params?.post?.origionalPath,
+                          uri: 'file://' + videoLink,
                         }}
-                        ref={videoRef}
+                        ref={videoRef2}
                         style={styles.singlePostInner}
-                        paused={paused}
                       />
-                      {paused && (
-                        <View style={styles.playPaused}>
-                          <Entypo
-                            size={ResponsiveSize(50)}
-                            name="controller-play"
-                            color={'white'}
-                          />
-                        </View>
-                      )}
-                    </Pressable>
+                    }
                   </>
                 ) : (
                   <>
@@ -403,7 +405,7 @@ const CreatePostTwo = ({
                       ref={CurrentIndex}
                       key={'1'}
                       style={styles.singlePostInner}
-                      source={{uri: 'file://' + route?.params?.post?.content}}
+                      source={{ uri: 'file://' + route?.params?.post?.content }}
                     />
                   </>
                 )}
@@ -426,11 +428,11 @@ const CreatePostTwo = ({
                     text={`@${date?.user_name}`}
                     font={'Montserrat-Medium'}
                     size={ResponsiveSize(11)}
-                    style={{color: global.black}}
+                    style={{ color: global.black }}
                   />
                   <TouchableOpacity
                     onPress={() => excludeConections(date)}
-                    style={{marginLeft: ResponsiveSize(5)}}>
+                    style={{ marginLeft: ResponsiveSize(5) }}>
                     <Entypo
                       name="cross"
                       color={global.black}
@@ -444,7 +446,7 @@ const CreatePostTwo = ({
           <TouchableOpacity
             onPress={() => navigation.navigate('TagPeople')}
             style={styles.SettingList}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <AntDesign
                 name="adduser"
                 color={global.primaryColor}
@@ -474,7 +476,7 @@ const CreatePostTwo = ({
               onChange={option => {
                 setPrivacy(option?.label);
               }}
-              selectTextStyle={{color: global.placeholderColor}}>
+              selectTextStyle={{ color: global.placeholderColor }}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -482,7 +484,7 @@ const CreatePostTwo = ({
                   justifyContent: 'space-between',
                   width: '100%',
                 }}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <AntDesign
                     name="user"
                     color={global.primaryColor}
@@ -520,7 +522,7 @@ const CreatePostTwo = ({
           <TouchableOpacity
             onPress={() => navigation.navigate('PostSetting')}
             style={styles.SettingList}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Ionicons
                 name="settings-outline"
                 color={global.primaryColor}
@@ -550,7 +552,7 @@ const CreatePostTwo = ({
   );
 };
 
-function mapStateToProps({PostCreationReducer}) {
-  return {PostCreationReducer};
+function mapStateToProps({ PostCreationReducer }) {
+  return { PostCreationReducer };
 }
 export default connect(mapStateToProps, PostCreationAction)(CreatePostTwo);

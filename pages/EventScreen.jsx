@@ -43,11 +43,11 @@ const EventScreen = ({ route }) => {
   const TabContent = () => {
     switch (tabSlider) {
       case 1:
-        return <AllEvents page={allEventPage} pageChange={useAllEventPage} />;
+        return <AllEvents page={allEventPage} pageChange={useAllEventPage}/>;
       case 2:
-        return <Joined tabActivator={tabActivator} page={joinedEventPage} pageChange={useJoinedEventPage} />;
+        return <Joined page={joinedEventPage} pageChange={useJoinedEventPage} tabActivator={tabActivator}/>;
       case 3:
-        return <MyEvent page={myEventPage} pageChange={useMyEventPage} />;
+        return <MyEvent page={myEventPage} pageChange={useMyEventPage}/>;
       default:
         return null;
     }
