@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import Video, { VideoRef } from 'react-native-video';
 import ReadMore from '@fawazahmed/react-native-read-more';
 import AntDesign from 'react-native-vector-icons/AntDesign'
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCount, description, content, userLocation, timeAgo, LikeFunc, DisLikeFunc }) => {
     const windowWidth = Dimensions.get('window').width;
@@ -45,7 +45,7 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
             marginRight: ResponsiveSize(10),
             overflow: 'hidden',
         },
-        PostProfileImage2:{
+        PostProfileImage2: {
             height: commentSectioLength * 0.1,
             width: commentSectioLength * 0.1,
             borderRadius: commentSectioLength * 0.1,
@@ -119,9 +119,15 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
             marginTop: ResponsiveSize(5),
             color: global.black,
         },
+        commentKeyBoard: {
+            height: ResponsiveSize(90),
+            width: windowWidth,
+            backgroundColor: global.black,
+            position: 'absolute',
+            bottom: ResponsiveSize(10)
+        }
     })
     useEffect(() => {
-        handleOpenSheet()
         return () => { closeBottomSheet() }
     }, [])
     const { openBottomSheet, closeBottomSheet } = useBottomSheet();
@@ -129,9 +135,9 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
     const handleOpenSheet = () => {
         openBottomSheet(
             <>
-                <ScrollView style={{ flex: 1, backgroundColor: global.white }}>
+                <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: global.white }}>
                     <View style={{ flex: 1, paddingHorizontal: ResponsiveSize(15), paddingTop: 10 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', width: commentSectioLength}}>
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', width: commentSectioLength }}>
 
                             <View style={style.commentSectionProfile}>
                                 <ImageBackground source={profileImage} style={style.PostProfileImage2} resizeMode="cover"></ImageBackground>
@@ -142,18 +148,34 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                                     <TextC text={"neo6.1"} font={'Montserrat-SemiBold'} size={ResponsiveSize(12)} style={{ includeFontPadding: false }} />
                                     <TextC text={"3d"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} style={{ includeFontPadding: false, color: "#999999", marginLeft: 6 }} />
                                 </View>
-                                <TextC text={"es simplemente el texto de relleno de. es simplemente el texto de relleno de. es simplemente el texto de relleno de. es simplemente el texto de relleno de."} font={'Montserrat-Regular'} style={{ includeFontPadding: false, fontSize: ResponsiveSize(11),color:global.black,backgroundColor:'red'}} />
+                                <TextC text={"es simplemente el texto de relleno de. es simplemente el texto de relleno de. es simplemente el texto de relleno de. es simplemente el texto de relleno de."} font={'Montserrat-Regular'} style={{ includeFontPadding: false, fontSize: ResponsiveSize(11), color: global.black }} />
+
                                 <View style={{ flexDirection: "row", alignItems: 'center', paddingTop: 5 }}>
-                                    <TouchableOpacity>
-                                        <TextC text={"Reply"} font={'Montserrat-Medium'} style={{ includeFontPadding: false, color: "#999999" }} />
+                                    <TouchableOpacity style={{ flexDirection: "row", alignItems: 'center' }}>
+                                        <AntDesign
+                                            name={'heart'}
+                                            color={global.red}
+                                            size={ResponsiveSize(15)}
+                                        />
+                                        <TextC text={"322"} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(5) }} />
                                     </TouchableOpacity>
-                                    <TouchableOpacity>
-                                        <TextC text={"Like"} font={'Montserrat-Medium'} style={{ includeFontPadding: false, color: "#999999" }} />
+
+                                    <TextC text={"|"} size={ResponsiveSize(12)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingHorizontal: ResponsiveSize(5) }} />
+
+                                    <TouchableOpacity style={{ flexDirection: "row", alignItems: 'center' }}>
+                                        <MaterialCommunityIcons
+                                            name={'comment-outline'}
+                                            color={global.black}
+                                            size={ResponsiveSize(15)}
+                                        />
+                                        <TextC text={"23"} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(5) }} />
                                     </TouchableOpacity>
                                 </View>
                             </View>
                         </View>
                     </View>
+
+
                     {/* <View style={{ flex: 1, paddingHorizontal: 15, paddingTop: 10, paddingLeft: 70 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
@@ -202,6 +224,7 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
             console.error('Error disliking the post:', error);
         }
     };
+    console.log(description, 'asdasd')
     return (
         <>
             <View style={style.PostHeader}>
@@ -267,22 +290,24 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
             <View style={style.PostDetail}>
                 <TextC size={ResponsiveSize(10)} text={`${likeCountPre} likes`} font={'Montserrat-Medium'} />
 
-                <View style={{ paddingVertical: ResponsiveSize(3) }}>
-                    <ReadMore
-                        seeLessStyle={{
-                            fontFamily: 'Montserrat-Bold',
-                            color: global.primaryColor,
-                        }}
-                        seeMoreStyle={{
-                            fontFamily: 'Montserrat-Bold',
-                            color: global.primaryColor,
-                        }}
-                        numberOfLines={2}
-                        style={style.DescriptionStyle}>
-                        {description}
-                    </ReadMore>
-                </View>
-
+                {description !== '' ?
+                    <View style={{ paddingVertical: ResponsiveSize(3) }}>
+                        <ReadMore
+                            seeLessStyle={{
+                                fontFamily: 'Montserrat-Bold',
+                                color: global.primaryColor,
+                            }}
+                            seeMoreStyle={{
+                                fontFamily: 'Montserrat-Bold',
+                                color: global.primaryColor,
+                            }}
+                            numberOfLines={2}
+                            style={style.DescriptionStyle}>
+                            {description}
+                        </ReadMore>
+                    </View>
+                    :""
+                }
                 <TouchableOpacity onPress={handleOpenSheet} style={{ paddingVertical: ResponsiveSize(3) }}>
                     <TextC size={ResponsiveSize(11)} text={`View all ${commnetCount} comments`} font={'Montserrat-Medium'} />
                 </TouchableOpacity>

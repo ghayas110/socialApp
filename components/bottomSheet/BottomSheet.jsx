@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useRef, useState, useCallback, useMemo } from 'react';
 import BottomSheet from '@gorhom/bottom-sheet';
-import { useColorScheme, View } from 'react-native';
+import { Dimensions, StyleSheet, useColorScheme, View } from 'react-native';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { global } from '../constant';
+import { global, ResponsiveSize } from '../constant';
 
 const BottomSheetContext = createContext();
 
@@ -27,15 +27,30 @@ export const BottomSheetProvider = ({ children }) => {
     closeBottomSheet,
   }), [openBottomSheet, closeBottomSheet]);
 
+
+  const style = StyleSheet.create({
+    commentKeyBoard: {
+      height: ResponsiveSize(90),
+      width: windowWidth,
+      backgroundColor: global.black,
+      position: 'absolute',
+      bottom: ResponsiveSize(0),
+      zIndex: 999
+    }
+  })
+  const windowWidth = Dimensions.get('window').width;
+
   return (
     <BottomSheetContext.Provider value={contextValue}>
       {children}
+      <View style={style.commentKeyBoard}>
 
+      </View>
       <BottomSheet
-        handleStyle={{ height: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15, backgroundColor: scheme == "dark" ? DarkTheme.colors.background :"white"}}
-        handleIndicatorStyle={{ backgroundColor: scheme == "dark" ? DefaultTheme.colors.background :global.primaryColor}}
+        handleStyle={{ height: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15, backgroundColor: scheme == "dark" ? DarkTheme.colors.background : "white" }}
+        handleIndicatorStyle={{ backgroundColor: scheme == "dark" ? DefaultTheme.colors.background : global.primaryColor }}
         ref={bottomSheetRef}
-        backgroundStyle={{ backgroundColor: scheme == "dark" ? DarkTheme.colors.background :"white" }}
+        backgroundStyle={{ backgroundColor: scheme == "dark" ? DarkTheme.colors.background : "white" }}
         index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose={true}

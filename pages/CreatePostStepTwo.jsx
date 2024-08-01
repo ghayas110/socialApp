@@ -272,7 +272,7 @@ const CreatePostTwo = ({
           }
         });
       }
-      const result = await CreatePostFunction(formData,route?.params?.post?.content,goHome);
+      const result = await CreatePostFunction(formData,route?.params?.isMultiple?route?.params?.post[0]?.content:route?.params?.post?.content,goHome);
     } catch (error) {
       console.log(error);
     }
