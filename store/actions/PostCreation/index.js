@@ -95,6 +95,7 @@ export const LikeCountSwitch = (body) => async (dispatch, getState) => {
 }
 export const CreatePostFunction = (FormData, path,goHome) => async (dispatch) => {
     const Token = await AsyncStorage.getItem('Token');
+    console.log(FormData?._parts,'FormData')
     dispatch({
         type: TASK_POST_CREATE_START,
         uploadLoading: true,
@@ -112,6 +113,7 @@ export const CreatePostFunction = (FormData, path,goHome) => async (dispatch) =>
             },
             body: FormData
         });
+        console.log(response, 'response1221')
         if (response.ok) {
             const res = await response?.json();
             dispatch({

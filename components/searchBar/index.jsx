@@ -79,7 +79,7 @@ const SearchCenter = ({ placeholder, height, style, error, onChange, result, loa
             {isEmpty == "" ? "" :
                 <TouchableOpacity onPress={() => {
                     onChange("")
-                    setIsSuggest(false)}} style={{ position: 'absolute', right: ResponsiveSize(15), zIndex: 999, top: ResponsiveSize(15) }}>
+                    setIsSuggest(false)}} style={{ position: 'absolute', right: ResponsiveSize(15), zIndex: 999, top: ResponsiveSize(13) }}>
                     <Entypo name="cross" size={ResponsiveSize(16)} />
                 </TouchableOpacity>
             }
@@ -99,7 +99,7 @@ const SearchCenter = ({ placeholder, height, style, error, onChange, result, loa
                                                         <TextC size={ResponsiveSize(11)} font={'Montserrat-Medium'} text={data?.user_name} style={{ color: 'black' }} />
                                                     </View>
                                                     <TouchableOpacity onPress={() => includeList(result)}>
-                                                        <TextC size={ResponsiveSize(10)} font={'Montserrat-Medium'} text={"Add"} style={{ color: global.white, backgroundColor: global.secondaryColor, paddingHorizontal: ResponsiveSize(15), paddingVertical: ResponsiveSize(3), borderRadius: ResponsiveSize(10) }} />
+                                                        <TextC size={ResponsiveSize(10)} font={'Montserrat-Medium'} text={"Add"} style={{ color: global.white, backgroundColor: global.secondaryColor, paddingHorizontal: ResponsiveSize(15), paddingVertical: ResponsiveSize(3), borderRadius: ResponsiveSize(10),overflow:'hidden'}} />
                                                     </TouchableOpacity>
                                                 </View>
                                             )) : ""}

@@ -37,7 +37,7 @@ const EventStackNavigation = () => {
 const ProfileStackNavigation = ({ onLogin }) => {
   const Stack = createNativeStackNavigator();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator >
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ProfileMain" component={ProfileScreen} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="EditProfile" component={EditProfile} />
       <Stack.Screen
@@ -67,7 +67,7 @@ const HomeStackNavigation = () => {
 const PostStackNavigation = () => {
   const Stack = createNativeStackNavigator();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName='CreatePost'>
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="CreatePost" component={CreatePost} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="CreatePostTwo" component={CreatePostTwo} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="TagPeople" component={TagPeople} />
