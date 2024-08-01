@@ -160,7 +160,7 @@ const EventDetail = ({ route, getEventDetail, DeleteEvent, AllEventReducer, Join
       shadowRadius: 20,
       backgroundColor: global.white,
       borderRadius: ResponsiveSize(50),
-      paddingHorizontal: ResponsiveSize(10),
+      paddingHorizontal: ResponsiveSize(15),
     },
     backBtn: {
       width: ResponsiveSize(50),

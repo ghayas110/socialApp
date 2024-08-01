@@ -174,7 +174,7 @@ const EditProfile = ({
       borderBottomWidth: 1,
       borderBottomColor: global.description,
       color: global.placeholderColor,
-      paddingHorizontal: ResponsiveSize(10),
+      paddingHorizontal: ResponsiveSize(15),
       width: windowWidth * 0.6,
       fontFamily: 'Montserrat-Medium',
       height: windowHeight * 0.07,
@@ -189,7 +189,7 @@ const EditProfile = ({
     TextFeidContainerRight1: {
       borderBottomWidth: 1,
       borderBottomColor: global.description,
-      paddingHorizontal: ResponsiveSize(10),
+      paddingHorizontal: ResponsiveSize(15),
       width: windowWidth * 0.6,
       fontFamily: 'Montserrat-Medium',
       color: global.placeholderColor,

@@ -99,7 +99,7 @@ const SearchCenter = ({ placeholder, height, style, error, onChange, result, loa
                                                         <TextC size={ResponsiveSize(11)} font={'Montserrat-Medium'} text={data?.user_name} style={{ color: 'black' }} />
                                                     </View>
                                                     <TouchableOpacity onPress={() => includeList(result)}>
-                                                        <TextC size={ResponsiveSize(10)} font={'Montserrat-Medium'} text={"Add"} style={{ color: global.white, backgroundColor: global.secondaryColor, paddingHorizontal: ResponsiveSize(10), paddingVertical: ResponsiveSize(3), borderRadius: ResponsiveSize(10) }} />
+                                                        <TextC size={ResponsiveSize(10)} font={'Montserrat-Medium'} text={"Add"} style={{ color: global.white, backgroundColor: global.secondaryColor, paddingHorizontal: ResponsiveSize(15), paddingVertical: ResponsiveSize(3), borderRadius: ResponsiveSize(10) }} />
                                                     </TouchableOpacity>
                                                 </View>
                                             )) : ""}

@@ -6,7 +6,10 @@ import {
     TASK_EXCLUDE_CONNECTION,
     TASK_POST_COMMNET_OFF,
     TASK_POST_COMMNET_COUNT_OFF,
-    TASK_POST_LIKE_COUNT_OFF
+    TASK_POST_LIKE_COUNT_OFF,
+    TASK_POST_CREATE_START,
+    TASK_POST_CREATE_END,
+    TASK_POST_CREATE_ERROR,
 } from '../../actions/types'
 
 
@@ -17,6 +20,9 @@ const PostCreation = {
     isCommentOff: false,
     isCommentCount: false,
     isLikeCount: false,
+    uploadLoading: false,
+    uploadNetworkError: false,
+    uploadFiles:""
 }
 
 const PostCreationReducer = (state = PostCreation, action) => {
@@ -62,6 +68,26 @@ const PostCreationReducer = (state = PostCreation, action) => {
             return {
                 ...state,
                 isLikeCount: action.isLikeCount
+            };
+        case TASK_POST_CREATE_START:
+            return {
+                ...state,
+                uploadLoading: action.uploadLoading,
+                uploadNetworkError:action.uploadNetworkError,
+                uploadFiles:action.uploadFiles
+            };
+        case TASK_POST_CREATE_END:
+            return {
+                ...state,
+                uploadLoading: action.uploadLoading,
+                uploadFiles:action.uploadFiles
+            };
+        case TASK_POST_CREATE_ERROR:
+            return {
+                ...state,
+                uploadLoading: action.uploadLoading,
+                uploadNetworkError:action.uploadNetworkError,
+                uploadFiles:action.uploadFiles
             };
         default:
             return state;

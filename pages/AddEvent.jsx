@@ -181,7 +181,7 @@ const AddEvent = ({
       backgroundColor: '#EEEEEE',
       marginTop: ResponsiveSize(10),
       borderRadius: ResponsiveSize(30),
-      paddingHorizontal: ResponsiveSize(10),
+      paddingHorizontal: ResponsiveSize(15),
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',

@@ -224,7 +224,7 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
         joinedBadge: {
             borderWidth: 1,
             borderColor: global.secondaryColor,
-            paddingHorizontal: ResponsiveSize(10),
+            paddingHorizontal: ResponsiveSize(15),
             borderRadius: ResponsiveSize(10),
             paddingVertical: ResponsiveSize(2),
             backgroundColor: global.secondaryColor,
@@ -242,7 +242,7 @@ const AllEvents = ({ getAllEvents, AllEventReducer }) => {
         timeAgoOwn: {
             borderWidth: 1,
             borderColor: global.primaryColor,
-            paddingHorizontal: ResponsiveSize(10),
+            paddingHorizontal: ResponsiveSize(15),
             borderRadius: ResponsiveSize(10),
             paddingVertical: ResponsiveSize(2),
             backgroundColor: global.primaryColor,

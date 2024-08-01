@@ -2,6 +2,7 @@ import React, { createContext, useContext, useRef, useState, useCallback, useMem
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useColorScheme, View } from 'react-native';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { global } from '../constant';
 
 const BottomSheetContext = createContext();
 
@@ -31,10 +32,10 @@ export const BottomSheetProvider = ({ children }) => {
       {children}
 
       <BottomSheet
-        handleStyle={{ height: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15, backgroundColor: scheme == "dark" ? DarkTheme.colors.background : DefaultTheme.colors.background }}
-        handleIndicatorStyle={{ backgroundColor: scheme == "dark" ? DefaultTheme.colors.background : DarkTheme.colors.background }}
+        handleStyle={{ height: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15, backgroundColor: scheme == "dark" ? DarkTheme.colors.background :"white"}}
+        handleIndicatorStyle={{ backgroundColor: scheme == "dark" ? DefaultTheme.colors.background :global.primaryColor}}
         ref={bottomSheetRef}
-        backgroundStyle={{ backgroundColor: scheme == "dark" ? DarkTheme.colors.background : DefaultTheme.colors.background }}
+        backgroundStyle={{ backgroundColor: scheme == "dark" ? DarkTheme.colors.background :"white" }}
         index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose={true}

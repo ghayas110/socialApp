@@ -6,7 +6,11 @@ import {
     TASK_INCLUDE_CONNECTION,
     TASK_POST_COMMNET_OFF,
     TASK_POST_COMMNET_COUNT_OFF,
-    TASK_POST_LIKE_COUNT_OFF
+    TASK_POST_LIKE_COUNT_OFF,
+    TASK_POST_CREATE_START,
+    TASK_POST_CREATE_END,
+    TASK_POST_CREATE_ERROR,
+
 } from '../types'
 import baseUrl from '../../config.json'
 
@@ -89,10 +93,16 @@ export const LikeCountSwitch = (body) => async (dispatch, getState) => {
         isLikeCount: body,
     });
 }
-
-export const CreatePostFunction = (FormData) => async () => {
+export const CreatePostFunction = (FormData, path,goHome) => async (dispatch) => {
     const Token = await AsyncStorage.getItem('Token');
+    dispatch({
+        type: TASK_POST_CREATE_START,
+        uploadLoading: true,
+        uploadNetworkError: false,
+        uploadFiles: path
+    });
     try {
+        goHome()
         const response = await fetch(`${baseUrl.baseUrl}/posts/createPost`, {
             method: "POST",
             headers: {
@@ -102,9 +112,47 @@ export const CreatePostFunction = (FormData) => async () => {
             },
             body: FormData
         });
-        console.log(FormData,'gloooooooooooooooo')
+        if (response.ok) {
+            const res = await response?.json();
+            dispatch({
+                type: TASK_POST_CREATE_END,
+                uploadLoading: false,
+                uploadNetworkError: false,
+                uploadFiles: path
+            });
+        }
+        else {
+            dispatch({
+                type: TASK_POST_CREATE_ERROR,
+                uploadLoading: false,
+                uploadNetworkError: true,
+                uploadFiles: path
+            });
+        }
+    }
+    catch (error) {
+        dispatch({
+            type: TASK_POST_CREATE_ERROR,
+            uploadLoading: false,
+            uploadNetworkError: true
+        });
+        console.log(error.message)
+    }
+}
+export const LikeFunc = (body) => async () => {
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/like-post`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+            body: JSON.stringify(body)
+
+        });
         const res = await response?.json();
-        return res?.message
     }
     catch (error) {
         console.log(error.message, "oken")
@@ -112,12 +160,10 @@ export const CreatePostFunction = (FormData) => async () => {
     }
 }
 
-
-export const LikeDisLikeFunc = (body) => async () => {
-    console.log(JSON.stringify(body), "like")
+export const DisLikeFunc = (body) => async () => {
     const Token = await AsyncStorage.getItem('Token');
     try {
-        const response = await fetch(`${baseUrl.baseUrl}/posts/like-post`, {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/unlike-post`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',

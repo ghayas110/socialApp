@@ -233,7 +233,7 @@ const Joined = ({ getJoinedEvents, JoinedEventReducer, tabActivator, }) => {
         joinedBadge: {
             borderWidth: 1,
             borderColor: global.secondaryColor,
-            paddingHorizontal: ResponsiveSize(10),
+            paddingHorizontal: ResponsiveSize(15),
             borderRadius: ResponsiveSize(10),
             paddingVertical: ResponsiveSize(2),
             backgroundColor: global.secondaryColor,

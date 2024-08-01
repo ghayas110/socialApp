@@ -239,7 +239,7 @@ const MyEvent = ({ getMyEvents, MyEventReducer }) => {
         timeAgoOwn: {
             borderWidth: 1,
             borderColor: global.primaryColor,
-            paddingHorizontal: ResponsiveSize(10),
+            paddingHorizontal: ResponsiveSize(15),
             borderRadius: ResponsiveSize(10),
             paddingVertical: ResponsiveSize(2),
             backgroundColor: global.primaryColor,

@@ -63,7 +63,7 @@ const TagPeople = ({ PostCreationReducer, SearchConnection,ExludeConnection }) =
             alignItems: 'center',
             justifyContent: 'space-between',
             backgroundColor: "#EEEEEE",
-            paddingHorizontal: ResponsiveSize(10),
+            paddingHorizontal: ResponsiveSize(15),
             borderRadius: ResponsiveSize(5),
             borderColor: global.description,
             borderWidth: 1
@@ -114,7 +114,7 @@ const TagPeople = ({ PostCreationReducer, SearchConnection,ExludeConnection }) =
                             <TextC size={ResponsiveSize(11)} font={'Montserrat-Medium'} text={data?.user_name} style={{ color: 'black' }} />
                         </View>
                         <TouchableOpacity onPress={() => excludeConections(data)}>
-                            <TextC size={ResponsiveSize(10)} font={'Montserrat-Medium'} text={"Remove"} style={{ color: global.white, backgroundColor: global.red, paddingHorizontal: ResponsiveSize(10), paddingVertical: ResponsiveSize(3), borderRadius: ResponsiveSize(10) }} />
+                            <TextC size={ResponsiveSize(10)} font={'Montserrat-Medium'} text={"Remove"} style={{ color: global.white, backgroundColor: global.red, paddingHorizontal: ResponsiveSize(15), paddingVertical: ResponsiveSize(3), borderRadius: ResponsiveSize(10) }} />
                         </TouchableOpacity>
                     </View>
                 ))}
