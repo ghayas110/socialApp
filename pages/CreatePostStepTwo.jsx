@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -9,20 +9,27 @@ import {
   StatusBar,
   ActivityIndicator,
   Pressable,
+  KeyboardAvoidingView,
 } from 'react-native';
-import { global, ResponsiveSize } from '../components/constant';
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+
+import {global, ResponsiveSize} from '../components/constant';
+import {
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import TextC from '../components/text/text';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation,CommonActions} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ModalSelector from 'react-native-modal-selector';
 import Carousel from 'react-native-reanimated-carousel';
 import * as PostCreationAction from '../store/actions/PostCreation/index';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Video from 'react-native-video';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useHeaderHeight} from '@react-navigation/elements';
 
 const CreatePostTwo = ({
   route,
@@ -30,11 +37,14 @@ const CreatePostTwo = ({
   CreatePostFunction,
   ExludeConnection,
 }) => {
+  const headerHeight = useHeaderHeight();
   const CurrentIndex = useRef(null);
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const ScreenHeight = Dimensions.get('screen').height;
-  const [videoLink, setVideoLink] = useState(route?.params?.post?.origionalPath)
+  const [videoLink, setVideoLink] = useState(
+    route?.params?.post?.origionalPath,
+  );
   const navigation = useNavigation();
   const ref = React.useRef(null);
   const [privacy, setPrivacy] = useState('Public');
@@ -91,7 +101,7 @@ const CreatePostTwo = ({
       borderRadius: ResponsiveSize(10),
       overflow: 'hidden',
       shadowColor: 'black',
-      shadowOffset: { width: 0, height: 3 },
+      shadowOffset: {width: 0, height: 3},
       borderWidth: 1,
       borderColor: global.description,
       backgroundColor: 'white',
@@ -202,14 +212,21 @@ const CreatePostTwo = ({
     },
   });
   const data = [
-    { key: 'PUBLIC', label: 'Public' },
-    { key: 'PRIVATE', label: 'Private' },
-    { key: 'FOLLOWERS', label: 'Connections only' },
+    {key: 'PUBLIC', label: 'Public'},
+    {key: 'PRIVATE', label: 'Private'},
+    {key: 'FOLLOWERS', label: 'Connections only'},
   ];
 
   const goHome = () => {
-    navigation.navigate('Home')
-  }
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          { name: 'Home' },
+        ],
+      })
+    );
+  };
 
   const CreatePostFinalStep = async () => {
     const Tags = PostCreationReducer?.searchConnectionData?.map(
@@ -247,16 +264,14 @@ const CreatePostTwo = ({
             name: 'photo.jpg',
             type: 'image/jpeg',
           });
-        }
-        else {
+        } else {
           formData.append('post_attachments', {
-            uri: `file://${route?.params?.post?.content}`,
+            uri: `file://${route?.params?.post?.origionalPath}`,
             name: 'video.mp4',
             type: 'video/mp4',
           });
         }
-      }
-      else {
+      } else {
         route?.params?.post?.map(dev => {
           if (dev.type == 'image') {
             formData.append('post_attachments', {
@@ -264,8 +279,7 @@ const CreatePostTwo = ({
               name: 'photo.jpg',
               type: 'image/jpeg',
             });
-          }
-          else {
+          } else {
             formData.append('post_attachments', {
               uri: `file://${dev?.content}`,
               name: 'video.mp4',
@@ -274,7 +288,13 @@ const CreatePostTwo = ({
           }
         });
       }
-      const result = await CreatePostFunction(formData, route?.params?.isMultiple ? route?.params?.post[0]?.content : route?.params?.post?.content, goHome);
+      const result = await CreatePostFunction(
+        formData,
+        route?.params?.isMultiple
+          ? route?.params?.post[0]?.content
+          : route?.params?.post?.content,
+        goHome,
+      );
     } catch (error) {
       console.log(error);
     }
@@ -286,193 +306,162 @@ const CreatePostTwo = ({
   const videoRef2 = useRef(null);
   return (
     <>
-      <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: global.white,
-          position: 'relative',
-        }}>
-        <View style={styles.wrapper}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.logoSide1}>
-            <AntDesign
-              name="left"
-              color={'#05348E'}
-              size={ResponsiveSize(16)}
-            />
-            <Image
-              source={require('../assets/icons/Logo.png')}
-              style={{
-                objectFit: 'contain',
-                width: ResponsiveSize(70),
-                height: ResponsiveSize(22),
-              }}
-            />
-          </TouchableOpacity>
-          <View style={styles.logoSide2}>
-            <TextC font={'Montserrat-SemiBold'} text={'Post'} />
-          </View>
-          <View style={styles.logoSide3}>
-            <TouchableOpacity
-              onPress={() => CreatePostFinalStep()}
-              style={styles.NextBtn}>
-              <TextC
-                size={ResponsiveSize(11)}
-                text={'Post'}
-                font={'Montserrat-SemiBold'}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.singlePostContainer}>
-          {route?.params?.isMultiple == true ? (
-            <Carousel
-              ref={ref}
-              width={windowWidth}
-              height={windowHeight * 0.3}
-              loop={false}
-              autoPlay={false}
-              mode="parallax"
-              modeConfig={{
-                parallaxScrollingScale: 0.9,
-                parallaxScrollingOffset: 50,
-              }}
-              data={route?.params?.post}
-              renderItem={items => {
-                return (
-                  <View style={styles.CarouselShadow}>
-                    {items?.item?.type == 'video' ? (
-                      <>
-                        <Video
-                          repeat={true}
-                          source={{
-                            uri: 'file://' + items?.item?.content,
-                          }}
-                          ref={videoRef1}
-                          style={styles.singlePostInnerCarousel}
-                        />
-                      </>
-                    ) : (
-                      <Image
-                        ref={CurrentIndex}
-                        key={'1'}
-                        style={styles.singlePostInnerCarousel}
-                        source={{ uri: 'file://' + items?.item?.content }}
-                      />
-                    )}
-                  </View>
-                );
-              }}
-            />
-          ) : (
-            <>
-              {route?.params?.post?.type == 'video' ? (
-                <>
-                  {videoLink &&
-                    <Video
-                      controls={true}
-                      source={{
-                        uri: 'file://' + videoLink,
-                      }}
-                      ref={videoRef2}
-                      style={styles.singlePostInner}
-                    />
-                  }
-                </>
-              ) : (
-                <>
-                  <Image
-                    ref={CurrentIndex}
-                    key={'1'}
-                    style={styles.singlePostInner}
-                    source={{ uri: 'file://' + route?.params?.post?.content }}
-                  />
-                </>
-              )}
-            </>
-          )}
-        </View>
-        <View style={styles.descriptionCenter}>
-          <TextInput
-            placeholder="Write a caption or add a poll..."
-            style={styles.TextFeidContainerRight1}
-            multiline={true}
-            numberOfLines={2}
-            textAlignVertical="top"
-            onChangeText={text => setCaption(text)}
-          />
-          <View style={styles.TagedPeople}>
-            {PostCreationReducer?.searchConnectionData?.map(date => (
-              <View style={styles.tagCapsule}>
-                <TextC
-                  text={`@${date?.user_name}`}
-                  font={'Montserrat-Medium'}
-                  size={ResponsiveSize(11)}
-                  style={{ color: global.black }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{flexGrow: 1}}
+        keyboardVerticalOffset={
+          Platform.OS === 'ios' ? headerHeight + StatusBar.currentHeight : 0
+        }>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            backgroundColor: global.white,
+            position: 'relative',
+          }}>
+          <ScrollView>
+            <View style={styles.wrapper}>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={styles.logoSide1}>
+                <AntDesign
+                  name="left"
+                  color={'#05348E'}
+                  size={ResponsiveSize(16)}
                 />
+                <Image
+                  source={require('../assets/icons/Logo.png')}
+                  style={{
+                    objectFit: 'contain',
+                    width: ResponsiveSize(70),
+                    height: ResponsiveSize(22),
+                  }}
+                />
+              </TouchableOpacity>
+              <View style={styles.logoSide2}>
+                <TextC font={'Montserrat-SemiBold'} text={'Post'} />
+              </View>
+              <View style={styles.logoSide3}>
                 <TouchableOpacity
-                  onPress={() => excludeConections(date)}
-                  style={{ marginLeft: ResponsiveSize(5) }}>
-                  <Entypo
-                    name="cross"
-                    color={global.black}
-                    size={ResponsiveSize(18)}
+                  onPress={() => CreatePostFinalStep()}
+                  style={styles.NextBtn}>
+                  <TextC
+                    size={ResponsiveSize(11)}
+                    text={'Post'}
+                    font={'Montserrat-SemiBold'}
                   />
                 </TouchableOpacity>
               </View>
-            ))}
-          </View>
-        </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('TagPeople')}
-          style={styles.SettingList}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <AntDesign
-              name="adduser"
-              color={global.primaryColor}
-              size={ResponsiveSize(28)}
-            />
-            <TextC
-              text={'Tag People'}
-              font={'Montserrat-Medium'}
-              size={ResponsiveSize(12)}
-              style={{
-                color: global?.placeholderColor,
-                marginLeft: ResponsiveSize(5),
-              }}
-            />
-          </View>
-          <View>
-            <AntDesign
-              name="right"
-              color={global.primaryColor}
-              size={ResponsiveSize(18)}
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.SettingList}>
-          <ModalSelector
-            data={data}
-            onChange={option => {
-              setPrivacy(option?.label);
-            }}
-            selectTextStyle={{ color: global.placeholderColor }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-              }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            </View>
+            <View style={styles.singlePostContainer}>
+              {route?.params?.isMultiple == true ? (
+                <Carousel
+                  ref={ref}
+                  width={windowWidth}
+                  height={windowHeight * 0.3}
+                  loop={false}
+                  autoPlay={false}
+                  mode="parallax"
+                  modeConfig={{
+                    parallaxScrollingScale: 0.9,
+                    parallaxScrollingOffset: 50,
+                  }}
+                  data={route?.params?.post}
+                  renderItem={items => {
+                    return (
+                      <>
+                        {items?.item?.type == 'video' ? (
+                          <>
+                            <Video
+                              source={{
+                                uri: 'file://' + items?.item?.origionalPath,
+                              }}
+                              controls={true}
+                              ref={videoRef1}
+                              style={styles.singlePostInnerCarousel}
+                            />
+                          </>
+                        ) : (
+                          <Image
+                            ref={CurrentIndex}
+                            key={'1'}
+                            style={styles.singlePostInnerCarousel}
+                            source={{uri: 'file://' + items?.item?.content}}
+                          />
+                        )}
+                      </>
+                    );
+                  }}
+                />
+              ) : (
+                <>
+                  {route?.params?.post?.type == 'video' ? (
+                    <>
+                      {videoLink && (
+                        <Video
+                          controls={true}
+                          source={{
+                            uri: 'file://' + videoLink,
+                          }}
+                          ref={videoRef2}
+                          style={styles.singlePostInner}
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Image
+                        ref={CurrentIndex}
+                        key={'1'}
+                        style={styles.singlePostInner}
+                        source={{uri: 'file://' + route?.params?.post?.content}}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+            </View>
+            <View style={styles.descriptionCenter}>
+              <TextInput
+                placeholder="Write a caption"
+                style={styles.TextFeidContainerRight1}
+                multiline={true}
+                numberOfLines={2}
+                textAlignVertical="top"
+                onChangeText={text => setCaption(text)}
+              />
+              <View style={styles.TagedPeople}>
+                {PostCreationReducer?.searchConnectionData?.map(date => (
+                  <View style={styles.tagCapsule}>
+                    <TextC
+                      text={`@${date?.user_name}`}
+                      font={'Montserrat-Medium'}
+                      size={ResponsiveSize(11)}
+                      style={{color: global.black}}
+                    />
+                    <TouchableOpacity
+                      onPress={() => excludeConections(date)}
+                      style={{marginLeft: ResponsiveSize(5)}}>
+                      <Entypo
+                        name="cross"
+                        color={global.black}
+                        size={ResponsiveSize(18)}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('TagPeople')}
+              style={styles.SettingList}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <AntDesign
-                  name="user"
+                  name="adduser"
                   color={global.primaryColor}
                   size={ResponsiveSize(28)}
                 />
                 <TextC
-                  text={'Audience'}
+                  text={'Tag People'}
                   font={'Montserrat-Medium'}
                   size={ResponsiveSize(12)}
                   style={{
@@ -482,57 +471,96 @@ const CreatePostTwo = ({
                 />
               </View>
               <View>
+                <AntDesign
+                  name="right"
+                  color={global.primaryColor}
+                  size={ResponsiveSize(18)}
+                />
+              </View>
+            </TouchableOpacity>
+            <ModalSelector
+              style={styles.SettingList}
+              data={data}
+              onChange={option => {
+                setPrivacy(option?.label);
+              }}
+              selectTextStyle={{color: global.placeholderColor}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <AntDesign
+                    name="user"
+                    color={global.primaryColor}
+                    size={ResponsiveSize(28)}
+                  />
+                  <TextC
+                    text={'Audience'}
+                    font={'Montserrat-Medium'}
+                    size={ResponsiveSize(12)}
+                    style={{
+                      color: global?.placeholderColor,
+                      marginLeft: ResponsiveSize(5),
+                    }}
+                  />
+                </View>
+                <View>
+                  <TextC
+                    text={privacy}
+                    font={'Montserrat-Medium'}
+                    size={ResponsiveSize(10)}
+                    style={{
+                      color: global?.placeholderColor,
+                      marginLeft: ResponsiveSize(5),
+                      backgroundColor: global.description,
+                      paddingHorizontal: ResponsiveSize(15),
+                      paddingVertical: ResponsiveSize(5),
+                      borderRadius: ResponsiveSize(10),
+                      overflow: 'hidden',
+                    }}
+                  />
+                </View>
+              </View>
+            </ModalSelector>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('PostSetting')}
+              style={styles.SettingList}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Ionicons
+                  name="settings-outline"
+                  color={global.primaryColor}
+                  size={ResponsiveSize(28)}
+                />
                 <TextC
-                  text={privacy}
+                  text={'Advance Settings'}
                   font={'Montserrat-Medium'}
-                  size={ResponsiveSize(10)}
+                  size={ResponsiveSize(12)}
                   style={{
                     color: global?.placeholderColor,
                     marginLeft: ResponsiveSize(5),
-                    backgroundColor: global.description,
-                    paddingHorizontal: ResponsiveSize(15),
-                    paddingVertical: ResponsiveSize(5),
-                    borderRadius: ResponsiveSize(10),
-                    overflow: 'hidden',
                   }}
                 />
               </View>
-            </View>
-          </ModalSelector>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('PostSetting')}
-          style={styles.SettingList}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Ionicons
-              name="settings-outline"
-              color={global.primaryColor}
-              size={ResponsiveSize(28)}
-            />
-            <TextC
-              text={'Advance Settings'}
-              font={'Montserrat-Medium'}
-              size={ResponsiveSize(12)}
-              style={{
-                color: global?.placeholderColor,
-                marginLeft: ResponsiveSize(5),
-              }}
-            />
-          </View>
-          <View>
-            <AntDesign
-              name="right"
-              color={global.primaryColor}
-              size={ResponsiveSize(18)}
-            />
-          </View>
-        </TouchableOpacity>
-      </SafeAreaView>
+              <View>
+                <AntDesign
+                  name="right"
+                  color={global.primaryColor}
+                  size={ResponsiveSize(18)}
+                />
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </>
   );
 };
 
-function mapStateToProps({ PostCreationReducer }) {
-  return { PostCreationReducer };
+function mapStateToProps({PostCreationReducer}) {
+  return {PostCreationReducer};
 }
 export default connect(mapStateToProps, PostCreationAction)(CreatePostTwo);

@@ -292,7 +292,7 @@ const CreatePost = () => {
     });
     setMultiContent(prev =>
       prev?.map(item =>
-        item.id == id ? { ...item, content: result?.split('file://')[1],isEdited:true } : item,
+        item.id == id ? { ...item, content: result?.split('file://')[1], isEdited: true } : item,
       ),
     );
     setIsEditAvailable({ value: true, content: 'Image' });
@@ -302,10 +302,16 @@ const CreatePost = () => {
     if (Platform.OS === 'android') {
       setLoading(true);
       try {
-        const imageFiles = await RNFS.readDir(RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera');
-        const imageBatch = imageFiles.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+        const imageFiles = await RNFS.readDir(
+          RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera',
+        );
+        const imageBatch = imageFiles.slice(
+          page * PAGE_SIZE,
+          (page + 1) * PAGE_SIZE,
+        );
         const videoContentPromises = imageBatch?.map(async item => {
-          const isVideo = item.name.endsWith('.mp4') || item.name.endsWith('.mov');
+          const isVideo =
+            item.name.endsWith('.mp4') || item.name.endsWith('.mov');
           if (isVideo) {
             return {
               id: item.name,
@@ -325,7 +331,7 @@ const CreatePost = () => {
         const videoContent = await Promise.all(videoContentPromises);
         setContent(prevImages => [...prevImages, ...videoContent]);
         if (page == 0) {
-          setCurrentPreview(videoContent[0])
+          setCurrentPreview(videoContent[0]);
         }
 
         setPage(prevPage => prevPage + 1);
@@ -336,10 +342,16 @@ const CreatePost = () => {
     } else if (Platform.OS === 'ios') {
       setLoading(true);
       try {
-        const imageFiles = await RNFS.readDir('/var/mobile/Media/DCIM/100APPLE');
-        const imageBatch = imageFiles.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+        const imageFiles = await RNFS.readDir(
+          '/var/mobile/Media/DCIM/100APPLE',
+        );
+        const imageBatch = imageFiles.slice(
+          page * PAGE_SIZE,
+          (page + 1) * PAGE_SIZE,
+        );
         const videoContentPromises = imageBatch.map(async item => {
-          const isVideo = item.name.endsWith('.MP4') || item.name.endsWith('.mov');
+          const isVideo =
+            item.name.endsWith('.MP4') || item.name.endsWith('.mov');
           if (isVideo) {
             const thumbnail = await createThumbnail({ url: item.path });
             return {
@@ -360,7 +372,7 @@ const CreatePost = () => {
         const videoContent = await Promise.all(videoContentPromises);
         setContent(prevImages => [...prevImages, ...videoContent]);
         if (page == 0) {
-          setCurrentPreview(videoContent[0])
+          setCurrentPreview(videoContent[0]);
         }
         setPage(prevPage => prevPage + 1);
       } catch (error) {
@@ -372,13 +384,18 @@ const CreatePost = () => {
 
   const [mediaChangeLoader, setMediaChangeLoader] = useState(false);
 
-  const MultListAdder = (id, content, type) => {
+  const MultListAdder = (id, content, type, origionalPath) => {
     setMultiContent(prevMultiContent => {
       const exists = prevMultiContent.some(item => item.id === id);
       const indexToDelete = prevMultiContent.findIndex(item => item.id === id);
       const updatedMultiContent = [...prevMultiContent];
       if (!exists) {
-        updatedMultiContent.push({ id: id, content: content, type: type });
+        updatedMultiContent.push({
+          id: id,
+          content: content,
+          type: type,
+          origionalPath: origionalPath,
+        });
       } else {
         updatedMultiContent.splice(indexToDelete, 1);
       }
@@ -394,7 +411,7 @@ const CreatePost = () => {
           setMultiContent(prev =>
             prev?.map(item =>
               item.id == multiVideoId
-                ? { ...item, content: event?.outputPath?.split('file://')[1] }
+                ? { ...item, origionalPath: event?.outputPath?.split('file://')[1] }
                 : item,
             ),
           );
@@ -432,8 +449,9 @@ const CreatePost = () => {
           if (selectMulti == true) {
             MultListAdder(
               inde,
-              item?.origionalPath,
+              item?.content,
               item?.type,
+              item?.origionalPath,
             );
           }
           else {
@@ -500,7 +518,6 @@ const CreatePost = () => {
     }
   };
 
-
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -530,7 +547,7 @@ const CreatePost = () => {
 
                             <Video
                               repeat={true}
-                              source={{ uri: 'file://' + items?.item?.content }}
+                              source={{ uri: 'file://' + items?.item?.origionalPath }}
                               ref={videoRef1}
                               style={styles.FirstImage}
                               paused={paused}
@@ -572,7 +589,7 @@ const CreatePost = () => {
                               <TouchableOpacity
                                 onPress={() => {
                                   VideoEditorMultiple(
-                                    `file://${items?.item?.content}`,
+                                    `file://${items?.item?.origionalPath}`,
                                     items?.item?.id,
                                   );
                                 }}
@@ -757,35 +774,40 @@ const CreatePost = () => {
               </>
             )}
           </>
-        </View>
-        {mediaChangeLoader ? (
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingTop: ResponsiveSize(80),
-            }}>
-            <ActivityIndicator size="small" color={global.primaryColor} />
-          </View>
-        ) : (
-          <FlatList
-            data={content}
-            numColumns={4}
-            refreshing={loading}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            onEndReached={() => {
-              if (content.length > 26) {
-                handleEndReached()
+        </View >
+        {
+          mediaChangeLoader ? (
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingTop: ResponsiveSize(80),
+              }}>
+              <ActivityIndicator size="small" color={global.primaryColor} />
+            </View >
+          ) : (
+            <FlatList
+              data={content}
+              numColumns={4}
+              refreshing={loading}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              onEndReached={() => {
+                if (content.length > 26) {
+                  handleEndReached()
+                }
               }
-            }
-            }
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={loading ? <ActivityIndicator size={'small'} color={global.primaryColor} /> : null}
-          />
-        )}
-      </SafeAreaView>
+              }
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={
+                loading ? (
+                  <ActivityIndicator size={'small'} color={global.primaryColor} />
+                ) : null
+              }
+            />
+          )}
+      </SafeAreaView >
     </>
   );
 };
