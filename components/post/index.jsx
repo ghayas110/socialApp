@@ -19,6 +19,7 @@ import ReadMore from '@fawazahmed/react-native-read-more';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+
 const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCount, description, content, userLocation, timeAgo, LikeFunc, DisLikeFunc }) => {
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
@@ -224,7 +225,6 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
             console.error('Error disliking the post:', error);
         }
     };
-    console.log(description, 'asdasd')
     return (
         <>
             <View style={style.PostHeader}>

@@ -99,7 +99,15 @@ const CreatePostTwo = ({
       shadowRadius: 5,
       elevation: 2,
     },
-
+    CarouselShadow:{
+      shadowColor: 'black',
+      shadowOffset: { width: 0, height: 3 },
+      borderWidth: 0,
+      shadowOpacity: 0.7,
+      shadowRadius: 9,
+      elevation: 5,
+      borderRadius: ResponsiveSize(10),
+    },
     singlePostInnerCarousel: {
       height: windowHeight * 0.27,
       width: windowWidth,
@@ -108,12 +116,6 @@ const CreatePostTwo = ({
       overflow: 'hidden',
       borderWidth: 1,
       borderColor: global.description,
-      shadowColor: 'black',
-      shadowOffset: { width: 0, height: 3 },
-      backgroundColor: 'white',
-      shadowOpacity: 0.2,
-      shadowRadius: 5,
-      elevation: 2,
     },
     descriptionCenter: {
       paddingHorizontal: ResponsiveSize(15),
@@ -205,9 +207,9 @@ const CreatePostTwo = ({
     { key: 'FOLLOWERS', label: 'Connections only' },
   ];
 
-  const goHome =()=>{
+  const goHome = () => {
     navigation.navigate('Home')
-  } 
+  }
 
   const CreatePostFinalStep = async () => {
     const Tags = PostCreationReducer?.searchConnectionData?.map(
@@ -272,7 +274,7 @@ const CreatePostTwo = ({
           }
         });
       }
-      const result = await CreatePostFunction(formData,route?.params?.isMultiple?route?.params?.post[0]?.content:route?.params?.post?.content,goHome);
+      const result = await CreatePostFunction(formData, route?.params?.isMultiple ? route?.params?.post[0]?.content : route?.params?.post?.content, goHome);
     } catch (error) {
       console.log(error);
     }
@@ -339,7 +341,7 @@ const CreatePostTwo = ({
               data={route?.params?.post}
               renderItem={items => {
                 return (
-                  <>
+                  <View style={styles.CarouselShadow}>
                     {items?.item?.type == 'video' ? (
                       <>
                         <Video
@@ -359,7 +361,7 @@ const CreatePostTwo = ({
                         source={{ uri: 'file://' + items?.item?.content }}
                       />
                     )}
-                  </>
+                  </View>
                 );
               }}
             />

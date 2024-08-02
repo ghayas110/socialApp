@@ -33,6 +33,9 @@ import ButtonC from '../components/button';
 import { createThumbnail } from 'react-native-create-thumbnail';
 import FastImage from 'react-native-fast-image';
 import { FlashList } from "@shopify/flash-list";
+import { ImageZoom } from '@likashefqet/react-native-image-zoom';
+
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -53,7 +56,7 @@ const CreatePost = () => {
   });
   const [selectMulti, setSelectMulti] = useState(false);
   const [multiContent, setMultiContent] = useState([]);
-  const {openBottomSheet, closeBottomSheet } = useBottomSheet();
+  const { openBottomSheet, closeBottomSheet } = useBottomSheet();
   const [temp, setTemp] = useState();
   const [multiVideoId, isMultiVideoId] = useState();
   const [paused, setPause] = useState(paused);
@@ -75,6 +78,7 @@ const CreatePost = () => {
       position: 'relative',
       borderBottomWidth: 1,
       borderBottomColor: global.description,
+      overflow: 'hidden',
     },
     uploadControls: {
       height: 60,
@@ -87,11 +91,6 @@ const CreatePost = () => {
       justifyContent: 'flex-end',
       paddingHorizontal: ResponsiveSize(20),
     },
-    FirstImage: {
-      width: '100%',
-      height: windowHeight * 0.43,
-      resizeMode: imageResize,
-    },
     FirstVideo: {
       width: windowWidth,
       height: windowHeight * 0.43,
@@ -103,6 +102,11 @@ const CreatePost = () => {
       justifyContent: 'flex-start',
       alignItems: 'center',
       position: 'relative',
+    },
+    FirstImage: {
+      width: '100%',
+      height: windowHeight * 0.43,
+      resizeMode: imageResize,
     },
     box: {
       height: ResponsiveSize(90),
@@ -233,8 +237,11 @@ const CreatePost = () => {
             <TouchableOpacity
               style={{ paddingVertical: ResponsiveSize(10) }}
               onPress={() => {
-                setIsEditAvailable(false);
                 setCurrentPreview(temp);
+                setIsEditAvailable({
+                  value: false,
+                  content: 'Image',
+                });
                 closeBottomSheet();
               }}>
               <TextC
@@ -285,12 +292,11 @@ const CreatePost = () => {
     });
     setMultiContent(prev =>
       prev?.map(item =>
-        item.id == id ? { ...item, content: result?.split('file://')[1] } : item,
+        item.id == id ? { ...item, content: result?.split('file://')[1],isEdited:true } : item,
       ),
     );
-    setIsEditAvailable(true);
+    setIsEditAvailable({ value: true, content: 'Image' });
   };
-
 
   const loadImages = async () => {
     if (Platform.OS === 'android') {
@@ -413,8 +419,6 @@ const CreatePost = () => {
       saveToPhoto: true,
     });
   };
-
-
   const renderItem = useCallback(({ item, index }) => {
     const inde = index + 1;
     return (
@@ -425,20 +429,22 @@ const CreatePost = () => {
           setMultiContent([]);
         }}
         onPress={() => {
-          if (isEditAvailable?.value) {
-            setTemp(item);
-            handleOpenSheet();
-          } else {
-            if (selectMulti == true) {
-              MultListAdder(
-                inde,
-                item?.origionalPath,
-                item?.type,
-              );
-            }
-            setPause(true)
-            setCurrentPreview(item);
+          if (selectMulti == true) {
+            MultListAdder(
+              inde,
+              item?.origionalPath,
+              item?.type,
+            );
           }
+          else {
+            if (isEditAvailable.value == true) {
+              setTemp(item);
+              handleOpenSheet();
+            } else {
+              setCurrentPreview(item)
+            }
+          }
+          setPause(true)
         }}
         style={styles.box}>
         <FastImage
@@ -485,7 +491,7 @@ const CreatePost = () => {
         )}
       </TouchableOpacity>
     );
-  }, [selectMulti,multiContent]);
+  }, [currentPreview, selectMulti, multiContent, isEditAvailable.value, temp]);
 
 
   const handleEndReached = () => {
@@ -494,7 +500,7 @@ const CreatePost = () => {
     }
   };
 
-  console.log(videoRef1,'renderVideo')
+
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -521,7 +527,7 @@ const CreatePost = () => {
                           <Pressable
                             onPress={() => setPause(!paused)}
                             style={{ position: 'relative' }}>
-                              
+
                             <Video
                               repeat={true}
                               source={{ uri: 'file://' + items?.item?.content }}
@@ -591,12 +597,7 @@ const CreatePost = () => {
                         </>
                       ) : (
                         <>
-                          <Image
-                            ref={CurrentIndex}
-                            key={'1'}
-                            style={styles.FirstImage}
-                            source={{ uri: 'file://' + items?.item?.content }}
-                          />
+                          <ImageZoom resizeMode={imageResize} ref={CurrentIndex} key={'1'} style={styles.FirstImage} uri={'file://' + items?.item?.content} />
                           <View style={styles.uploadControls}>
                             <TouchableOpacity
                               onPress={() => {
@@ -660,7 +661,7 @@ const CreatePost = () => {
                       <Video
                         repeat={true}
                         source={{
-                          uri: 'file://' + currentPreview?.origionalPath,
+                          uri: 'file://' + currentPreview?.origionalPath
                         }}
                         ref={videoRef2}
                         style={styles.FirstImage}
@@ -718,12 +719,7 @@ const CreatePost = () => {
                   </>
                 ) : (
                   <>
-                    <Image
-                      ref={CurrentIndex}
-                      key={'1'}
-                      style={styles.FirstImage}
-                      source={{ uri: 'file://' + currentPreview?.content }}
-                    />
+                    <ImageZoom resizeMode={imageResize} ref={CurrentIndex} key={'1'} style={styles.FirstImage} uri={'file://' + currentPreview?.content} />
                     <View style={styles.uploadControls}>
                       <TouchableOpacity
                         onPress={() => {
@@ -779,7 +775,12 @@ const CreatePost = () => {
             refreshing={loading}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
-            onEndReached={() => handleEndReached()}
+            onEndReached={() => {
+              if (content.length > 26) {
+                handleEndReached()
+              }
+            }
+            }
             onEndReachedThreshold={0.5}
             ListFooterComponent={loading ? <ActivityIndicator size={'small'} color={global.primaryColor} /> : null}
           />
