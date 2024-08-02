@@ -18,6 +18,7 @@ import Video, { VideoRef } from 'react-native-video';
 import ReadMore from '@fawazahmed/react-native-read-more';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Entypo from 'react-native-vector-icons/Entypo';
 
 
 const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCount, description, content, userLocation, timeAgo, LikeFunc, DisLikeFunc }) => {
@@ -126,7 +127,18 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
             backgroundColor: global.black,
             position: 'absolute',
             bottom: ResponsiveSize(10)
-        }
+        },
+        playPaused: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            borderWidth: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: windowWidth,
+            height: windowHeight * 0.43,
+            flexDirection: 'row',
+        },
     })
     useEffect(() => {
         return () => { closeBottomSheet() }
@@ -136,7 +148,7 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
     const handleOpenSheet = () => {
         openBottomSheet(
             <>
-                <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: global.white }}>
+                {/* <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: global.white }}>
                     <View style={{ flex: 1, paddingHorizontal: ResponsiveSize(15), paddingTop: 10 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'flex-start', width: commentSectioLength }}>
 
@@ -175,36 +187,10 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                             </View>
                         </View>
                     </View>
-
-
-                    {/* <View style={{ flex: 1, paddingHorizontal: 15, paddingTop: 10, paddingLeft: 70 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-                                <View style={style.commentSectionProfile}>
-                                    <ImageBackground source={profileImage} style={style.PostProfileImage} resizeMode="cover"></ImageBackground>
-                                </View>
-                                <View style={{ paddingHorizontal: 15 }}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <TextC text={"neo6.1"} font={'Montserrat-Regular'} style={{ includeFontPadding: false }} />
-                                        <TextC text={"3d"} font={'Montserrat-Medium'} style={{ includeFontPadding: false, color: "#999999", marginLeft: 6 }} />
-                                    </View>
-                                    <TextC text={"es simplemente el texto de."} font={'Montserrat-Regular'} style={{ includeFontPadding: false, fontSize: 14 }} />
-                                    <View style={{ flexDirection: "row", alignItems: 'center', paddingTop: 5 }}>
-                                        <TouchableOpacity>
-                                            <TextC text={"Reply"} font={'Montserrat-Medium'} style={{ includeFontPadding: false, color: "#999999" }} />
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            </View>
-                            <TouchableOpacity style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                <EntypoFont name={"heart-outlined"} size={20} />
-                                <TextC text={"34"} font={'Montserrat-Medium'} style={{ includeFontPadding: false, color: "#999999", fontSize: 12 }} />
-                            </TouchableOpacity>
-                        </View>
-                    </View> */}
-                </ScrollView>
+                </ScrollView> */}
+                <></>
             </>
-            , ["100%", "60%"]
+            , ["60%"]
         );
     };
     const handleLike = async () => {
@@ -225,6 +211,8 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
             console.error('Error disliking the post:', error);
         }
     };
+    const [paused, setPause] = useState(true);
+
     return (
         <>
             <View style={style.PostHeader}>
@@ -245,7 +233,37 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                     scrollAnimationDuration={1000}
                     renderItem={items => {
                         return (
-                            <Image source={{ uri: items.item?.attachment_thumbnail_url }} style={style.ActuallPost} />
+                            <>
+                                {/* <Image source={{ uri: .attachment_thumbnail_url }} style={style.ActuallPost} /> */}
+                                {items.item?.attachment_url.endsWith('.mp4') ?
+                                    <View style={{ height: windowHeight * 0.40, width: windowWidth, backgroundColor: 'red', backgroundColor: global.description }}>
+                                        <Pressable
+                                            onPress={() => setPause(!paused)}
+                                            style={{ position: 'relative' }}>
+                                            <Video
+                                                repeat={true}
+                                                source={{
+                                                    uri: items.item?.attachment_url,
+                                                }}
+                                                ref={videoRef}
+                                                paused={paused}
+                                                style={{ height: windowHeight * 0.40, width: windowWidth }}
+                                            />
+                                            {paused && (
+                                                <View style={style.playPaused}>
+                                                    <Entypo
+                                                        size={ResponsiveSize(50)}
+                                                        name="controller-play"
+                                                        color={'white'}
+                                                    />
+                                                </View>
+                                            )}
+                                        </Pressable>
+                                    </View>
+                                    :
+                                    <Image source={{ uri: items.item?.attachment_thumbnail_url }} style={style.ActuallPost} />
+                                }
+                            </>
                         )
                     }
                     }
@@ -306,7 +324,7 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                             {description}
                         </ReadMore>
                     </View>
-                    :""
+                    : ""
                 }
                 <TouchableOpacity onPress={handleOpenSheet} style={{ paddingVertical: ResponsiveSize(3) }}>
                     <TextC size={ResponsiveSize(11)} text={`View all ${commnetCount} comments`} font={'Montserrat-Medium'} />

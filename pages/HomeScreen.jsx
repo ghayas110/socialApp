@@ -1,4 +1,4 @@
-import { DarkTheme } from '@react-navigation/native';
+import { DarkTheme, useNavigation,CommonActions } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -21,6 +21,7 @@ import TextC from '../components/text/text';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
 import { Easing } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SkeletonPlaceholder = ({ style, refreshing }) => {
   const translateX = new Animated.Value(-350);
@@ -151,20 +152,39 @@ const HomeScreen = ({
   PostCreationReducer,
 }) => {
   const scheme = useColorScheme();
+  const navigation = useNavigation();
   const [post, setPost] = useState([]);
   const [loading, setLoading] = useState(false);
   const getFeeds = async () => {
     setLoading(true);
     const result = await GetUserPosts();
-    console.log(result, 'result');
-    if (result == undefined) {
-      setLoading(false);
+    if (result) {
+      setPost(result.reverse())
+      setLoading(false)
+      navigation.dispatch(
+        CommonActions.navigate({
+          index: 0,
+          routes: [
+            { name: 'Home' },
+          ],
+        })
+      );
     }
     else {
-      setPost(result.reverse());
-      setLoading(false);
+      setPost([])
+      setLoading(false)
+      navigation.dispatch(
+        CommonActions.navigate({
+          index: 0,
+          routes: [
+            { name: 'Home' },
+          ],
+        })
+      );
     }
   };
+
+  console.log(post[0], 'holla')
   useEffect(() => {
     GetProfileData();
     if (PostCreationReducer?.uploadLoading == false) {
@@ -198,7 +218,7 @@ const HomeScreen = ({
   });
   return (
     <>
-      <SafeAreaView style={{flex:1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <StatusBar
           backgroundColor={
             scheme === 'dark' ? DarkTheme.colors.background : 'white'
@@ -268,7 +288,7 @@ const HomeScreen = ({
                     content={data?.attachments}
                   />
                 )) :
-                <View style={{ paddingTop: ResponsiveSize(30),flex:1,flexDirection:'column',alignItems:'center',justifyContent:'center' }}>
+                <View style={{ paddingTop: ResponsiveSize(30), flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                   <TextC
                     text={'No posts yet'}
                     font={'Montserrat-SemiBold'}

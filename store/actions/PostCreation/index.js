@@ -75,6 +75,13 @@ export const ExludeConnection = (body) => async (dispatch, getState) => {
         searchConnectionData: objectsArray,
     });
 }
+
+export const EmptyConnection = (body) => async (dispatch, getState) => {
+    dispatch({
+        type: TASK_INCLUDE_CONNECTION,
+        searchConnectionData: [],
+    });
+}
 export const CommentSwitch = (body) => async (dispatch, getState) => {
     dispatch({
         type: TASK_POST_COMMNET_OFF,
@@ -95,7 +102,6 @@ export const LikeCountSwitch = (body) => async (dispatch, getState) => {
 }
 export const CreatePostFunction = (FormData, path,goHome) => async (dispatch) => {
     const Token = await AsyncStorage.getItem('Token');
-    console.log(FormData?._parts,'FormData')
     dispatch({
         type: TASK_POST_CREATE_START,
         uploadLoading: true,
@@ -113,7 +119,6 @@ export const CreatePostFunction = (FormData, path,goHome) => async (dispatch) =>
             },
             body: FormData
         });
-        console.log(response, 'response1221')
         if (response.ok) {
             const res = await response?.json();
             dispatch({

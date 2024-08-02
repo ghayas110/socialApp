@@ -15,7 +15,9 @@ const CreatePostHeader = (post,isMultiple,isImage) => {
             justifyContent: "center",
             height: ResponsiveSize(55),
             backgroundColor: global.white,
-            paddingHorizontal: ResponsiveSize(15)
+            paddingHorizontal: ResponsiveSize(15),
+            borderBottomColor: global.description,
+            borderBottomWidth:1
         },
         logoSide1: {
             flexDirection: 'row',

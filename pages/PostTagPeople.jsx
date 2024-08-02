@@ -100,7 +100,7 @@ const TagPeople = ({ PostCreationReducer, SearchConnection,ExludeConnection }) =
                     <TextC font={'Montserrat-SemiBold'} text={"Mention"} />
                 </View>
                 <View style={styles.logoSide3}>
-                    <TouchableOpacity onPress={() => navigation.navigate('CreatePostTwo')} style={styles.NextBtn}><TextC size={ResponsiveSize(11)} text={'Next'} font={'Montserrat-SemiBold'} /></TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.NextBtn}><TextC size={ResponsiveSize(11)} text={'Next'} font={'Montserrat-SemiBold'} /></TouchableOpacity>
                 </View>
             </View>
             <View style={styles.SearchCenter}>

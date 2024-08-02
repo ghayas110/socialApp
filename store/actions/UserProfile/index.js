@@ -111,7 +111,7 @@ export const GetUserPosts = () => async (dispatch) => {
             },
         });
         const res = await response.json()
-        console.log(res)
+        
         return res?.data
     }
     catch (error) {

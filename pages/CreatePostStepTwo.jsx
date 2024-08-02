@@ -36,6 +36,10 @@ const CreatePostTwo = ({
   PostCreationReducer,
   CreatePostFunction,
   ExludeConnection,
+  CommentSwitch,
+  CommentCountSwitch,
+  LikeCountSwitch,
+  EmptyConnection
 }) => {
   const headerHeight = useHeaderHeight();
   const CurrentIndex = useRef(null);
@@ -217,15 +221,12 @@ const CreatePostTwo = ({
     {key: 'FOLLOWERS', label: 'Connections only'},
   ];
 
-  const goHome = () => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [
-          { name: 'Home' },
-        ],
-      })
-    );
+  const goHome = async () => {
+    await CommentSwitch(false);
+    await CommentCountSwitch(false);
+    await LikeCountSwitch(false);
+    await EmptyConnection()
+    navigation.navigate("Home");
   };
 
   const CreatePostFinalStep = async () => {
