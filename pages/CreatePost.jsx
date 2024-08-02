@@ -43,7 +43,6 @@ const windowHeight = Dimensions.get('window').height;
 const CreatePost = () => {
   const videoRef1 = useRef(null);
   const videoRef2 = useRef(null);
-
   const CurrentIndex = useRef(null);
   const [currentPreview, setCurrentPreview] = useState();
   const [isImage, setIsImage] = useState();
@@ -195,7 +194,9 @@ const CreatePost = () => {
       flexDirection: 'row',
     },
   });
-  const handleOpenSheet = () => {
+
+  console.log(multiContent, 'content')
+  const handleOpenSheet = (multiArray, index) => {
     openBottomSheet(
       <>
         <View
@@ -237,12 +238,22 @@ const CreatePost = () => {
             <TouchableOpacity
               style={{ paddingVertical: ResponsiveSize(10) }}
               onPress={() => {
-                setCurrentPreview(temp);
-                setIsEditAvailable({
-                  value: false,
-                  content: 'Image',
-                });
-                closeBottomSheet();
+                if (selectMulti == true) {
+                  multiArray.splice(index, 1);
+                  setIsEditAvailable({
+                    value: false,
+                    content: 'Image',
+                  });
+                  closeBottomSheet();
+                }
+                else {
+                  setCurrentPreview(temp);
+                  setIsEditAvailable({
+                    value: false,
+                    content: 'Image',
+                  });
+                  closeBottomSheet();
+                }
               }}>
               <TextC
                 font={'Montserrat-Medium'}
@@ -384,10 +395,11 @@ const CreatePost = () => {
 
   const [mediaChangeLoader, setMediaChangeLoader] = useState(false);
 
-  const MultListAdder = (id, content, type, origionalPath) => {
+  const MultListAdder = (id, content, type, origionalPath, isEdited) => {
     setMultiContent(prevMultiContent => {
       const exists = prevMultiContent.some(item => item.id === id);
       const indexToDelete = prevMultiContent.findIndex(item => item.id === id);
+      const existedArray = prevMultiContent?.find(data => data.id == id)
       const updatedMultiContent = [...prevMultiContent];
       if (!exists) {
         updatedMultiContent.push({
@@ -395,9 +407,15 @@ const CreatePost = () => {
           content: content,
           type: type,
           origionalPath: origionalPath,
+          isEdited: isEdited
         });
       } else {
-        updatedMultiContent.splice(indexToDelete, 1);
+        if (existedArray.isEdited) {
+          handleOpenSheet(updatedMultiContent, indexToDelete)
+        }
+        else {
+          updatedMultiContent.splice(indexToDelete, 1);
+        }
       }
       return updatedMultiContent;
     });
@@ -411,7 +429,7 @@ const CreatePost = () => {
           setMultiContent(prev =>
             prev?.map(item =>
               item.id == multiVideoId
-                ? { ...item, origionalPath: event?.outputPath?.split('file://')[1] }
+                ? { ...item, origionalPath: event?.outputPath, isEdited: true }
                 : item,
             ),
           );
@@ -452,6 +470,7 @@ const CreatePost = () => {
               item?.content,
               item?.type,
               item?.origionalPath,
+              false
             );
           }
           else {
@@ -528,7 +547,7 @@ const CreatePost = () => {
         />
         <View style={styles.FirstImagePreview}>
           <>
-            {multiContent.length > 1 ? (
+            {multiContent.length >= 1 ? (
               <Carousel
                 loop
                 width={windowWidth}
@@ -544,13 +563,12 @@ const CreatePost = () => {
                           <Pressable
                             onPress={() => setPause(!paused)}
                             style={{ position: 'relative' }}>
-
                             <Video
-                              repeat={true}
                               source={{ uri: 'file://' + items?.item?.origionalPath }}
                               ref={videoRef1}
                               style={styles.FirstImage}
                               paused={paused}
+                              controls={true}
                             />
                             <View style={styles.uploadControls}>
                               <TouchableOpacity
@@ -751,7 +769,6 @@ const CreatePost = () => {
                           size={15}
                         />
                       </TouchableOpacity>
-
                       <TouchableOpacity
                         onPress={() =>
                           setImageResize(
