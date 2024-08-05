@@ -75,7 +75,6 @@ export const ExludeConnection = (body) => async (dispatch, getState) => {
         searchConnectionData: objectsArray,
     });
 }
-
 export const EmptyConnection = (body) => async (dispatch, getState) => {
     dispatch({
         type: TASK_INCLUDE_CONNECTION,
@@ -100,7 +99,7 @@ export const LikeCountSwitch = (body) => async (dispatch, getState) => {
         isLikeCount: body,
     });
 }
-export const CreatePostFunction = (FormData, path,goHome) => async (dispatch) => {
+export const CreatePostFunction = (FormData, path, goHome) => async (dispatch) => {
     const Token = await AsyncStorage.getItem('Token');
     dispatch({
         type: TASK_POST_CREATE_START,
@@ -166,7 +165,6 @@ export const LikeFunc = (body) => async () => {
         return "Internal Server Error"
     }
 }
-
 export const DisLikeFunc = (body) => async () => {
     const Token = await AsyncStorage.getItem('Token');
     try {
@@ -184,6 +182,29 @@ export const DisLikeFunc = (body) => async () => {
     }
     catch (error) {
         console.log(error.message, "oken")
+        return "Internal Server Error"
+    }
+}
+export const LoadComments = (body) => async () => {
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/get-posts-comment/${body?.post_id}/${body?.page}/${body?.limit}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+        });
+        if (response.ok) {
+            const res = await response.json()
+            return res;
+        }
+        else {
+            return 'Something went wrong'
+        }
+    }
+    catch (error) {
         return "Internal Server Error"
     }
 }

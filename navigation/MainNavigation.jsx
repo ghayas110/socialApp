@@ -78,7 +78,6 @@ const MainNavigation = ({GetUserProfileReducer}) => {
       justifyContent: 'center',
     },
   });
-  console.log(GetUserProfileReducer?.data?.profile_picture_url)
   return (
     <NavigationContainer>
       {isLoggedIn ? (

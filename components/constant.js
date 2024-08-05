@@ -5,6 +5,8 @@ const scale = windowWidth / 320;
 
 
 const ResponsiveSize = (size) => Math.round(size * scale);
+
+
 const global = {
     primaryColor: '#05348E',
     primaryColorDark:"#002245",
