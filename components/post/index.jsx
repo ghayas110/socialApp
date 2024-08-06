@@ -1,35 +1,27 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ImageBackground, StyleSheet, View, Dimensions, Image, TouchableOpacity, Pressable, TextInput, ActivityIndicator } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react';
+import { ImageBackground, StyleSheet, View, Dimensions, Image, TouchableOpacity, Pressable, TextInput, ActivityIndicator, TouchableWithoutFeedback, ScrollView, Platform, Keyboard } from 'react-native'
 import TextC from '../text/text';
-import EntypoFont from "react-native-vector-icons/Entypo";
-import { useColorScheme } from 'react-native';
-import LikeLight from '../../assets/icons/Like.png';
 import CommnetLight from '../../assets/icons/Comment.png';
 import ShareLight from '../../assets/icons/Share.png';
-import { useBottomSheet } from '../bottomSheet/BottomSheet';
-import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import { ResponsiveSize, global } from '../constant';
 import TimeAgo from '@manu_omg/react-native-timeago';
 import * as PostCreationAction from '../../store/actions/PostCreation/index';
 import { connect } from 'react-redux';
-import Video, { VideoRef } from 'react-native-video';
+import Video from 'react-native-video';
 import ReadMore from '@fawazahmed/react-native-read-more';
 import AntDesign from 'react-native-vector-icons/AntDesign'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Entypo from 'react-native-vector-icons/Entypo';
-import Feather from 'react-native-vector-icons/Feather';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import Modal from "react-native-modal";
+import Feather from 'react-native-vector-icons/Feather'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 
-const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCount, description, content, userLocation, timeAgo, LikeFunc, DisLikeFunc, LoadComments }) => {
+const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCount, description, content, userLocation, timeAgo, LikeFunc, DisLikeFunc, LoadComments, AddComment, comments_show_flag, allow_comments_flag, likes_show_flag }) => {
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
-    const [commentIdState, setCommentIdState] = useState()
     const [liked, setLike] = useState(selfLiked);
     const [likeCountPre, setLikeCountPre] = useState(likeCount)
-    const scheme = useColorScheme();
     const videoRef = useRef(null);
     const commentSectioLength = windowWidth - ResponsiveSize(30)
     const style = StyleSheet.create({
@@ -166,108 +158,36 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
             borderRadius: ResponsiveSize(15),
             paddingRight: ResponsiveSize(2),
             paddingTop: ResponsiveSize(2),
+        },
+        modalTopLayer: {
+            height: windowHeight * 0.6,
+            width: windowWidth,
+            paddingHorizontal: ResponsiveSize(15),
+            paddingTop: 10,
+            position: 'absolute',
+            backgroundColor: 'white',
+            bottom: ResponsiveSize(0),
+            borderTopLeftRadius: ResponsiveSize(15),
+            borderTopRightRadius: ResponsiveSize(15),
+            overflow: 'hidden'
+        },
+        TopIndicator: {
+            width: windowWidth - ResponsiveSize(30),
+            paddingVertical: ResponsiveSize(2),
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center'
+        },
+        modalIndicator: {
+            width: ResponsiveSize(30),
+            paddingVertical: ResponsiveSize(2),
+            borderRadius: ResponsiveSize(20),
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#EEEEEE',
         }
     })
-    useEffect(() => {
-        return () => { closeBottomSheet() }
-    }, [])
-    const { openBottomSheet, closeBottomSheet } = useBottomSheet();
-
-    const [commentLoading, setCommentLoading] = useState(false)
-    const [commentCrash, setCommentCrash] = useState(false)
-    const [commentList, setCommentList] = useState()
-
-
-    const openCommentSection = async () => {
-        handleOpenSheet()
-        if (postId !== commentIdState) {
-            setCommentLoading(true)
-            const result = await LoadComments({
-                post_id: postId,
-                page: 1,
-                limit: 100
-            })
-            setCommentIdState(result?.post_id)
-            setCommentList(result?.comments)
-            setCommentLoading(false)
-        }
-    }
-
-
-
-
-    console.log(commentList,'comment loading')
-
-    const handleOpenSheet = () => {
-        openBottomSheet(
-            <>
-                <View style={{ flex: 1, paddingHorizontal: ResponsiveSize(15), paddingTop: 10, position: 'relative' }}>
-                    {commentLoading ?
-                        <View style={{paddingTop:ResponsiveSize(50),width:windowWidth}}>
-                            <ActivityIndicator size="large" color={global.primaryColor} />
-                        </View>
-                        :
-                        <>
-                            <BottomSheetScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: ResponsiveSize(50) }}>
-                                {commentList !== null && commentList !== undefined && commentList !== "" && commentList.length > 0 ? commentList?.map(data =>
-                                    <View key={data?.post_id} style={{ flexDirection: 'row', alignItems: 'flex-start', width: commentSectioLength, marginBottom: ResponsiveSize(15) }}>
-                                        <View style={style.commentSectionProfile}>
-                                            <ImageBackground source={
-                                                data?.user?.profile_picture_url === ''
-                                                    ? require('../../assets/icons/avatar.png')
-                                                    : { uri: data?.user?.profile_picture_url }
-                                            } style={style.PostProfileImage2} resizeMode="cover"></ImageBackground>
-                                        </View>
-                                        <View style={{ paddingHorizontal: ResponsiveSize(8), paddingTop: ResponsiveSize(5), width: commentSectioLength * 0.9 }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: ResponsiveSize(3) }}>
-                                                <TextC text={data?.user?.user_name} font={'Montserrat-SemiBold'} size={ResponsiveSize(11)} style={{ includeFontPadding: false }} />
-                                                <TextC text={"3d"} font={'Montserrat-Medium'} size={ResponsiveSize(9)} style={{ includeFontPadding: false, color: "#999999", marginLeft: 6 }} />
-                                            </View>
-                                            <TextC text={data?.comment} font={'Montserrat-Regular'} style={{ includeFontPadding: false, fontSize: ResponsiveSize(10), color: global.black, paddingVertical: ResponsiveSize(2) }} />
-                                            <View style={{ flexDirection: "row", alignItems: 'center', paddingTop: 5 }}>
-                                                <TouchableOpacity style={{ flexDirection: "row", alignItems: 'center' }}>
-                                                    <AntDesign
-                                                        name={'heart'}
-                                                        color={global.red}
-                                                        size={ResponsiveSize(11)}
-                                                    />
-                                                    <TextC text={"322"} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(5) }} />
-                                                </TouchableOpacity>
-
-                                                <TextC text={"|"} size={ResponsiveSize(12)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingHorizontal: ResponsiveSize(5) }} />
-
-                                                <TouchableOpacity style={{ flexDirection: "row", alignItems: 'center' }}>
-                                                    <MaterialCommunityIcons
-                                                        name={'comment-outline'}
-                                                        color={global.black}
-                                                        size={ResponsiveSize(11)}
-                                                    />
-                                                    <TextC text={"23"} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(5) }} />
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                    </View>
-                                ) : ""}
-                            </BottomSheetScrollView>
-                        </>
-                    }
-                    <View style={style.commentAdd}>
-                        <View style={{ width: windowWidth, position: 'relative' }}>
-                            <TouchableWithoutFeedback onPress={() => null}>
-                                <TextInput placeholder='Comment here' style={style.commentInput} />
-                                <TouchableOpacity style={style.sendCommentBtn}>
-                                    <Feather name='send' color={'white'} size={ResponsiveSize(15)} />
-                                </TouchableOpacity>
-                            </TouchableWithoutFeedback>
-                        </View>
-                    </View>
-                </View>
-            </>
-            , ["60%"]
-        );
-    };
-
-    
     const handleLike = async () => {
         try {
             setLike(true);
@@ -287,6 +207,36 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
         }
     };
     const [paused, setPause] = useState(true);
+    const [isModalVisible, setModalVisible] = useState(false);
+    const toggleModal = () => {
+        openCommentSection()
+        setModalVisible(!isModalVisible);
+    };
+
+
+
+    const [commentLoading, setCommentLoading] = useState(false)
+    const [commentCrash, setCommentCrash] = useState(false)
+    const [commentList, setCommentList] = useState()
+
+
+    const openCommentSection = async () => {
+        setCommentLoading(true)
+        setCommentCrash(false)
+        const result = await LoadComments({
+            post_id: postId,
+            page: 1,
+            limit: 100
+        })
+        if (result?.comments) {
+            setCommentList(result?.comments)
+            setCommentLoading(false)
+        }
+        else {
+            setCommentCrash(true)
+            setCommentLoading(false)
+        }
+    }
     return (
         <>
             <View style={style.PostHeader}>
@@ -301,7 +251,6 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                     <TextC size={ResponsiveSize(10)} text={userLocation} font={'Montserrat-Medium'} />
                 </View>
             </View>
-
             {content?.length > 1 ?
                 <Carousel
                     loop={false}
@@ -366,7 +315,6 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                     }
                 </>
             }
-
             <View style={style.postActionSection}>
                 <Pressable onPress={liked ? handleDislike : handleLike} style={style.PostIcons1}>
                     <AntDesign
@@ -375,18 +323,19 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                         size={ResponsiveSize(22)}
                     />
                 </Pressable>
-                <Pressable onPress={() => openCommentSection()} style={style.PostIcons}>
-                    <Image source={CommnetLight} style={{ height: ResponsiveSize(20), width: ResponsiveSize(20) }} />
-                </Pressable>
+                {allow_comments_flag == "Y" &&
+                    <Pressable onPress={() => toggleModal()} style={style.PostIcons}>
+                        <Image source={CommnetLight} style={{ height: ResponsiveSize(20), width: ResponsiveSize(20) }} />
+                    </Pressable>
+                }
                 <Pressable style={style.PostIcons}>
                     <Image source={ShareLight} style={{ height: ResponsiveSize(20), width: ResponsiveSize(20), marginTop: 1 }} />
                 </Pressable>
             </View>
-
-
             <View style={style.PostDetail}>
-                <TextC size={ResponsiveSize(10)} text={`${likeCountPre} likes`} font={'Montserrat-Medium'} />
-
+                {likes_show_flag == "Y" &&
+                    <TextC size={ResponsiveSize(10)} text={`${likeCountPre} likes`} font={'Montserrat-Medium'} />
+                }
                 {description !== '' ?
                     <View style={{ paddingVertical: ResponsiveSize(3) }}>
                         <ReadMore
@@ -405,9 +354,19 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                     </View>
                     : ""
                 }
-                <TouchableOpacity onPress={handleOpenSheet} style={{ paddingVertical: ResponsiveSize(3) }}>
-                    <TextC size={ResponsiveSize(11)} text={`View all ${commnetCount} comments`} font={'Montserrat-Medium'} />
-                </TouchableOpacity>
+                {allow_comments_flag == "Y" ?
+                    <TouchableOpacity style={{ paddingVertical: ResponsiveSize(3) }}>
+                        {comments_show_flag == "Y" ?
+                            <TextC size={ResponsiveSize(11)} text={`View all ${commnetCount} comments`} font={'Montserrat-Medium'} />
+                            :
+                            <TextC size={ResponsiveSize(11)} text={`View all comments`} font={'Montserrat-Medium'} />
+                        }
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={{ paddingTop: ResponsiveSize(3) }}>
+                        <TextC size={ResponsiveSize(10)} text={'Comments are turned off'} font={'Montserrat-Medium'} />
+                    </TouchableOpacity>
+                }
             </View>
             <View style={style.PostDate}>
                 <TimeAgo
@@ -415,6 +374,90 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                     time={timeAgo}
                 />
             </View>
+
+
+
+            <Modal
+                isVisible={isModalVisible}
+                style={{ margin: 0 }}
+                animationIn={"bounceInUp"}
+                avoidKeyboard={true}
+                onBackdropPress={() => setModalVisible(false)}
+                statusBarTranslucent={true}
+                propagateSwipe={true}
+                swipeDirection="down"
+                onSwipeComplete={toggleModal}
+            >
+                <View style={style.modalTopLayer}>
+                    <View style={style.TopIndicator}>
+                        <View style={style.modalIndicator}></View>
+                        <TextC text={"Comments"} style={{ color: global.black, paddingTop: ResponsiveSize(3) }} font={'Montserrat-Bold'} size={ResponsiveSize(12)} />
+                    </View>
+                    {commentLoading ? (
+                        <View style={{ paddingTop: ResponsiveSize(50), width: windowWidth - ResponsiveSize(30), flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                            <ActivityIndicator size="large" color={global.primaryColor} />
+                        </View>
+                    ) : (
+                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: ResponsiveSize(50), paddingTop: ResponsiveSize(10) }}>
+                            {commentList !== null && commentList !== undefined && commentList !== "" && commentList.length > 0 ? (
+                                commentList.map(data => (
+                                    <View key={data?.post_id} style={{ flexDirection: 'row', alignItems: 'flex-start', width: commentSectioLength, marginBottom: ResponsiveSize(15) }}>
+                                        <View style={style.commentSectionProfile}>
+                                            <ImageBackground
+                                                source={data?.user?.profile_picture_url === '' ? require('../../assets/icons/avatar.png') : { uri: data?.user?.profile_picture_url }}
+                                                style={style.PostProfileImage2}
+                                                resizeMode="cover"
+                                            />
+                                        </View>
+                                        <View style={{ paddingHorizontal: ResponsiveSize(8), paddingTop: ResponsiveSize(5), width: commentSectioLength * 0.9 }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: ResponsiveSize(3) }}>
+                                                <TextC text={data?.user?.user_name} font={'Montserrat-SemiBold'} size={ResponsiveSize(11)} style={{ includeFontPadding: false }} />
+                                                <TextC text={"3d"} font={'Montserrat-Medium'} size={ResponsiveSize(9)} style={{ includeFontPadding: false, color: "#999999", marginLeft: 6 }} />
+                                            </View>
+                                            <TextC text={data?.comment} font={'Montserrat-Regular'} style={{ includeFontPadding: false, fontSize: ResponsiveSize(10), color: global.black, paddingVertical: ResponsiveSize(2) }} />
+                                            <View style={{ flexDirection: "row", alignItems: 'center', paddingTop: 5 }}>
+                                                <TouchableOpacity style={{ flexDirection: "row", alignItems: 'center' }}>
+                                                    <AntDesign name={'heart'} color={global.red} size={ResponsiveSize(11)} />
+                                                    <TextC text={"322"} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(5) }} />
+                                                </TouchableOpacity>
+
+                                                <TextC text={"|"} size={ResponsiveSize(12)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingHorizontal: ResponsiveSize(5) }} />
+
+                                                <TouchableOpacity style={{ flexDirection: "row", alignItems: 'center' }}>
+                                                    <MaterialCommunityIcons name={'comment-outline'} color={global.black} size={ResponsiveSize(11)} />
+                                                    <TextC text={"23"} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(5) }} />
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    </View>
+                                ))
+                            ) : (
+                                commentCrash ? (
+                                    <View style={{ paddingTop: ResponsiveSize(50), width: windowWidth - ResponsiveSize(30), flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                        <View style={{ paddingBottom: ResponsiveSize(5), paddingHorizontal: ResponsiveSize(50) }}>
+                                            <Image style={{ height: ResponsiveSize(80), width: ResponsiveSize(80) }} source={require('../../assets/icons/something-went-wrong.png')} />
+                                        </View>
+                                        <TextC text={"Something went wrong"} font={'Montserrat-Bold'} size={ResponsiveSize(15)} />
+                                        <TextC style={{ textAlign: 'center', color: global?.black }} text={"Brace yourself till we get the error fixed"} font={'Montserrat-Medium'} size={ResponsiveSize(10)} />
+                                    </View>
+                                ) : (
+                                    <View style={{ paddingTop: ResponsiveSize(50), width: windowWidth - ResponsiveSize(30), flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                        <TextC text={'No Comments Found'} font={'Montserrat-Medium'} />
+                                    </View>
+                                )
+                            )}
+                        </ScrollView>
+                    )}
+                    <View style={style.commentAdd}>
+                        <View style={{ width: windowWidth, position: 'relative' }}>
+                            <TextInput onChangeText={(e) => setCommentInfo(e)} placeholder='Comment here' style={style.commentInput} />
+                            <TouchableOpacity style={style.sendCommentBtn}>
+                                <Feather name='send' color={'white'} size={ResponsiveSize(15)} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </>
     )
 }

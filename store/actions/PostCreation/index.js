@@ -208,3 +208,29 @@ export const LoadComments = (body) => async () => {
         return "Internal Server Error"
     }
 }
+export const AddComment = (body) => async () => {
+    console.log(body,'body')
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/create-comment`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+            body: JSON.stringify(body)
+        });
+        console.log(response,'success')
+        if (response.ok) {
+            const res = await response.json()
+            return res;
+        }
+        else {
+            return 'Something went wrong'
+        }
+    }
+    catch (error) {
+        return "Internal Server Error"
+    }
+}

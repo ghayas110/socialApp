@@ -1,5 +1,5 @@
-import { DarkTheme, useNavigation,CommonActions } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import { DarkTheme, useNavigation, CommonActions } from '@react-navigation/native';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -10,6 +10,7 @@ import {
   useColorScheme,
   View,
   Animated,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import CityScroll from '../components/citiesScroll';
@@ -21,7 +22,9 @@ import TextC from '../components/text/text';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
 import { Easing } from 'react-native-reanimated';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useHeaderHeight } from "@react-navigation/elements";
+
+
 
 const SkeletonPlaceholder = ({ style, refreshing }) => {
   const translateX = new Animated.Value(-350);
@@ -151,6 +154,7 @@ const HomeScreen = ({
   GetUserPosts,
   PostCreationReducer,
 }) => {
+  const headerHeight = useHeaderHeight();
   const scheme = useColorScheme();
   const navigation = useNavigation();
   const [post, setPost] = useState([]);
@@ -184,7 +188,6 @@ const HomeScreen = ({
     }
   };
 
-  console.log(post[0], 'holla')
   useEffect(() => {
     GetProfileData();
     if (PostCreationReducer?.uploadLoading == false) {
@@ -216,8 +219,14 @@ const HomeScreen = ({
       paddingLeft: ResponsiveSize(8),
     },
   });
+
   return (
-    <>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={{flexGrow:1}}
+      keyboardVerticalOffset={
+        Platform.OS === 'ios' ? headerHeight + StatusBar.currentHeight : 0
+      }>
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar
           backgroundColor={
@@ -286,6 +295,9 @@ const HomeScreen = ({
                     commnetCount={data?.comments_count}
                     description={data?.caption}
                     content={data?.attachments}
+                    comments_show_flag={data?.comments_show_flag}
+                    allow_comments_flag={data?.allow_comments_flag}
+                    likes_show_flag={data?.likes_show_flag}
                   />
                 )) :
                 <View style={{ paddingTop: ResponsiveSize(30), flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -301,7 +313,7 @@ const HomeScreen = ({
           )}
         </ScrollView>
       </SafeAreaView >
-    </>
+      </KeyboardAvoidingView>
   );
 };
 

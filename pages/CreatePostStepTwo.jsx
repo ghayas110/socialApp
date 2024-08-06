@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import {global, ResponsiveSize} from '../components/constant';
+import { global, ResponsiveSize } from '../components/constant';
 import {
   ScrollView,
   TextInput,
@@ -21,15 +21,15 @@ import {
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import TextC from '../components/text/text';
-import {useNavigation,CommonActions} from '@react-navigation/native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ModalSelector from 'react-native-modal-selector';
 import Carousel from 'react-native-reanimated-carousel';
 import * as PostCreationAction from '../store/actions/PostCreation/index';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Video from 'react-native-video';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useHeaderHeight} from '@react-navigation/elements';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 const CreatePostTwo = ({
   route,
@@ -105,7 +105,7 @@ const CreatePostTwo = ({
       borderRadius: ResponsiveSize(10),
       overflow: 'hidden',
       shadowColor: 'black',
-      shadowOffset: {width: 0, height: 3},
+      shadowOffset: { width: 0, height: 3 },
       borderWidth: 1,
       borderColor: global.description,
       backgroundColor: 'white',
@@ -113,7 +113,7 @@ const CreatePostTwo = ({
       shadowRadius: 5,
       elevation: 2,
     },
-    CarouselShadow:{
+    CarouselShadow: {
       shadowColor: 'black',
       shadowOffset: { width: 0, height: 3 },
       borderWidth: 0,
@@ -216,9 +216,9 @@ const CreatePostTwo = ({
     },
   });
   const data = [
-    {key: 'PUBLIC', label: 'Public'},
-    {key: 'PRIVATE', label: 'Private'},
-    {key: 'FOLLOWERS', label: 'Connections only'},
+    { key: 'PUBLIC', label: 'Public' },
+    { key: 'PRIVATE', label: 'Private' },
+    { key: 'FOLLOWERS', label: 'Connections only' },
   ];
 
   const goHome = async () => {
@@ -248,15 +248,15 @@ const CreatePostTwo = ({
       formData.append('tags', JSON.stringify(stringNumbers));
       formData.append(
         'comments_show_flag',
-        PostCreationReducer?.isCommentCount == true ? 'Y' : 'N',
+        PostCreationReducer?.isCommentCount == true ? 'N' : 'Y',
       );
       formData.append(
         'likes_show_flag',
-        PostCreationReducer?.isLikeCount == true ? 'Y' : 'N',
+        PostCreationReducer?.isLikeCount == true ? 'N' : 'Y',
       );
       formData.append(
         'allow_comments_flag',
-        PostCreationReducer?.isCommentOff == true ? 'Y' : 'N',
+        PostCreationReducer?.isCommentOff == true ? 'N' : 'Y',
       );
       if (route?.params?.isMultiple == false) {
         if (route?.params?.post?.type == 'image') {
@@ -309,7 +309,7 @@ const CreatePostTwo = ({
     <>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{flexGrow: 1}}
+        style={{ flexGrow: 1 }}
         keyboardVerticalOffset={
           Platform.OS === 'ios' ? headerHeight + StatusBar.currentHeight : 0
         }>
@@ -386,7 +386,7 @@ const CreatePostTwo = ({
                             ref={CurrentIndex}
                             key={'1'}
                             style={styles.singlePostInnerCarousel}
-                            source={{uri: 'file://' + items?.item?.content}}
+                            source={{ uri: 'file://' + items?.item?.content }}
                           />
                         )}
                       </>
@@ -414,7 +414,7 @@ const CreatePostTwo = ({
                         ref={CurrentIndex}
                         key={'1'}
                         style={styles.singlePostInner}
-                        source={{uri: 'file://' + route?.params?.post?.content}}
+                        source={{ uri: 'file://' + route?.params?.post?.content }}
                       />
                     </>
                   )}
@@ -437,11 +437,11 @@ const CreatePostTwo = ({
                       text={`@${date?.user_name}`}
                       font={'Montserrat-Medium'}
                       size={ResponsiveSize(11)}
-                      style={{color: global.black}}
+                      style={{ color: global.black }}
                     />
                     <TouchableOpacity
                       onPress={() => excludeConections(date)}
-                      style={{marginLeft: ResponsiveSize(5)}}>
+                      style={{ marginLeft: ResponsiveSize(5) }}>
                       <Entypo
                         name="cross"
                         color={global.black}
@@ -455,7 +455,7 @@ const CreatePostTwo = ({
             <TouchableOpacity
               onPress={() => navigation.navigate('TagPeople')}
               style={styles.SettingList}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <AntDesign
                   name="adduser"
                   color={global.primaryColor}
@@ -485,7 +485,7 @@ const CreatePostTwo = ({
               onChange={option => {
                 setPrivacy(option?.label);
               }}
-              selectTextStyle={{color: global.placeholderColor}}>
+              selectTextStyle={{ color: global.placeholderColor }}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -493,7 +493,7 @@ const CreatePostTwo = ({
                   justifyContent: 'space-between',
                   width: '100%',
                 }}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <AntDesign
                     name="user"
                     color={global.primaryColor}
@@ -530,7 +530,7 @@ const CreatePostTwo = ({
             <TouchableOpacity
               onPress={() => navigation.navigate('PostSetting')}
               style={styles.SettingList}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Ionicons
                   name="settings-outline"
                   color={global.primaryColor}
@@ -561,7 +561,7 @@ const CreatePostTwo = ({
   );
 };
 
-function mapStateToProps({PostCreationReducer}) {
-  return {PostCreationReducer};
+function mapStateToProps({ PostCreationReducer }) {
+  return { PostCreationReducer };
 }
 export default connect(mapStateToProps, PostCreationAction)(CreatePostTwo);

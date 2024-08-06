@@ -22,10 +22,18 @@ export const BottomSheetProvider = ({ children }) => {
     bottomSheetRef.current?.close();
   }, []);
 
+  const onClose = useCallback(() => {
+    setContent(null);
+  }, []);
+
   const contextValue = useMemo(() => ({
     openBottomSheet,
     closeBottomSheet,
-  }), [openBottomSheet, closeBottomSheet]);
+    onClose
+  }), [openBottomSheet, closeBottomSheet,onClose]);
+
+
+  
 
   return (
     <BottomSheetContext.Provider value={contextValue}>
@@ -38,7 +46,7 @@ export const BottomSheetProvider = ({ children }) => {
         index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose={true}
-        onClose={() => setContent(null)}
+        onClose={() => {onClose(null)}}
       >
         <>
           {content}
