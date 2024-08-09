@@ -208,8 +208,32 @@ export const LoadComments = (body) => async () => {
         return "Internal Server Error"
     }
 }
+export const LoadReplies = (body) => async () => {
+    const Token = await AsyncStorage.getItem('Token');
+    console.log(body)
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/get-comment-replies/${body?.comment_id}/${body?.page}/${body?.limit}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+        });
+        if (response.ok) {
+            const res = await response.json()
+            return res;
+        }
+        else {
+            return 'Something went wrong'
+        }
+    }
+    catch (error) {
+        return "Internal Server Error"
+    }
+}
 export const AddComment = (body) => async () => {
-    console.log(body,'body')
+    console.log(body, 'body')
     const Token = await AsyncStorage.getItem('Token');
     try {
         const response = await fetch(`${baseUrl.baseUrl}/posts/create-comment`, {
@@ -221,7 +245,6 @@ export const AddComment = (body) => async () => {
             },
             body: JSON.stringify(body)
         });
-        console.log(response,'success')
         if (response.ok) {
             const res = await response.json()
             return res;
@@ -231,6 +254,71 @@ export const AddComment = (body) => async () => {
         }
     }
     catch (error) {
+        return "Internal Server Error"
+    }
+}
+export const LikeCommentFunc = (body) => async () => {
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/like-comment`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+            body: JSON.stringify(body)
+
+        });
+        const res = await response?.json();
+        console.log(res, 'like comment')
+    }
+    catch (error) {
+        console.log(error.message, "oken")
+        return "Internal Server Error"
+    }
+}
+export const DisLikeCommentFunc = (body) => async () => {
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/dislike-comment`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+            body: JSON.stringify(body)
+
+        });
+        const res = await response?.json();
+        console.log(res, 'unlike comment')
+    }
+    catch (error) {
+        console.log(error.message, "oken")
+        return "Internal Server Error"
+    }
+}
+export const DeletComments = (body) => async () => {
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/delete-comment`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+            body: JSON.stringify(body)
+
+        });
+        const res = await response?.json();
+        if (res?.statusCode == 200) {
+            return res?.message
+        }
+    }
+    catch (error) {
+        console.log(error.message)
         return "Internal Server Error"
     }
 }

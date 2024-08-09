@@ -62,7 +62,6 @@ const CreatePost = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(1);
-
   const PAGE_SIZE = 26;
 
   const styles = StyleSheet.create({
@@ -325,90 +324,75 @@ const CreatePost = () => {
     );
     setIsEditAvailable({ value: true, content: 'Image' });
   };
-
+  const [hasMoreContent, setHasMoreContent] = useState(true);
   const loadImages = async () => {
-    if (Platform.OS === 'android') {
-      setLoading(true);
-      try {
-        const imageFiles = await RNFS.readDir(
-          RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera',
-        );
-        const imageBatch = imageFiles.slice(
-          page * PAGE_SIZE,
-          (page + 1) * PAGE_SIZE,
-        );
-        const videoContentPromises = imageBatch?.map(async item => {
-          const isVideo =
-            item.name.endsWith('.mp4') || item.name.endsWith('.mov');
-          if (isVideo) {
-            return {
-              id: item.name,
-              content: item.path,
-              type: 'video',
-              origionalPath: item.path,
-            };
-          } else {
-            return {
-              id: item.name,
-              content: item.path,
-              type: 'image',
-              origionalPath: item.path,
-            };
-          }
-        });
-        const videoContent = await Promise.all(videoContentPromises);
-        setContent(prevImages => [...prevImages, ...videoContent]);
-        if (page == 0) {
-          setCurrentPreview(videoContent[0]);
-        }
+    if (loading) return;
 
-        setPage(prevPage => prevPage + 1);
-      } catch (error) {
-        console.error('Error loading images:', error);
+    setLoading(true);
+    try {
+      let imageFiles = [];
+      if (Platform.OS === 'android') {
+        imageFiles = await RNFS.readDir(
+          RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera'
+        );
+      } else if (Platform.OS === 'ios') {
+        imageFiles = await RNFS.readDir(
+          '/var/mobile/Media/DCIM/100APPLE'
+        );
       }
-      setLoading(false);
-    } else if (Platform.OS === 'ios') {
-      setLoading(true);
-      try {
-        const imageFiles = await RNFS.readDir(
-          '/var/mobile/Media/DCIM/100APPLE',
-        );
-        const imageBatch = imageFiles.slice(
-          page * PAGE_SIZE,
-          (page + 1) * PAGE_SIZE,
-        );
-        const videoContentPromises = imageBatch.map(async item => {
-          const isVideo =
-            item.name.endsWith('.MP4') || item.name.endsWith('.mov');
-          if (isVideo) {
+
+      const imageBatch = imageFiles.slice(
+        page * PAGE_SIZE,
+        (page + 1) * PAGE_SIZE
+      );
+
+      if (imageBatch.length === 0) {
+        setHasMoreContent(false);
+        setLoading(false);
+        return;
+      }
+
+      const videoContentPromises = imageBatch.map(async item => {
+        const isVideo = item.name.endsWith('.mp4') || item.name.endsWith('.mov') || item.name.endsWith('.MP4');
+        if (isVideo) {
+          if (Platform.OS === 'ios') {
             const thumbnail = await createThumbnail({ url: item.path });
             return {
               id: item.name,
               content: thumbnail?.path,
               type: 'video',
-              origionalPath: item.path,
+              originalPath: item.path,
             };
           } else {
             return {
               id: item.name,
               content: item.path,
-              type: 'image',
-              origionalPath: item.path,
+              type: 'video',
+              originalPath: item.path,
             };
           }
-        });
-        const videoContent = await Promise.all(videoContentPromises);
-        setContent(prevImages => [...prevImages, ...videoContent]);
-        if (page == 0) {
-          setCurrentPreview(videoContent[0]);
+        } else {
+          return {
+            id: item.name,
+            content: item.path,
+            type: 'image',
+            originalPath: item.path,
+          };
         }
-        setPage(prevPage => prevPage + 1);
-      } catch (error) {
-        console.error('Error loading images:', error);
+      });
+
+      const videoContent = await Promise.all(videoContentPromises);
+      setContent(prevImages => [...prevImages, ...videoContent]);
+      if (page === 0) {
+        setCurrentPreview(videoContent[0]);
       }
-      setLoading(false);
+      setPage(prevPage => prevPage + 1);
+    } catch (error) {
+      console.error('Error loading images:', error);
     }
+    setLoading(false);
   };
+
 
   const [mediaChangeLoader, setMediaChangeLoader] = useState(false);
 
@@ -571,7 +555,7 @@ const CreatePost = () => {
 
 
   const handleEndReached = () => {
-    if (!loading) {
+    if (!loading && hasMoreContent) {
       loadImages();
     }
   };
@@ -878,12 +862,7 @@ const CreatePost = () => {
               refreshing={loading}
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
-              onEndReached={() => {
-                if (content.length > 26) {
-                  handleEndReached()
-                }
-              }
-              }
+              onEndReached={handleEndReached}
               onEndReachedThreshold={0.5}
               ListFooterComponent={
                 loading ? (
