@@ -44,6 +44,7 @@ import ReApplyDocument from '../pages/ReApplyDocument';
 import Approval from '../pages/Approval';
 import * as UserProfile from '../store/actions/UserProfile/index';
 import {connect} from 'react-redux';
+import FastImage from 'react-native-fast-image';
 
 const MainNavigation = ({GetUserProfileReducer}) => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(true);
@@ -227,13 +228,13 @@ const MainNavigation = ({GetUserProfileReducer}) => {
                       color={global.primaryColor}
                     />
                   ) : (
-                    <Image
+                    <FastImage
                       source={
                         GetUserProfileReducer?.data?.profile_picture_url === ''
                           ? require('../assets/icons/avatar.png')
                           : {
-                              uri: GetUserProfileReducer?.data
-                                ?.profile_picture_url,
+                              uri: GetUserProfileReducer?.data?.profile_picture_url,
+                              priority: FastImage.priority.high,
                             }
                       }
                       style={{

@@ -20,6 +20,7 @@ import Reply from './Reply';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { Text } from 'react-native-elements';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import FastImage from 'react-native-fast-image';
 
 
 const Post = ({ userName, profileImage, selfLiked, LikeCommentFunc, DisLikeCommentFunc, postId, likeCount, commnetCount, description, content, userLocation, timeAgo, LikeFunc, DisLikeFunc, LoadComments, AddComment, comments_show_flag, allow_comments_flag, likes_show_flag, LoadReplies, DeletComments }) => {
@@ -135,7 +136,7 @@ const Post = ({ userName, profileImage, selfLiked, LikeCommentFunc, DisLikeComme
         ActuallPost: {
             height: windowHeight * 0.40,
             width: windowWidth,
-            borderRadius: 0
+            borderRadius: 0,
         },
         postActionSection: {
             flexDirection: 'row',
@@ -980,7 +981,7 @@ const Post = ({ userName, profileImage, selfLiked, LikeCommentFunc, DisLikeComme
                                         </Pressable>
                                     </View>
                                     :
-                                    <Image source={{ uri: items.item?.attachment_thumbnail_url }} style={style.ActuallPost} />
+                                    <FastImage resizeMode={FastImage.resizeMode.cover} source={{ uri: items.item?.attachment_thumbnail_url,priority: FastImage.priority.high}} style={style.ActuallPost} />
                                 }
                             </>
                         )
@@ -990,7 +991,7 @@ const Post = ({ userName, profileImage, selfLiked, LikeCommentFunc, DisLikeComme
                 :
                 <>
                     {content[0]?.attachment_url.endsWith('.mp4') ?
-                        <View style={{ height: windowHeight * 0.40, width: windowWidth, backgroundColor: 'red', backgroundColor: global.description }}>
+                        <View style={{ height: windowHeight * 0.7, width: windowWidth, backgroundColor: 'red', backgroundColor: global.description }}>
                             <Video
                                 repeat={true}
                                 source={{
@@ -998,11 +999,12 @@ const Post = ({ userName, profileImage, selfLiked, LikeCommentFunc, DisLikeComme
                                 }}
                                 ref={videoRef}
                                 paused={false}
-                                style={{ height: windowHeight * 0.40, width: windowWidth }}
+                                style={{ height: windowHeight * 0.7, width: windowWidth }}
+                                resizeMode='stretch'
                             />
                         </View>
                         :
-                        <Image source={{ uri: content[0]?.attachment_thumbnail_url }} style={style.ActuallPost} />
+                        <FastImage resizeMode={FastImage.resizeMode.cover} source={{ uri: content[0]?.attachment_thumbnail_url,priority: FastImage.priority.high, }} style={style.ActuallPost} />
                     }
                 </>
             }
@@ -1016,7 +1018,7 @@ const Post = ({ userName, profileImage, selfLiked, LikeCommentFunc, DisLikeComme
                 </Pressable>
                 {allow_comments_flag == "Y" &&
                     <Pressable onPress={() => toggleModal()} style={style.PostIcons}>
-                        <Image source={CommnetLight} style={{ height: ResponsiveSize(20), width: ResponsiveSize(20) }} />
+                        <Image  source={CommnetLight} style={{ height: ResponsiveSize(20), width: ResponsiveSize(20) }} />
                     </Pressable>
                 }
                 <Pressable style={style.PostIcons}>
@@ -1151,7 +1153,7 @@ const Post = ({ userName, profileImage, selfLiked, LikeCommentFunc, DisLikeComme
                         {replyComment !== "" &&
                             <View style={style.replyBox}>
                                 <View style={style.ProfileReplyBox}>
-                                    <Image style={style.ProfileReplyBoxProfile} source={{ uri: replyComment?.user?.profile_picture_url }} />
+                                    <FastImage resizeMode={FastImage.resizeMode.contain} style={style.ProfileReplyBoxProfile} source={{ uri: replyComment?.user?.profile_picture_url,priority: FastImage.priority.high, }} />
                                     <TextC font={'Montserrat-Medium'} size={ResponsiveSize(11)} text={`Reply to ${replyComment?.user?.user_name}`} />
                                 </View>
                                 <TouchableOpacity onPress={() => setReplyComment("")}>
