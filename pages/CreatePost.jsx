@@ -212,7 +212,7 @@ const CreatePost = () => {
   });
 
 
-  const handleOpenSheet = (id, content, type, origionalPath, isEdited) => {
+  const handleOpenSheet = (id, content, type, originalPath, isEdited) => {
     openBottomSheet(
       <>
         <View
@@ -255,7 +255,7 @@ const CreatePost = () => {
               style={{ paddingVertical: ResponsiveSize(10) }}
               onPress={() => {
                 if (selectMulti == true) {
-                  MultListAdderSecond(id, content, type, origionalPath, isEdited)
+                  MultListAdderSecond(id, content, type, originalPath, isEdited)
                   setIsEditAvailable({
                     value: false,
                     content: 'Image',
@@ -393,11 +393,10 @@ const CreatePost = () => {
     setLoading(false);
   };
 
-
   const [mediaChangeLoader, setMediaChangeLoader] = useState(false);
 
 
-  const MultListAdderSecond = (id, content, type, origionalPath, isEdited) => {
+  const MultListAdderSecond = (id, content, type, originalPath, isEdited) => {
     setMultiContent(prevMultiContent => {
       const exists = prevMultiContent.some(item => item.id === id);
       const indexToDelete = prevMultiContent.findIndex(item => item.id === id);
@@ -408,7 +407,7 @@ const CreatePost = () => {
           id: id,
           content: content,
           type: type,
-          origionalPath: origionalPath,
+          originalPath: originalPath,
           isEdited: isEdited
         });
       } else {
@@ -417,7 +416,7 @@ const CreatePost = () => {
       return updatedMultiContent;
     });
   };
-  const MultListAdder = (id, content, type, origionalPath, isEdited) => {
+  const MultListAdder = (id, content, type, originalPath, isEdited) => {
     setMultiContent(prevMultiContent => {
       const exists = prevMultiContent.some(item => item.id === id);
       const indexToDelete = prevMultiContent.findIndex(item => item.id === id);
@@ -428,12 +427,12 @@ const CreatePost = () => {
           id: id,
           content: content,
           type: type,
-          origionalPath: origionalPath,
+          originalPath: originalPath,
           isEdited: isEdited
         });
       } else {
         if (existedArray.isEdited) {
-          handleOpenSheet(id, content, type, origionalPath, isEdited)
+          handleOpenSheet(id, content, type, originalPath, isEdited)
         }
         else {
           updatedMultiContent.splice(indexToDelete, 1);
@@ -451,13 +450,13 @@ const CreatePost = () => {
           setMultiContent(prev =>
             prev?.map(item =>
               item.id == multiVideoId
-                ? { ...item, origionalPath: event?.outputPath, isEdited: true }
+                ? { ...item, originalPath: event?.outputPath, isEdited: true }
                 : item,
             ),
           );
           setCurrentPreview(prev => ({
             ...prev,
-            origionalPath: event?.outputPath,
+            originalPath: event?.outputPath,
           }));
           setIsEditAvailable({ value: true, content: 'Video' });
           setPause(true);
@@ -492,7 +491,7 @@ const CreatePost = () => {
               inde,
               item?.content,
               item?.type,
-              item?.origionalPath,
+              item?.originalPath,
               false
             );
           }
@@ -559,7 +558,8 @@ const CreatePost = () => {
       loadImages();
     }
   };
-  console.log(multiContent[currentCarouselIndex - 1]?.id,'hommer')
+
+  console.log(currentPreview?.originalPath)
 
   return (
     <>
@@ -612,7 +612,7 @@ const CreatePost = () => {
                               onPress={() => setPause(!paused)}
                               style={{ position: 'relative' }}>
                               <Video
-                                source={{ uri: 'file://' + items?.item?.origionalPath }}
+                                source={{ uri: 'file://' + items?.item?.originalPath }}
                                 ref={videoRef1}
                                 style={styles.FirstImage}
                                 paused={paused}
@@ -677,7 +677,7 @@ const CreatePost = () => {
                     <TouchableOpacity
                       onPress={() => {
                           VideoEditorMultiple(
-                            `file://${multiContent[currentCarouselIndex - 1]?.origionalPath}`,
+                            `file://${multiContent[currentCarouselIndex - 1]?.originalPath}`,
                             multiContent[currentCarouselIndex - 1]?.id,
                           )
                       }}
@@ -748,7 +748,7 @@ const CreatePost = () => {
                       <Video
                         repeat={true}
                         source={{
-                          uri: 'file://' + currentPreview?.origionalPath
+                          uri: 'file://' + currentPreview?.originalPath
                         }}
                         ref={videoRef2}
                         style={styles.FirstImage}
@@ -783,7 +783,7 @@ const CreatePost = () => {
                         <TouchableOpacity
                           onPress={() => {
                             showEditor(
-                              `file://${currentPreview?.origionalPath}`,
+                              `file://${currentPreview?.originalPath}`,
                               {
                                 saveToPhoto: true,
                               },

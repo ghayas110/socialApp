@@ -47,7 +47,7 @@ const CreatePostTwo = ({
   const windowHeight = Dimensions.get('window').height;
   const ScreenHeight = Dimensions.get('screen').height;
   const [videoLink, setVideoLink] = useState(
-    route?.params?.post?.origionalPath,
+    route?.params?.post?.originalPath,
   );
   const navigation = useNavigation();
   const ref = React.useRef(null);
@@ -267,7 +267,7 @@ const CreatePostTwo = ({
           });
         } else {
           formData.append('post_attachments', {
-            uri: `file://${route?.params?.post?.origionalPath}`,
+            uri: `file://${route?.params?.post?.originalPath}`,
             name: 'video.mp4',
             type: 'video/mp4',
           });
@@ -374,7 +374,7 @@ const CreatePostTwo = ({
                           <>
                             <Video
                               source={{
-                                uri: 'file://' + items?.item?.origionalPath,
+                                uri: 'file://' + items?.item?.originalPath,
                               }}
                               controls={true}
                               ref={videoRef1}

@@ -118,6 +118,7 @@ export const CreatePostFunction = (FormData, path, goHome) => async (dispatch) =
             },
             body: FormData
         });
+        console.log(response,'postResponce21')
         if (response.ok) {
             const res = await response?.json();
             dispatch({
@@ -198,6 +199,7 @@ export const LoadComments = (body) => async () => {
         });
         if (response.ok) {
             const res = await response.json()
+            console.log(res,body,baseUrl.baseUrl,'comment responce')
             return res;
         }
         else {
