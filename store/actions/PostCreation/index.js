@@ -233,7 +233,6 @@ export const LoadReplies = (body) => async () => {
     }
 }
 export const AddComment = (body) => async () => {
-    console.log(body, 'body')
     const Token = await AsyncStorage.getItem('Token');
     try {
         const response = await fetch(`${baseUrl.baseUrl}/posts/create-comment`, {
@@ -272,6 +271,7 @@ export const LikeCommentFunc = (body) => async () => {
         });
         const res = await response?.json();
         console.log(res, 'like comment')
+        return res
     }
     catch (error) {
         console.log(error.message, "oken")

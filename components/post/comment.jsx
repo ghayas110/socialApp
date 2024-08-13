@@ -11,11 +11,10 @@ import * as PostCreationAction from '../../store/actions/PostCreation/index';
 
 
 
-const Comments = ({ data, commentRetry, commentAddLoading, LikeCommentFunc, DisLikeCommentFunc, setReplyComment, LoadRepliesFunction, replyLoading, replyCommentId, DeleteComment, deleteList, ref }) => {
+const Comments = ({ likeLoader,deleteLoader,data, commentRetry, DisLikeComment, LikeComment, LoadCommentReplies, CloseCommentReplies, DeleteComment, setReplyComment }) => {
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
     const commentSectioLength = windowWidth - ResponsiveSize(30)
-
     const style = StyleSheet.create({
         PostHeader: {
             flexDirection: 'row',
@@ -180,7 +179,7 @@ const Comments = ({ data, commentRetry, commentAddLoading, LikeCommentFunc, DisL
             backgroundColor: '#EEEEEE',
         },
         CommentCrashBtn: {
-            backgroundColor: global.placeholderColor,
+            backgroundColor: global.red,
             paddingHorizontal: ResponsiveSize(10),
             paddingVertical: ResponsiveSize(5),
             borderRadius: ResponsiveSize(10),
@@ -198,37 +197,6 @@ const Comments = ({ data, commentRetry, commentAddLoading, LikeCommentFunc, DisL
             zIndex: 9999
         }
     })
-
-    const [liked, setLike] = useState(data?.selfLiked);
-    const [likeCountPre, setLikeCountPre] = useState(data?.likes_count)
-    const [replyCount, setReplyCount] = useState(data?.replies_count)
-    const LikeCommentFunction = async () => {
-        try {
-            setLike(true);
-            setLikeCountPre(prev => prev + 1);
-            await LikeCommentFunc({
-                comment_id: data?.comment_id,
-                comment_type: "COMMENT"
-            });
-        } catch (error) {
-            console.error('Error liking the post:', error);
-        }
-    };
-    const DisLikeCommentFunction = async () => {
-        try {
-            setLike(false);
-            setLikeCountPre(prev => prev - 1);
-            await DisLikeCommentFunc({
-                comment_id: data?.comment_id,
-                comment_type: "COMMENT"
-            });
-        } catch (error) {
-            console.error('Error disliking the post:', error);
-        }
-    };
-    const loadReply = (e) => {
-        LoadRepliesFunction(e)
-    }
     return (
         <>
             <View key={data?.post_id} style={{ flexDirection: 'row', alignItems: 'flex-start', width: windowWidth, paddingVertical: ResponsiveSize(10), backgroundColor: data?.posting == true ? '#EEEEEE' : 'white', paddingHorizontal: ResponsiveSize(15), position: 'relative' }}>
@@ -272,27 +240,32 @@ const Comments = ({ data, commentRetry, commentAddLoading, LikeCommentFunc, DisL
                                 </TouchableOpacity>
                                 :
                                 <>
-                                    <TouchableOpacity onPress={liked ? DisLikeCommentFunction : LikeCommentFunction} style={{ flexDirection: "row", alignItems: 'center' }}>
-                                        <AntDesign name={liked ? 'heart' : 'hearto'} color={liked ? global.red : global.black} size={ResponsiveSize(11)} />
-                                        <TextC text={likeCountPre || 0} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(3) }} />
+                                    <TouchableOpacity disabled={likeLoader} onPress={() => data?.selfLiked ? DisLikeComment(data?.comment_id) : LikeComment(data?.comment_id)} style={{ flexDirection: "row", alignItems: 'center' }}>
+                                        <AntDesign name={data?.selfLiked ? 'heart' : 'hearto'} color={data?.selfLiked ? global.red : global.black} size={ResponsiveSize(11)} />
+                                        <TextC text={data?.likes_count || 0} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(3) }} />
                                     </TouchableOpacity>
                                     <TextC text={"|"} size={ResponsiveSize(12)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingHorizontal: ResponsiveSize(5) }} />
-                                    <TouchableOpacity onPress={() => {
-                                        setReplyComment(data)
-                                        loadReply(data?.comment_id)
-                                    }} style={{ flexDirection: "row", alignItems: 'center' }}>
+                                    <TouchableOpacity onPress={() => setReplyComment(data)} style={{ flexDirection: "row", alignItems: 'center' }}>
                                         <MaterialCommunityIcons name={'comment-outline'} color={global.black} size={ResponsiveSize(11)} />
-                                        <TextC text={replyCount || 0} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(3) }} />
+                                        <TextC text={data?.replies_count || 0} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(3) }} />
                                     </TouchableOpacity>
-                                    {replyCount == '0' ? <></> :
+                                    {data?.replies_count == '0' ? <></> :
                                         <>
                                             <TextC text={"|"} size={ResponsiveSize(12)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingHorizontal: ResponsiveSize(5) }} />
-                                            {replyLoading && replyCommentId == data?.comment_id ?
+                                            {data?.replyLoading && !data?.replyLoaded ?
                                                 <ActivityIndicator size={ResponsiveSize(13)} color={"#999999"} />
                                                 :
-                                                <TouchableOpacity onPress={() => { loadReply(data?.comment_id) }} style={{ flexDirection: "row", alignItems: 'center' }}>
-                                                    <TextC text={'View replies'} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(3) }} />
-                                                </TouchableOpacity>
+                                                <>
+                                                    {data?.replyLoaded == true?
+                                                        <TouchableOpacity onPress={() => CloseCommentReplies(data?.comment_id)} style={{ flexDirection: "row", alignItems: 'center' }}>
+                                                            <TextC text={'Close replies'} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(3) }} />
+                                                        </TouchableOpacity> :
+                                                        <TouchableOpacity onPress={() => LoadCommentReplies(data?.comment_id)} style={{ flexDirection: "row", alignItems: 'center' }}>
+                                                            <TextC text={'View replies'} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(3) }} />
+                                                        </TouchableOpacity>
+                                                    }
+                                                </>
+
                                             }
                                         </>
                                     }
@@ -306,7 +279,7 @@ const Comments = ({ data, commentRetry, commentAddLoading, LikeCommentFunc, DisL
                             {data?.deleting ?
                                 <ActivityIndicator size={'small'} color={global.red} />
                                 :
-                                <TouchableOpacity onPress={() => DeleteComment(data?.comment_id)}>
+                                <TouchableOpacity disabled={deleteLoader} onPress={() => DeleteComment(data?.comment_id)}>
                                     <AntDesign name='delete' size={ResponsiveSize(15)} color={global.red} />
                                 </TouchableOpacity>
                             }

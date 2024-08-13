@@ -11,7 +11,7 @@ import * as PostCreationAction from '../../store/actions/PostCreation/index';
 
 
 
-const Reply = ({ data, commentRetry, LikeCommentFunc, DisLikeCommentFunc, DeleteReply }) => {
+const Reply = ({deleteLoader, data, commentRetry, LikeReply, DisLikeReply, DeleteReply,likeLoader }) => {
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
     const commentSectioLength = windowWidth - ResponsiveSize(30)
@@ -187,32 +187,6 @@ const Reply = ({ data, commentRetry, LikeCommentFunc, DisLikeCommentFunc, Delete
         }
     })
 
-    const [liked, setLike] = useState(data?.selfLiked);
-    const [likeCountPre, setLikeCountPre] = useState(data?.likes_count)
-    const LikeReplyFunction = async () => {
-        try {
-            setLike(true);
-            setLikeCountPre(prev => prev + 1);
-            await LikeCommentFunc({
-                comment_id: data?.comment_id,
-                comment_type: "REPLY"
-            });
-        } catch (error) {
-            console.error('Error liking the post:', error);
-        }
-    };
-    const DisLikeReplyFunction = async () => {
-        try {
-            setLike(false);
-            setLikeCountPre(prev => prev - 1);
-            await DisLikeCommentFunc({
-                comment_id: data?.comment_id,
-                comment_type: "REPLY"
-            });
-        } catch (error) {
-            console.error('Error disliking the post:', error);
-        }
-    };
     return (
         <>
             <View key={data?.post_id} style={{ flexDirection: 'row', alignItems: 'flex-start', width: windowWidth * 0.88, paddingVertical: ResponsiveSize(0), backgroundColor: data?.posting == true ? '#EEEEEE' : 'white', paddingHorizontal: ResponsiveSize(15), paddingVertical: ResponsiveSize(5), position: 'relative' }}>
@@ -256,9 +230,9 @@ const Reply = ({ data, commentRetry, LikeCommentFunc, DisLikeCommentFunc, Delete
                                 </TouchableOpacity>
                                 :
                                 <>
-                                    <TouchableOpacity onPress={liked ? DisLikeReplyFunction : LikeReplyFunction} style={{ flexDirection: "row", alignItems: 'center' }}>
-                                        <AntDesign name={liked ? 'heart' : 'hearto'} color={liked ? global.red : global.black} size={ResponsiveSize(11)} />
-                                        <TextC text={likeCountPre || 0} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(3) }} />
+                                    <TouchableOpacity disabled={likeLoader} onPress={() => data?.selfLiked ? DisLikeReply(data?.comment_id, data?.parent_id) : LikeReply(data?.comment_id, data?.parent_id)} style={{ flexDirection: "row", alignItems: 'center' }}>
+                                        <AntDesign name={data?.selfLiked ? 'heart' : 'hearto'} color={data?.selfLiked ? global.red : global.black} size={ResponsiveSize(11)} />
+                                        <TextC text={data?.likes_count || 0} size={ResponsiveSize(10)} font={'Montserrat-Medium'} style={{ color: "#999999", paddingLeft: ResponsiveSize(3) }} />
                                     </TouchableOpacity>
                                 </>
                         }
@@ -270,7 +244,7 @@ const Reply = ({ data, commentRetry, LikeCommentFunc, DisLikeCommentFunc, Delete
                             {data?.deleting ?
                                 <ActivityIndicator size={'small'} color={global.red} />
                                 :
-                                <TouchableOpacity onPress={() => DeleteReply(data?.comment_id)}>
+                                <TouchableOpacity disabled={deleteLoader} onPress={() => DeleteReply(data?.comment_id, data?.parent_id)}>
                                     <AntDesign name='delete' size={ResponsiveSize(15)} color={global.red} />
                                 </TouchableOpacity>
                             }
@@ -282,7 +256,4 @@ const Reply = ({ data, commentRetry, LikeCommentFunc, DisLikeCommentFunc, Delete
     )
 }
 
-function mapStateToProps({ PostCreationReducer }) {
-    return { PostCreationReducer };
-}
-export default connect(mapStateToProps, PostCreationAction)(Reply);
+export default Reply;

@@ -22,7 +22,7 @@ import { Text } from 'react-native-elements';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 
-const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCount, description, content, userLocation, timeAgo, LikeFunc, DisLikeFunc, LoadComments, AddComment, comments_show_flag, allow_comments_flag, likes_show_flag, LoadReplies, DeletComments }) => {
+const Post = ({ userName, profileImage, selfLiked, LikeCommentFunc, DisLikeCommentFunc, postId, likeCount, commnetCount, description, content, userLocation, timeAgo, LikeFunc, DisLikeFunc, LoadComments, AddComment, comments_show_flag, allow_comments_flag, likes_show_flag, LoadReplies, DeletComments }) => {
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
     const [liked, setLike] = useState(selfLiked);
@@ -33,10 +33,8 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
     const [commentLoading, setCommentLoading] = useState(false)
     const [commentCrash, setCommentCrash] = useState(false)
     const [commentList, setCommentList] = useState([])
-    const [tempId, setTempId] = useState()
     const [tempReplyId, setTempReplyId] = useState()
     const [ReplyList, setReplyList] = useState([])
-    const [ReplyId, setReplyId] = useState()
     const [commentInfo, setCommentInfo] = useState("")
     const [commentPage, setCommentPage] = useState(1)
     const [allDataLoaded, setAllDataLoaded] = useState(false);
@@ -52,12 +50,36 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
     const [paused, setPause] = useState(true);
     const [isModalVisible, setModalVisible] = useState(false);
     const [commentAddLoading, setCommentAddLoading] = useState(false)
-
+    const [deleteLoader, setDeleteLoader] = useState(false)
+    const [likeLoader, setLikeLoader] = useState(false)
     useEffect(() => {
         if (commentPage !== 1) {
             openCommentSectionPagination()
         }
     }, [commentPage])
+
+    const openCommentSection = async (Reload) => {
+        if (Reload) {
+            setCommentLoading(true)
+        }
+        setCommentCrash(false)
+        const result = await LoadComments({
+            post_id: postId,
+            page: 1,
+            limit: 10
+        })
+        if (result?.comments) {
+            setCommentList(result?.comments)
+            setCommentLoading(false)
+            if (result.comments.length < 10) {
+                setAllDataLoaded(true);
+            }
+        }
+        else {
+            setCommentCrash(true)
+            setCommentLoading(false)
+        }
+    }
     const openCommentSectionPagination = async () => {
         if (allDataLoaded) return;
         setCommentLoadingPage(true);
@@ -324,30 +346,431 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
         }
     };
     const toggleModal = () => {
-        openCommentSection()
+        openCommentSection(true)
         setModalVisible(!isModalVisible);
     };
-    const openCommentSection = async () => {
-        setCommentLoading(true)
+
+    const closeCommentFunction = () => {
+        setModalVisible(false)
+        setCommentLoading(false)
         setCommentCrash(false)
-        const result = await LoadComments({
-            post_id: postId,
+        setCommentList([])
+        setReplyList([])
+        setCommentInfo("")
+        setCommentPage(1)
+        setAllDataLoaded(false);
+        setAllReplyLoaded(false)
+        setCommentLoadingPage(false)
+        setCommentCrashPage(false)
+        setReplyComment("")
+        setReplyCommentId("")
+        setReplyLoading(false)
+        setReplyAddLoader(false)
+        setLoadMoreLoading(false)
+        setPause(true);
+        setModalVisible(false);
+        setCommentAddLoading(false)
+    }
+
+    // deleteing comments and replies
+    const DeleteComment = async (comment_id) => {
+        setDeleteLoader(true)
+        const filterCommentDat = commentList.map(comment => {
+            if (comment.comment_id == comment_id) {
+                return {
+                    ...comment,
+                    deleting: true,
+                };
+            }
+            return comment;
+        });
+        setCommentList(filterCommentDat);
+        const result = await DeletComments({
+            comment_type: "COMMENT",
+            comment_id: comment_id
+        })
+        if (result == "Comment deleted successfully") {
+            setCommentList(prevItems => prevItems.filter(item => item.comment_id !== comment_id))
+            setDeleteLoader(false)
+        }
+        setDeleteLoader(false)
+
+    }
+    const DeleteReply = async (reply_id, comment_id) => {
+        setDeleteLoader(true)
+        const updatedComment = commentList.find(comment => comment.comment_id === comment_id);
+        if (updatedComment) {
+            const newComment = {
+                ...updatedComment,
+                replies: {
+                    ...updatedComment.replies,
+                    reply: updatedComment.replies.reply.map(comment => {
+                        if (comment.comment_id == reply_id) {
+                            return {
+                                ...comment,
+                                deleting: true
+                            };
+                        }
+                        return comment;
+                    }),
+                },
+            };
+            const updatedCommentList = commentList.map(comment =>
+                comment.comment_id === comment_id ? newComment : comment
+            );
+            setCommentList(updatedCommentList);
+            const result = await DeletComments({
+                comment_type: "REPLY",
+                comment_id: reply_id
+            })
+            if (result == "Reply deleted successfully") {
+                LoadRefreashReplies(comment_id, false)
+            }
+            setDeleteLoader(false)
+        }
+        setDeleteLoader(false)
+    }
+    // deleteing comments and replies
+
+    // like unlike comment and reply functionality
+    const LikeComment = async (comment_id) => {
+        setLikeLoader(true)
+        const filterCommentData = commentList.map(comment => {
+            if (comment.comment_id == comment_id) {
+                return {
+                    ...comment,
+                    likes_count: comment?.likes_count + 1,
+                    selfLiked: true
+                };
+            }
+            return comment;
+        });
+        setCommentList(filterCommentData);
+        try {
+            await LikeCommentFunc({
+                comment_id: comment_id,
+                comment_type: "COMMENT"
+            });
+            setLikeLoader(false)
+        } catch (error) {
+            console.error('Error liking the post:', error);
+            setLikeLoader(false)
+        }
+        setLikeLoader(false)
+    };
+    const DisLikeComment = async (comment_id) => {
+        setLikeLoader(true)
+        const filterCommentData = commentList.map(comment => {
+            if (comment.comment_id == comment_id) {
+                return {
+                    ...comment,
+                    likes_count: comment?.likes_count - 1,
+                    selfLiked: false
+                };
+            }
+            return comment;
+        });
+        setCommentList(filterCommentData);
+        try {
+            await DisLikeCommentFunc({
+                comment_id: comment_id,
+                comment_type: "COMMENT"
+            });
+            setLikeLoader(false)
+        } catch (error) {
+            console.error('Error disliking the post:', error);
+            setLikeLoader(false)
+        }
+        setLikeLoader(false)
+    };
+    const LikeReply = async (reply_id, comment_id) => {
+        setLikeLoader(true)
+        const updatedComment = commentList.find(comment => comment.comment_id === comment_id);
+        if (updatedComment) {
+            const newComment = {
+                ...updatedComment,
+                replies: {
+                    ...updatedComment.replies,
+                    reply: updatedComment.replies.reply.map(comment => {
+                        if (comment.comment_id == reply_id) {
+                            return {
+                                ...comment,
+                                selfLiked: true,
+                                likes_count: comment?.likes_count + 1
+                            };
+                        }
+                        return comment;
+                    }),
+                },
+            };
+            const updatedCommentList = commentList.map(comment =>
+                comment.comment_id === comment_id ? newComment : comment
+            );
+            setCommentList(updatedCommentList);
+            try {
+                await LikeCommentFunc({
+                    comment_id: reply_id,
+                    comment_type: "REPLY"
+                });
+                setLikeLoader(false)
+            } catch (error) {
+                console.error('Error disliking the post:', error);
+                setLikeLoader(false)
+            }
+            setLikeLoader(false)
+        }
+        setLikeLoader(false)
+
+    };
+    const DisLikeReply = async (reply_id, comment_id) => {
+        setLikeLoader(true)
+        const updatedComment = commentList.find(comment => comment.comment_id === comment_id);
+        if (updatedComment) {
+            const newComment = {
+                ...updatedComment,
+                replies: {
+                    ...updatedComment.replies,
+                    reply: updatedComment.replies.reply.map(comment => {
+                        if (comment.comment_id == reply_id) {
+                            return {
+                                ...comment,
+                                selfLiked: false,
+                                likes_count: comment?.likes_count - 1
+                            };
+                        }
+                        return comment;
+                    }),
+                },
+            };
+            const updatedCommentList = commentList.map(comment =>
+                comment.comment_id === comment_id ? newComment : comment
+            );
+            setCommentList(updatedCommentList);
+            try {
+                await DisLikeCommentFunc({
+                    comment_id: reply_id,
+                    comment_type: "REPLY"
+                });
+                setLikeLoader(false)
+            } catch (error) {
+                console.error('Error disliking the post:', error);
+                setLikeLoader(false)
+            }
+            setLikeLoader(false)
+        }
+        setLikeLoader(false)
+    };
+    // like unlike comment and reply functionality
+
+    // Loading comments Replies
+    const LoadCommentReplies = async (comment_id) => {
+        const filterCommentData = commentList.map(comment => {
+            if (comment.comment_id == comment_id) {
+                return {
+                    ...comment,
+                    replyLoading: true,
+                };
+            }
+            return comment;
+        });
+        setCommentList(filterCommentData);
+        const result = await LoadReplies({
+            comment_id: comment_id,
             page: 1,
             limit: 10
         })
-        if (result?.comments) {
-            setCommentList(result?.comments)
-            setTempId(result?.comments[0]?.comment_id + 1)
-            setCommentLoading(false)
-            if (result.comments.length < 10) {
-                setAllDataLoaded(true);
+        if (result.message == "Replies fetched successfully") {
+            if (result.replies.length < 10) {
+                const filterCommentData = commentList.map(comment => {
+                    if (comment.comment_id == comment_id) {
+                        return {
+                            ...comment,
+                            replyLoading: false,
+                            replyLoaded: true,
+                            replies: {
+                                reply: result?.replies,
+                                hasMore: false,
+                                page: 1
+                            }
+                        };
+                    }
+                    return comment;
+                });
+                setCommentList(filterCommentData);
+            }
+            else {
+                const filterCommentData = commentList.map(comment => {
+                    if (comment.comment_id == comment_id) {
+                        return {
+                            ...comment,
+                            replyLoading: false,
+                            replyLoaded: true,
+                            replies: {
+                                reply: result?.replies,
+                                hasMore: true,
+                                page: 1
+                            }
+                        };
+                    }
+                    return comment;
+                });
+                setCommentList(filterCommentData);
             }
         }
         else {
-            setCommentCrash(true)
-            setCommentLoading(false)
+            const filterCommentData = commentList.map(comment => {
+                if (comment.comment_id == comment_id) {
+                    return {
+                        ...comment,
+                        replyLoading: false
+                    };
+                }
+                return comment;
+            });
+            setCommentList(filterCommentData);
         }
     }
+    const LoadMoreCommentReplies = async (comment_id, page) => {
+        const filterCommentData = commentList.map(comment => {
+            if (comment.comment_id == comment_id) {
+                return {
+                    ...comment,
+                    replyLoading: true,
+                };
+            }
+            return comment;
+        });
+        setCommentList(filterCommentData);
+        const result = await LoadReplies({
+            comment_id: comment_id,
+            page: page,
+            limit: 10
+        })
+        if (result.replies.length < 10) {
+            const filterCommentData = commentList.map(comment => {
+                if (comment.comment_id == comment_id) {
+                    return {
+                        ...comment,
+                        replyLoading: false,
+                        replies: {
+                            page: page,
+                            reply: [...comment?.replies?.reply, ...result?.replies],
+                            hasMore: false
+                        }
+                    };
+                }
+                return comment;
+            });
+            setCommentList(filterCommentData);
+        }
+        else {
+            const filterCommentData = commentList.map(comment => {
+                if (comment.comment_id == comment_id) {
+                    return {
+                        ...comment,
+                        replyLoading: false,
+                        replies: {
+                            page: page,
+                            reply: [...comment?.Replies, ...result?.replies],
+                            hasMore: true
+                        }
+                    };
+                }
+                return comment;
+            });
+            setCommentList(filterCommentData);
+            setLoadMoreLoading(false)
+        }
+    }
+    const CloseCommentReplies = async (comment_id) => {
+        const filterCommentData = commentList.map(comment => {
+            if (comment.comment_id == comment_id) {
+                return {
+                    ...comment,
+                    replyLoading: false,
+                    replyLoaded: false,
+                    replies: {
+                        page: 1,
+                        reply: []
+                    }
+                };
+            }
+            return comment;
+        });
+        setCommentList(filterCommentData);
+    }
+    const LoadRefreashReplies = async (comment_id, increase) => {
+        const result = await LoadReplies({
+            comment_id: comment_id,
+            page: 1,
+            limit: 10
+        })
+        if (result.message == "Replies fetched successfully") {
+            if (result.replies.length < 10) {
+                const filterCommentData = commentList.map(comment => {
+                    if (comment.comment_id == comment_id) {
+                        return {
+                            ...comment,
+                            replyLoading: false,
+                            replyLoaded: true,
+                            replies_count: increase ? comment.replies_count + 1 : comment.replies_count - 1,
+                            replies: {
+                                reply: result?.replies,
+                                hasMore: false,
+                                page: 1
+                            }
+                        };
+                    }
+                    return comment;
+                });
+                setCommentList(filterCommentData);
+                setDeleteLoader(false)
+            }
+            else {
+                const filterCommentData = commentList.map(comment => {
+                    if (comment.comment_id == comment_id) {
+                        return {
+                            ...comment,
+                            replyLoading: false,
+                            replyLoaded: true,
+                            replies_count: increase ? comment.replies_count + 1 : comment.replies_count - 1,
+                            replies: {
+                                reply: result?.replies,
+                                hasMore: true,
+                                page: 1
+                            }
+                        };
+                    }
+                    return comment;
+                });
+                setCommentList(filterCommentData);
+                setDeleteLoader(false)
+            }
+        }
+        else {
+            const filterCommentData = commentList.map(comment => {
+                if (comment.comment_id == comment_id) {
+                    return {
+                        ...comment,
+                        replyLoading: false,
+                        replyLoaded: true,
+                        replies_count: increase ? comment.replies_count + 1 : comment.replies_count - 1,
+                        replies: {
+                            reply: result?.replies,
+                            hasMore: false,
+                            page: 1
+                        }
+                    };
+                }
+                return comment;
+            });
+            setCommentList(filterCommentData);
+            setDeleteLoader(false)
+        }
+    }
+    // Loading comments Replies
+
+    // commment add funtion
     const commentAdder = async () => {
         setCommentAddLoading(true)
         commentScrollRef.current.scrollTo(0)
@@ -370,22 +793,8 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
             parent_id: postId
         })
         if (comments?.statusCode == 200) {
-            setCommentList(prev => [
-                {
-                    comment: commentInfo,
-                    user: {
-                        profile_picture_url: user_Picture,
-                        user_name: user_name,
-                    },
-                    posting: false,
-                    replies_count: 0,
-                    likes_count: 0,
-                    selfLiked: false,
-                    comment_id: tempId,
-                    myComment: true
-                },
-                ...prev?.filter(d => d.posting !== true)
-            ]);
+            setCommentPage(1)
+            openCommentSection(false)
             setCommentInfo("")
             setCommentAddLoading(false)
         }
@@ -426,22 +835,9 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                 parent_id: postId
             });
             if (comments?.statusCode == 200) {
-                setCommentList(prev => [
-                    {
-                        comment: commentInfo,
-                        user: {
-                            profile_picture_url: user_Picture,
-                            user_name: user_name,
-                        },
-                        posting: false,
-                        replies_count: 0,
-                        likes_count: 0,
-                        selfLiked: false,
-                        myComment: true
-                    },
-                    ...prev.filter(d => d.posting !== true && d.posting !== 'crash')
-                ]);
-                setCommentInfo("");
+                setCommentPage(1)
+                openCommentSection(false)
+                setCommentInfo("")
                 setCommentAddLoading(false)
             } else {
                 setCommentList(prev => [
@@ -473,186 +869,66 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
             setCommentAddLoading(false)
         }
     };
-    const LoadRepliesFunction = async (e) => {
-        setTempReplyId()
-        setReplyPages(1)
-        setReplyCommentId(e)
-        setReplyLoading(true);
-        setAllReplyLoaded(false);
-        if (ReplyList.length <= 0) {
-            const result = await LoadReplies({
-                comment_id: e,
-                page: ReplyPages,
-                limit: 10
-            })
-            if (result.replies.length < 10) {
-                setAllReplyLoaded(true);
-            }
-            setTempReplyId(result?.replies[0]?.comment_id + 1)
-            setReplyPages(prev => prev + 1)
-            setReplyList(result?.replies)
-            setReplyId(result?.parent_id)
-            setReplyLoading(false);
-        }
-        else {
-            setReplyList([])
-            setReplyLoading(false);
-        }
-    }
-    const loadMoreReply = async () => {
-        if (allReplyLoaded) return;
-        setLoadMoreLoading(true)
-        setReplyPages(prev => prev + 1)
-        const result = await LoadReplies({
-            comment_id: replyCommentId,
-            page: ReplyPages,
-            limit: 10
-        })
-        setReplyList(prev => [...prev, ...result?.replies]);
-        setLoadMoreLoading(false)
-        if (result.replies.length < 10) {
-            setAllReplyLoaded(true);
-            setLoadMoreLoading(false)
-        }
-        setReplyId(result?.parent_id)
-    }
+    // commment add funtion
+
+    // reply add funtion
     const ReplyAdder = async () => {
         setReplyAddLoader(true)
         commentScrollRef.current.scrollTo(0)
         const user_name = await AsyncStorage.getItem('Name')
         const user_Picture = await AsyncStorage.getItem('Picture')
-        setReplyList(prev => [
-            {
+        const updatedComment = commentList.find(comment => comment.comment_id === replyComment?.comment_id);
+        if (updatedComment) {
+            const newComment = {
+                ...updatedComment,
+                replies_count: updatedComment.replies_count + 1,
+                replies: {
+                    ...updatedComment.replies,
+                    reply: [
+                        {
+                            comment: commentInfo,
+                            user: {
+                                profile_picture_url: user_Picture,
+                                user_name: user_name,
+                            },
+                            posting: true
+                        },
+                        ...updatedComment.replies.reply,
+                    ]
+                },
+            };
+            const updatedCommentList = commentList.map(comment =>
+                comment.comment_id === replyComment?.comment_id ? newComment : comment
+            );
+            setCommentList(updatedCommentList);
+            const comments = await AddComment({
+                comment_type: "REPLY",
                 comment: commentInfo,
-                user: {
-                    profile_picture_url: user_Picture,
-                    user_name: user_name,
-                },
-                posting: true
-            },
-            ...prev
-        ]);
-        const comments = await AddComment({
-            comment_type: "REPLY",
-            comment: commentInfo,
-            parent_id: replyComment?.comment_id
-        })
-        if (comments?.statusCode == 200) {
-            setReplyAddLoader(false)
-            setCommentInfo("")
-            setReplyComment("")
-            setReplyList(prev => [
-                {
-                    comment: commentInfo,
-                    user: {
-                        profile_picture_url: user_Picture,
-                        user_name: user_name,
-                    },
-                    posting: false,
-                    selfLiked: false,
-                    likes_count: 0,
-                    comment_id: tempReplyId,
-                    myComment: true
-                },
-                ...prev?.filter(d => d.posting !== true)
-            ]);
-            setCommentList(prevArray =>
-                prevArray.map(item =>
-                    item.comment_id == replyComment?.comment_id ? { ...item, replies_count: item?.replies_count + 1 } : item
-                )
-            );
-        }
-        else {
-            setReplyAddLoader(false)
-            setReplyList(prev => [
-                {
-                    comment: commentInfo,
-                    user: {
-                        profile_picture_url: user_Picture,
-                        user_name: user_name,
-                    },
-                    posting: "crash"
-                },
-                ...prev?.filter(d => d.posting !== true)
-            ]);
-        }
-    }
-    const DeleteComment = async (e) => {
-        const filterCommentDat = commentList.map(comment => {
-            if (comment.comment_id == e) {
-                return {
-                    ...comment,
-                    deleting: true,
-                };
+                parent_id: replyComment?.comment_id
+            })
+            if (comments?.statusCode == 200) {
+                setCommentInfo("")
+                LoadRefreashReplies(replyComment?.comment_id, true)
+                setReplyAddLoader(false)
             }
-            return comment;
-        });
-        setCommentList(filterCommentDat);
-        const result = await DeletComments({
-            comment_type: "COMMENT",
-            comment_id: e
-        })
-        if (result == "Comment deleted successfully") {
-            setCommentList(prevItems => prevItems.filter(item => item.comment_id !== e))
-        }
-    }
-    const DeleteReply = async (e) => {
-        const filterCommentDat = ReplyList.map(comment => {
-            if (comment.comment_id == e) {
-                return {
-                    ...comment,
-                    deleting: true,
-                };
+            else {
+                setReplyAddLoader(false)
             }
-            return comment;
-        });
-        setReplyList(filterCommentDat);
-        const result = await DeletComments({
-            comment_type: "REPLY",
-            comment_id: e
-        })
-        console.log(result)
-        if (result == "Reply deleted successfully") {
-            setReplyList(prevItems => prevItems.filter(item => item.comment_id !== e))
-            setCommentList(prevArray =>
-                prevArray.map(item =>
-                    item.comment_id == ReplyId ? { ...item, replies_count: item?.replies_count - 1 } : item
-                )
-            );
         }
     }
-    const closeCommentFunction = () => {
-        setModalVisible(false)
-        setCommentLoading(false)
-        setCommentCrash(false)
-        setCommentList([])
-        setReplyList([])
-        setReplyId()
-        setCommentInfo("")
-        setCommentPage(1)
-        setAllDataLoaded(false);
-        setAllReplyLoaded(false)
-        setCommentLoadingPage(false)
-        setCommentCrashPage(false)
-        setReplyComment("")
-        setReplyCommentId("")
-        setReplyLoading(false)
-        setReplyAddLoader(false)
-        setLoadMoreLoading(false)
-        setPause(true);
-        setModalVisible(false);
-        setCommentAddLoading(false)
-    }
-    const CommentItem = React.memo(({ DeleteComment, ReplyId, replyCommentId, replyLoading, LoadRepliesFunction, data, commentRetry, setReplyComment }) => {
+    // reply add function
+
+    const CommentItem = React.memo(({ likeLoader, deleteLoader, CloseCommentReplies, LikeComment, DisLikeComment, DeleteComment, replyCommentId, replyLoading, LoadCommentReplies, data, commentRetry, setReplyComment }) => {
         return (
-            <Comments DeleteComment={DeleteComment} ReplyId={ReplyId} replyCommentId={replyCommentId} replyLoading={replyLoading} LoadRepliesFunction={LoadRepliesFunction} data={data} commentRetry={commentRetry} setReplyComment={setReplyComment} />
+            <Comments likeLoader={likeLoader} deleteLoader={deleteLoader} CloseCommentReplies={CloseCommentReplies} LikeComment={LikeComment} DisLikeComment={DisLikeComment} DeleteComment={DeleteComment} replyCommentId={replyCommentId} replyLoading={replyLoading} LoadCommentReplies={LoadCommentReplies} data={data} commentRetry={commentRetry} setReplyComment={setReplyComment} />
         );
     });
-    const ReplyItem = React.memo(({ data, commentRetry, setReplyComment, DeleteReply }) => {
+    const ReplyItem = React.memo(({ likeLoader, deleteLoader, LikeReply, DisLikeReply, data, commentRetry, setReplyComment, DeleteReply }) => {
         return (
-            <Reply DeleteReply={DeleteReply} data={data} commentRetry={commentRetry} setReplyComment={setReplyComment} />
+            <Reply likeLoader={likeLoader} deleteLoader={deleteLoader} LikeReply={LikeReply} DisLikeReply={DisLikeReply} DeleteReply={DeleteReply} data={data} commentRetry={commentRetry} setReplyComment={setReplyComment} />
         );
     });
+
     return (
         <>
             <View style={style.PostHeader}>
@@ -824,33 +1100,33 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                                 onEndReachedThreshold={0.5}
                                 renderItem={(items) => (
                                     <>
-                                        <CommentItem DeleteComment={DeleteComment} ReplyId={ReplyId} replyCommentId={replyCommentId} replyLoading={replyLoading} LoadRepliesFunction={LoadRepliesFunction} data={items.item} commentRetry={commentRetry} setReplyComment={setReplyComment} />
-                                        {ReplyId == items.item?.comment_id &&
-                                            <FlatList
-                                                showsVerticalScrollIndicator={false}
-                                                initialNumToRender={10}
-                                                data={ReplyList}
-                                                keyExtractor={(items, index) => index?.toString()}
-                                                maxToRenderPerBatch={10}
-                                                windowSize={10}
-                                                renderItem={(items) => (
+                                        <CommentItem likeLoader={likeLoader} deleteLoader={deleteLoader} CloseCommentReplies={CloseCommentReplies} LikeComment={LikeComment} DisLikeComment={DisLikeComment} DeleteComment={DeleteComment} replyCommentId={replyCommentId} replyLoading={replyLoading} LoadCommentReplies={LoadCommentReplies} data={items.item} commentRetry={commentRetry} setReplyComment={setReplyComment} />
+                                        <FlatList
+                                            showsVerticalScrollIndicator={false}
+                                            initialNumToRender={10}
+                                            data={items?.item?.replies?.reply}
+                                            keyExtractor={(items, index) => index?.toString()}
+                                            maxToRenderPerBatch={10}
+                                            windowSize={10}
+                                            renderItem={(items) => (
+                                                <>
+                                                    <View style={{ width: windowWidth, paddingLeft: ResponsiveSize(40) }}>
+                                                        <ReplyItem likeLoader={likeLoader} deleteLoader={deleteLoader} LikeReply={LikeReply} DisLikeReply={DisLikeReply} DeleteReply={DeleteReply} data={items.item} commentRetry={commentRetry} setReplyComment={setReplyComment} />
+                                                    </View>
+                                                </>
+                                            )}
+                                            ListFooterComponent={() => {
+                                                return (
                                                     <>
-                                                        <View style={{ width: windowWidth, paddingLeft: ResponsiveSize(40) }}>
-                                                            <ReplyItem DeleteReply={DeleteReply} data={items.item} commentRetry={commentRetry} setReplyComment={setReplyComment} />
-                                                        </View>
-                                                    </>
-                                                )}
-                                                ListFooterComponent={
-                                                    <>
-                                                        {!allReplyLoaded && ReplyPages > 1 &&
+                                                        {items?.item?.replies?.hasMore &&
                                                             <>
-                                                                {loadMoreLoading ?
+                                                                {items?.item?.replyLoading ?
                                                                     <View style={{ width: windowWidth, paddingLeft: ResponsiveSize(90), paddingTop: ResponsiveSize(10), paddingBottom: ResponsiveSize(20), flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
                                                                         <ActivityIndicator size={ResponsiveSize(13)} color={global.primaryColor} />
                                                                     </View>
                                                                     :
                                                                     <View style={{ width: windowWidth, paddingLeft: ResponsiveSize(90), paddingTop: ResponsiveSize(10), paddingBottom: ResponsiveSize(20) }}>
-                                                                        <TouchableOpacity onPress={() => loadMoreReply()}>
+                                                                        <TouchableOpacity onPress={() => LoadMoreCommentReplies(items?.item?.comment_id, items?.item?.replies?.page + 1)}>
                                                                             <TextC text={"Load more"} size={ResponsiveSize(10)} font={'Montserrat-SemiBold'} style={{ color: global.primaryColor }} />
                                                                         </TouchableOpacity>
                                                                     </View>
@@ -858,9 +1134,9 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                                                             </>
                                                         }
                                                     </>
-                                                }
-                                            />
-                                        }
+                                                )
+                                            }}
+                                        />
                                     </>
                                 )}
                                 ListFooterComponent={
@@ -884,8 +1160,8 @@ const Post = ({ userName, profileImage, selfLiked, postId, likeCount, commnetCou
                             </View>
                         }
                         <View style={{ width: windowWidth, position: 'relative' }}>
-                            <TextInput editable={!commentAddLoading} value={commentInfo} onChangeText={(e) => setCommentInfo(e)} placeholder='Comment here' style={style.commentInput} />
-                            <TouchableOpacity disabled={commentInfo === "" || commentAddLoading} onPress={() => {
+                            <TextInput editable={!commentAddLoading && !replyAddLoader} value={commentInfo} onChangeText={(e) => setCommentInfo(e)} placeholder='Comment here' style={style.commentInput} />
+                            <TouchableOpacity disabled={commentInfo === "" || commentAddLoading || replyAddLoader} onPress={() => {
                                 if (replyComment?.comment_id) {
                                     ReplyAdder()
                                 } else {
@@ -909,4 +1185,3 @@ function mapStateToProps({ PostCreationReducer }) {
     return { PostCreationReducer };
 }
 export default connect(mapStateToProps, PostCreationAction)(Post);
-// checking whether
