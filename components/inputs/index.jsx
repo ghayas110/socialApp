@@ -6,14 +6,14 @@ import TextC from "../text/text";
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label, error, type, max }) => {
+const InputC = ({ bgColor, secureTextEntry, placeholder, value, onChangeText, label, error, type, max }) => {
     const scale = windowWidth / 320;
 
     const style = StyleSheet.create({
         Input: {
             fontSize: ResponsiveSize(12),
             paddingHorizontal: global.inputPaddingH,
-            backgroundColor:'#FFFFFF',
+            backgroundColor: bgColor || '#FFFFFF',
             width: global.inputWidth,
             fontFamily: 'Montserrat-Regular',
             height: global.inputHeight,
@@ -38,7 +38,7 @@ const InputC = ({ secureTextEntry, placeholder, value, onChangeText, label, erro
                     <TextC text={label} size={ResponsiveSize(11)} font={'Montserrat-Regular'} style={{ color: 'white', paddingBottom: ResponsiveSize(4) }} />
                 </View>
                 <View style={{ position: 'relative' }}>
-                    <TextInput maxLength={max} theme={{fonts: { fontFamily: "Montserrat-Regular" }}} keyboardType={type} value={value} onChangeText={onChangeText} style={style.Input} placeholder={placeholder} secureTextEntry={secureTextEntry == true ? isSecure : secureTextEntry} placeholderTextColor={global.placeholderColor} />
+                    <TextInput maxLength={max} theme={{ fonts: { fontFamily: "Montserrat-Regular" } }} keyboardType={type} value={value} onChangeText={onChangeText} style={style.Input} placeholder={placeholder} secureTextEntry={secureTextEntry == true ? isSecure : secureTextEntry} placeholderTextColor={global.placeholderColor} />
                     {secureTextEntry == true ?
                         <TouchableOpacity onPress={() => setIsSecure(!isSecure)} style={{ position: 'absolute', height: windowHeight * 0.07, width: windowWidth * 0.10, right: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                             <Feather name={isSecure ? "eye-off" : "eye"} size={ResponsiveSize(12)} color={'black'} />

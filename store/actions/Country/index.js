@@ -62,7 +62,7 @@ export const CheckInInApp = (body) => async (dispatch) => {
             type: TASK_CHECKIN_START,
             loading: true,
         });
-        const response = await fetch(`${baseUrl.baseUrl}/checkIns/createCheckIn`, {
+        const response = await fetch(`${baseUrl.baseUrl}/check-in/update-checkin`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -72,6 +72,7 @@ export const CheckInInApp = (body) => async (dispatch) => {
             body: JSON.stringify(body)
         });
         const res = await response.json()
+        console.log(res,'checkINnnn')
         dispatch({
             type: TASK_CHECKIN_END,
             loading: false,

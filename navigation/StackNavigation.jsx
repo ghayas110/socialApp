@@ -17,6 +17,12 @@ import CreatePost from '../pages/CreatePost';
 import CreatePostTwo from '../pages/CreatePostStepTwo';
 import TagPeople from '../pages/PostTagPeople';
 import PostSetting from '../pages/PostSetting';
+import PostDetail from '../pages/PostDetail';
+import MyPost from '../pages/myPost';
+import Connections from '../pages/Connections';
+import Notification from '../pages/notification';
+import UserProfileScreen from '../pages/UserProfileScreen';
+import InAppCheckIn from '../pages/InAppCheckin';
 
 const EventStackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -37,7 +43,7 @@ const EventStackNavigation = () => {
 const ProfileStackNavigation = ({ onLogin }) => {
   const Stack = createNativeStackNavigator();
   return (
-    <Stack.Navigator >
+    <Stack.Navigator initialRouteName='ProfileMain'>
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ProfileMain" component={ProfileScreen} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="EditProfile" component={EditProfile} />
       <Stack.Screen
@@ -47,6 +53,9 @@ const ProfileStackNavigation = ({ onLogin }) => {
       />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ChangePassword" component={ChangePassword} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ChangeAirline" component={ChangeAirline} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="MyPost" component={MyPost} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Connection" component={Connections} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="UserProfileScreen" component={UserProfileScreen} />
       <Stack.Screen
         options={{ headerShown: false, navigationBarHidden: true }}
         name="DeleteAccount"
@@ -61,6 +70,9 @@ const HomeStackNavigation = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Home" component={HomeScreen} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="PostDetail" component={PostDetail} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Notification" component={Notification} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="InAppCheckIn" component={InAppCheckIn} />
     </Stack.Navigator>
   )
 }

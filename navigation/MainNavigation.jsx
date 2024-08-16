@@ -113,12 +113,7 @@ const MainNavigation = ({GetUserProfileReducer}) => {
                 </View>
               ),
               tabBarShowLabel: false,
-              headerTitle: () => <MainHeader />,
-              headerStyle: {
-                ...(scheme === 'dark'
-                  ? {backgroundColor: DarkTheme.colors.background}
-                  : {backgroundColor: 'white'}),
-              },
+              headerShown:false,
             }}
           />
 

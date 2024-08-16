@@ -10,7 +10,7 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import TextC from '../components/text/text';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -21,11 +21,15 @@ import { global, ResponsiveSize } from '../components/constant';
 import ReadMore from '@fawazahmed/react-native-read-more';
 import * as UserProfile from '../store/actions/UserProfile/index';
 import { connect } from 'react-redux';
+import FastImage from 'react-native-fast-image';
 
-const ProfileScreen = ({ GetUserProfileReducer }) => {
+const UserProfileScreen = ({ GetUserProfileReducer, route, LoadUserProfile }) => {
+  console.log(route?.params?.user_id)
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -138,10 +142,21 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
     },
   });
 
+  const LoadProfile = async () => {
+    setLoading(true)
+    const result = await LoadUserProfile(route?.params?.user_id)
+    setUserProfile(result?.data)
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    LoadProfile()
+  }, [])
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={'white'} barStyle={'dark-content'} />
-      {GetUserProfileReducer?.loading ? (
+      {loading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color={global.primaryColor} />
         </View>
@@ -152,7 +167,7 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
             <View>
               <TextC
                 font={'Montserrat-Bold'}
-                text={GetUserProfileReducer?.data?.user_name}
+                text={userProfile?.user_name}
                 size={ResponsiveSize(14)}
               />
             </View>
@@ -164,12 +179,12 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
           <View style={styles.ProfileInfo}>
             <View style={styles.profileImageWrapper}>
               <View style={styles.ProfileImage}>
-                <Image
+                <FastImage
                   style={styles.ProfileImageMain}
                   source={
-                    GetUserProfileReducer?.data?.profile_picture_url == ''
+                    userProfile?.profile_picture_url == ''
                       ? require('../assets/icons/avatar.png')
-                      : { uri: GetUserProfileReducer?.data?.profile_picture_url }
+                      : { uri: userProfile?.profile_picture_url, priority: FastImage.priority.high }
                   }
                 />
               </View>
@@ -177,7 +192,7 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
             <View style={styles.ProfilePostInfo}>
               <View style={styles.ProfilePostInfoInnerCard1}>
                 <TextC
-                  text={GetUserProfileReducer?.data?.post_count || 0}
+                  text={userProfile?.post_count || 0}
                   font={'Montserrat-SemiBold'}
                   size={ResponsiveSize(20)}
                   style={{ color: '#69BE25' }}
@@ -190,19 +205,19 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
               </View>
 
               <View style={styles.ProfilePostInfoInnerCard}>
-                <TouchableOpacity style={{flexDirection:'column',alignItems:'center',justifyContent:'center'}} onPress={()=> navigation.navigate('Connection')}>
-                  <TextC
-                    text={GetUserProfileReducer?.data?.connection_count || 0}
-                    font={'Montserrat-SemiBold'}
-                    size={ResponsiveSize(20)}
-                    style={{ color: '#69BE25' }}
-                  />
-                  <TextC
-                    text={'Connects'}
-                    font={'Montserrat-SemiBold'}
-                    size={ResponsiveSize(12)}
-                  />
-                </TouchableOpacity>
+                {/* <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.navigate('Connection')}> */}
+                <TextC
+                  text={userProfile?.connection_count || 0}
+                  font={'Montserrat-SemiBold'}
+                  size={ResponsiveSize(20)}
+                  style={{ color: '#69BE25' }}
+                />
+                <TextC
+                  text={'Connects'}
+                  font={'Montserrat-SemiBold'}
+                  size={ResponsiveSize(12)}
+                />
+                {/* </TouchableOpacity> */}
               </View>
 
               <View style={styles.ProfilePostInfoInnerCard}>
@@ -213,10 +228,10 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
                 />
                 <TextC
                   text={
-                    GetUserProfileReducer?.data?.last_checkin ==
+                    userProfile?.last_checkin ==
                       'No last check-in available'
                       ? 'No Check-in'
-                      : GetUserProfileReducer?.data?.last_checkin
+                      : userProfile?.last_checkin
                   }
                   font={'Montserrat-SemiBold'}
                   size={ResponsiveSize(12)}
@@ -231,10 +246,10 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
           <View style={styles.ProfileTitleDescription}>
             <TextC
               font={'Montserrat-SemiBold'}
-              text={GetUserProfileReducer?.data?.user_name}
+              text={userProfile?.user_name}
               size={16}
             />
-            {GetUserProfileReducer?.data?.bio && (
+            {userProfile?.bio && (
               <ReadMore
                 seeLessStyle={{
                   fontFamily: 'Montserrat-Bold',
@@ -246,12 +261,12 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
                 }}
                 numberOfLines={3}
                 style={styles.DescriptionStyle}>
-                {GetUserProfileReducer?.data?.bio}
+                {userProfile?.bio}
               </ReadMore>
             )}
           </View>
 
-          <View style={styles.ProfileSettingBtn}>
+          {/* <View style={styles.ProfileSettingBtn}>
             <TouchableOpacity
               style={styles.SetttingBtn}
               onPress={() => navigation.navigate('EditProfile')}>
@@ -265,17 +280,17 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
               style={styles.SetttingBtn}>
               <Text style={styles.SetttingBtnText}>Setting</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
 
           <ScrollView style={{ flexGrow: 1 }}>
             <View style={styles.wrapper}>
-              {GetUserProfileReducer?.data?.posts !== undefined &&
-                GetUserProfileReducer?.data?.posts !== null &&
-                GetUserProfileReducer?.data?.posts !== '' &&
-                GetUserProfileReducer?.data?.posts?.length > 0 ? (
-                GetUserProfileReducer?.data?.posts.map(userPosts => (
+              {userProfile?.posts !== undefined &&
+                userProfile?.posts !== null &&
+                userProfile?.posts !== '' &&
+                userProfile?.posts?.length > 0 ? (
+                userProfile?.posts.map(userPosts => (
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('MyPost', { user_id: GetUserProfileReducer?.data?.user_id })}
+                    onPress={() => navigation.navigate('MyPost', { user_id: route?.params?.user_id })}
                     key={userPosts?.parent_id}
                     style={styles.box}>
                     <Image
@@ -303,25 +318,6 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
                     text={'No Post Available Yet'}
                     font={'Montserrat-Bold'}
                   />
-                  <TouchableOpacity
-                    style={{
-                      backgroundColor: '#05348E',
-                      width: ResponsiveSize(150),
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      paddingVertical: ResponsiveSize(10),
-                      borderRadius: ResponsiveSize(30),
-                      marginTop: ResponsiveSize(10),
-                    }}
-                    onPress={() => navigation.navigate('CreatePost')}>
-                    <TextC
-                      text={'Start Your First Post'}
-                      font={'Montserrat-Medium'}
-                      size={ResponsiveSize(11)}
-                      style={{ color: 'white' }}
-                    />
-                  </TouchableOpacity>
                 </View>
               )}
             </View>
@@ -335,4 +331,4 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
 function mapStateToProps({ GetUserProfileReducer }) {
   return { GetUserProfileReducer };
 }
-export default connect(mapStateToProps, UserProfile)(ProfileScreen);
+export default connect(mapStateToProps, UserProfile)(UserProfileScreen);

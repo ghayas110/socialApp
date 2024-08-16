@@ -98,7 +98,6 @@ export const Login = () => async (dispatch) => {
     });
 }
 
-
 export const GetUserPosts = () => async (dispatch) => {
     const Token = await AsyncStorage.getItem('Token');
     try {
@@ -112,6 +111,47 @@ export const GetUserPosts = () => async (dispatch) => {
         });
         const res = await response.json()
         return res?.data
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
+export const UserPostsAll = ({ user_id, page }) => async (dispatch) => {
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/posts/get-posts-by-user_id/${page}/100/${user_id}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+        });
+        const res = await response.json()
+        console.log(res)
+        return res
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
+
+export const LoadUserProfile = (body) => async (dispatch) => {
+    const Token = await AsyncStorage.getItem('Token');
+    try {
+        const response = await fetch(`${baseUrl.baseUrl}/users/user-details-by-user-id/${body}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': baseUrl.apiKey,
+                'accesstoken': `Bearer ${Token}`
+            },
+        });
+        const res = await response.json()
+        console.log(res)
+        return res
     }
     catch (error) {
         console.log(error)

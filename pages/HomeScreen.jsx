@@ -23,6 +23,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
 import { Easing } from 'react-native-reanimated';
 import { useHeaderHeight } from "@react-navigation/elements";
+import MainHeader from '../components/mainHeader';
 
 
 
@@ -153,6 +154,7 @@ const HomeScreen = ({
   GetProfileData,
   GetUserPosts,
   PostCreationReducer,
+  route
 }) => {
   const headerHeight = useHeaderHeight();
   const scheme = useColorScheme();
@@ -188,12 +190,13 @@ const HomeScreen = ({
     }
   };
 
+  console.log(route,'asdhasjdjashj')
   useEffect(() => {
     GetProfileData();
     if (PostCreationReducer?.uploadLoading == false) {
       getFeeds();
     }
-  }, [PostCreationReducer?.uploadLoading]);
+  }, [PostCreationReducer?.uploadLoading, route.params?.CheckInCity]);
 
   const styles = StyleSheet.create({
     UploadingLoader: {
@@ -223,7 +226,7 @@ const HomeScreen = ({
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={{flexGrow:1}}
+      style={{ flexGrow: 1 }}
       keyboardVerticalOffset={
         Platform.OS === 'ios' ? headerHeight + StatusBar.currentHeight : 0
       }>
@@ -234,6 +237,7 @@ const HomeScreen = ({
           }
           barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
         />
+        <MainHeader loading={loading}/>
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
@@ -313,7 +317,7 @@ const HomeScreen = ({
           )}
         </ScrollView>
       </SafeAreaView >
-      </KeyboardAvoidingView>
+    </KeyboardAvoidingView>
   );
 };
 
