@@ -119,11 +119,13 @@ const LogIn = ({onLogin, LoginReducer, loginUser, CheckUserStatus}) => {
       password: data.password,
     });
     if (LoginStart?.message == 'Login successful') {
+      console.log(LoginStart?.user_id)
       await AsyncStorage.removeItem('Token');
       await AsyncStorage.removeItem('Picture');
       await AsyncStorage.removeItem('Name');
       await AsyncStorage.setItem('Token', LoginStart.access_token);
       await AsyncStorage.setItem('Picture', LoginStart.profile_picture);
+      await AsyncStorage.setItem('U_id', LoginStart.user_id?.toString());
       await AsyncStorage.setItem('Name', LoginStart.user_name);
       reset({
         email: '',

@@ -45,13 +45,13 @@ const AllConnections = ({ getAllConnections, AllConnectionsReducer }) => {
     }, [page]);
     useEffect(() => {
         if (renderLength > threshold) {
-            cache.delete('AllEvent')
+            cache.delete('AllConnections')
             setPage(page + 1)
             setTotalFetchLength(totalFetchLength + 100)
         }
     }, [renderLength])
     const cacheloader = async (loadAllevent) => {
-        const preLoad = cache.get('AllEvent')
+        const preLoad = cache.get('AllConnections')
         const combinedData = [...preLoad || [], ...(loadAllevent || [])];
         const uniqueData = Array.from(
             combinedData.reduce((map, item) => {
@@ -59,8 +59,8 @@ const AllConnections = ({ getAllConnections, AllConnectionsReducer }) => {
                 return map;
             }, new Map()).values()
         );
-        cache.set("AllEvent", uniqueData)
-        setDataList(cache.get('AllEvent'))
+        cache.set("AllConnections", uniqueData)
+        setDataList(cache.get('AllConnections'))
     }
     const styles = StyleSheet.create({
         Wrapper: {
@@ -165,7 +165,7 @@ const AllConnections = ({ getAllConnections, AllConnectionsReducer }) => {
         }
     })
     const onRefresh = async () => {
-        cache.delete('AllEvent')
+        cache.delete('AllConnections')
         allEventDataLoader({ refreshing: true, pageRe: 1 })
         setRenderLength(10)
         setTotalFetchLength(100)

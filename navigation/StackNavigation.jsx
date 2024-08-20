@@ -23,6 +23,9 @@ import Connections from '../pages/Connections';
 import Notification from '../pages/notification';
 import UserProfileScreen from '../pages/UserProfileScreen';
 import InAppCheckIn from '../pages/InAppCheckin';
+import MessageList from '../pages/messageList';
+import Message from '../pages/message';
+import NewMessage from '../pages/newMessage.jsx';
 
 const EventStackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -73,6 +76,13 @@ const HomeStackNavigation = () => {
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="PostDetail" component={PostDetail} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Notification" component={Notification} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="InAppCheckIn" component={InAppCheckIn} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="MessageList" component={MessageList} />
+      <Stack.Screen options={{
+        headerShown: false, navigationBarHidden: true,
+      }} name="Message" component={Message} />
+      <Stack.Screen options={{
+        headerShown: false, navigationBarHidden: true,
+      }} name="NewMessage" component={NewMessage} />
     </Stack.Navigator>
   )
 }

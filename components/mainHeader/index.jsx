@@ -33,7 +33,7 @@ const MainHeader = ({ GetUserProfileReducer, loading }) => {
                     <Image source={require('../../assets/icons/HeaderIcon1.png')} style={{ objectFit: 'contain', width: ResponsiveSize(21), height: ResponsiveSize(21) }} />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={{ padding: 4 }}>
+                <TouchableOpacity onPress={() => navigation.navigate('MessageList')} style={{ padding: 4 }}>
                     <Image source={require('../../assets/icons/HeaderIcon2.png')} style={{ objectFit: 'contain', width: ResponsiveSize(21), height: ResponsiveSize(21) }} />
                 </TouchableOpacity>
                 {/* 
