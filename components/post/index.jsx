@@ -1,7 +1,7 @@
 import ReadMore from '@fawazahmed/react-native-read-more';
 import TimeAgo from '@manu_omg/react-native-timeago';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -14,7 +14,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import Carousel from 'react-native-reanimated-carousel';
@@ -22,17 +22,16 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import Video from 'react-native-video';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import CommnetLight from '../../assets/icons/Comment.png';
 import ShareLight from '../../assets/icons/Share.png';
 import * as PostCreationAction from '../../store/actions/PostCreation/index';
-import { ResponsiveSize, global } from '../constant';
+import {ResponsiveSize, global} from '../constant';
 import TextC from '../text/text';
 import Comments from './comment';
 import Reply from './Reply';
 import FastImage from 'react-native-fast-image';
-import { useNavigation } from '@react-navigation/native';
-
+import {useNavigation} from '@react-navigation/native';
 
 const Post = ({
   userName,
@@ -57,7 +56,7 @@ const Post = ({
   LoadReplies,
   DeletComments,
 }) => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const [liked, setLike] = useState(selfLiked);
@@ -313,7 +312,7 @@ const Post = ({
       paddingHorizontal: ResponsiveSize(15),
       elevation: 5,
       shadowColor: 'black',
-      shadowOffset: { width: -2, height: 4 },
+      shadowOffset: {width: -2, height: 4},
       shadowOpacity: 0.2,
       shadowRadius: 3,
       flexDirection: 'row',
@@ -367,7 +366,7 @@ const Post = ({
     try {
       setLike(true);
       setLikeCountPre(prev => prev + 1);
-      await LikeFunc({ post_id: postId });
+      await LikeFunc({post_id: postId});
     } catch (error) {
       console.error('Error liking the post:', error);
     }
@@ -376,7 +375,7 @@ const Post = ({
     try {
       setLike(false);
       setLikeCountPre(prev => prev - 1);
-      await DisLikeFunc({ post_id: postId });
+      await DisLikeFunc({post_id: postId});
     } catch (error) {
       console.error('Error disliking the post:', error);
     }
@@ -952,7 +951,7 @@ const Post = ({
       });
       if (comments?.statusCode == 200) {
         setCommentInfo('');
-        setReplyComment("")
+        setReplyComment('');
         LoadRefreashReplies(replyComment?.comment_id, true);
         setReplyAddLoader(false);
       } else {
@@ -1022,7 +1021,7 @@ const Post = ({
   );
 
   const [Winheight, setHeight] = useState(windowHeight * 0.4);
-  const handleSetHeight = useCallback((e) => {
+  const handleSetHeight = useCallback(e => {
     const naturalRatio = 16 / 13;
     const videoRatio = e.naturalSize.width / e.naturalSize.height;
     if (videoRatio !== naturalRatio) {
@@ -1030,18 +1029,19 @@ const Post = ({
     }
   }, []);
 
-
   return (
     <>
       <View style={style.PostHeader}>
-        <ImageBackground
+        <FastImage
           source={
             profileImage == ''
               ? require('../../assets/icons/avatar.png')
-              : { uri: profileImage }
+              : {uri: profileImage, priority: FastImage.priority.high}
           }
           style={style.PostProfileImage}
-          resizeMode="cover"></ImageBackground>
+          resizeMode="cover"
+        />
+
         <View style={style.PostProfileImageBox}>
           <TextC
             size={ResponsiveSize(12)}
@@ -1076,7 +1076,7 @@ const Post = ({
                     }}>
                     <Pressable
                       onPress={() => setPause(!paused)}
-                      style={{ position: 'relative' }}>
+                      style={{position: 'relative'}}>
                       <Video
                         repeat={true}
                         source={{
@@ -1084,7 +1084,7 @@ const Post = ({
                         }}
                         ref={videoRef}
                         paused={paused}
-                        style={{ height: windowHeight * 0.4, width: windowWidth }}
+                        style={{height: windowHeight * 0.4, width: windowWidth}}
                       />
                       {paused && (
                         <View style={style.playPaused}>
@@ -1099,7 +1099,7 @@ const Post = ({
                   </View>
                 ) : (
                   <Image
-                    source={{ uri: items.item?.attachment_thumbnail_url }}
+                    source={{uri: items.item?.attachment_thumbnail_url}}
                     style={style.ActuallPost}
                   />
                 )}
@@ -1124,19 +1124,19 @@ const Post = ({
                 }}
                 ref={videoRef}
                 paused={false}
-                style={{ height: Winheight, width: windowWidth }}
+                style={{height: Winheight, width: windowWidth}}
               />
             </View>
           ) : (
-            <Pressable onPress={() => navigation.navigate('PostDetail')}>
-              <FastImage
-                source={{
-                  uri: content[0]?.attachment_thumbnail_url,
-                  priority: FastImage.priority.high,
-                }}
-                style={style.ActuallPost}
-              />
-            </Pressable>
+            // <Pressable onPress={() => navigation.navigate('PostDetail')}>
+            <FastImage
+              source={{
+                uri: content[0]?.attachment_thumbnail_url,
+                priority: FastImage.priority.high,
+              }}
+              style={style.ActuallPost}
+            />
+            // </Pressable>
           )}
         </>
       )}
@@ -1154,7 +1154,7 @@ const Post = ({
           <Pressable onPress={() => toggleModal()} style={style.PostIcons}>
             <Image
               source={CommnetLight}
-              style={{ height: ResponsiveSize(20), width: ResponsiveSize(20) }}
+              style={{height: ResponsiveSize(20), width: ResponsiveSize(20)}}
             />
           </Pressable>
         )}
@@ -1178,7 +1178,7 @@ const Post = ({
           />
         )}
         {description !== '' ? (
-          <View style={{ paddingVertical: ResponsiveSize(3) }}>
+          <View style={{paddingVertical: ResponsiveSize(3)}}>
             <ReadMore
               seeLessStyle={{
                 fontFamily: 'Montserrat-Bold',
@@ -1197,7 +1197,7 @@ const Post = ({
           ''
         )}
         {allow_comments_flag == 'Y' ? (
-          <TouchableOpacity style={{ paddingVertical: ResponsiveSize(3) }}>
+          <TouchableOpacity style={{paddingVertical: ResponsiveSize(3)}}>
             {comments_show_flag == 'Y' ? (
               <TextC
                 size={ResponsiveSize(11)}
@@ -1213,7 +1213,7 @@ const Post = ({
             )}
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={{ paddingTop: ResponsiveSize(3) }}>
+          <TouchableOpacity style={{paddingTop: ResponsiveSize(3)}}>
             <TextC
               size={ResponsiveSize(10)}
               text={'Comments are turned off'}
@@ -1235,17 +1235,17 @@ const Post = ({
       </View>
       <Modal
         isVisible={isModalVisible}
-        style={{ margin: 0 }}
+        style={{margin: 0}}
         animationIn={'bounceInUp'}
         avoidKeyboard={true}
         onBackdropPress={() => closeCommentFunction()}
         statusBarTranslucent={false}>
-        <View style={style.modalTopLayer} >
+        <View style={style.modalTopLayer}>
           <View style={style.TopIndicator}>
             <View style={style.modalIndicator}></View>
             <TextC
               text={'Comments'}
-              style={{ color: global.black, paddingTop: ResponsiveSize(3) }}
+              style={{color: global.black, paddingTop: ResponsiveSize(3)}}
               font={'Montserrat-Bold'}
               size={ResponsiveSize(12)}
             />
@@ -1421,7 +1421,7 @@ const Post = ({
                 <View style={style.ProfileReplyBox}>
                   <Image
                     style={style.ProfileReplyBoxProfile}
-                    source={{ uri: replyComment?.user?.profile_picture_url }}
+                    source={{uri: replyComment?.user?.profile_picture_url}}
                   />
                   <TextC
                     font={'Montserrat-Medium'}
@@ -1438,7 +1438,9 @@ const Post = ({
                 </TouchableOpacity>
               </View>
             )}
-            <View keyboardShouldPersistTaps='handled' style={{ width: windowWidth, position: 'relative' }}>
+            <View
+              keyboardShouldPersistTaps="handled"
+              style={{width: windowWidth, position: 'relative'}}>
               <TextInput
                 editable={!commentAddLoading && !replyAddLoader}
                 value={commentInfo}
@@ -1476,7 +1478,7 @@ const Post = ({
   );
 };
 
-function mapStateToProps({ PostCreationReducer }) {
-  return { PostCreationReducer };
+function mapStateToProps({PostCreationReducer}) {
+  return {PostCreationReducer};
 }
 export default connect(mapStateToProps, PostCreationAction)(Post);
