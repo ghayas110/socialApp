@@ -189,7 +189,7 @@ const PendingConnections = ({ getPendingConnections, PendingConnectionsReducer, 
         setDataList(prevItems =>
             prevItems.filter(item => item.user_id !== e),
         );
-        console.log(result)
+        allEventDataLoader({ refreshing: false })
     }
     const renderItem = useCallback((items) => {
         return (
@@ -214,7 +214,7 @@ const PendingConnections = ({ getPendingConnections, PendingConnectionsReducer, 
                             {acceptLoading.value == true && acceptLoading.id == items?.item?.user_id ?
                                 <ActivityIndicator size={'small'} color={global.white} />
                                 :
-                                <TextC style={{ color: 'white' }} text={"accept"} font={'Montserrat-Medium'} />
+                                <TextC style={{ color: 'white' }} text={"Accept"} font={'Montserrat-Medium'} />
                             }
                         </TouchableOpacity>
                     </View>

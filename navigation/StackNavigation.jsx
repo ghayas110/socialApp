@@ -26,6 +26,7 @@ import InAppCheckIn from '../pages/InAppCheckin';
 import MessageList from '../pages/messageList';
 import Message from '../pages/message';
 import NewMessage from '../pages/newMessage.jsx';
+import SearchUser from '../pages/SearchUser.jsx';
 
 const EventStackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -58,6 +59,7 @@ const ProfileStackNavigation = ({ onLogin }) => {
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="ChangeAirline" component={ChangeAirline} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="MyPost" component={MyPost} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Connection" component={Connections} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="SearchUser" component={SearchUser} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="UserProfileScreen" component={UserProfileScreen} />
       <Stack.Screen
         options={{ headerShown: false, navigationBarHidden: true }}

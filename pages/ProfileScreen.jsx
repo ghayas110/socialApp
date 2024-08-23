@@ -16,13 +16,14 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { global, ResponsiveSize } from '../components/constant';
+import {useNavigation} from '@react-navigation/native';
+import {global, ResponsiveSize} from '../components/constant';
 import ReadMore from '@fawazahmed/react-native-read-more';
 import * as UserProfile from '../store/actions/UserProfile/index';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
+import FastImage from 'react-native-fast-image';
 
-const ProfileScreen = ({ GetUserProfileReducer }) => {
+const ProfileScreen = ({GetUserProfileReducer}) => {
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const navigation = useNavigation();
@@ -142,13 +143,13 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={'white'} barStyle={'dark-content'} />
       {GetUserProfileReducer?.loading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator size="large" color={global.primaryColor} />
         </View>
       ) : (
-        <ScrollView style={{ flexGrow: 1 }}>
+        <ScrollView style={{flexGrow: 1}}>
           <View style={styles.ProfileHeader}>
-            <View style={{ width: 25 }}></View>
+            <View style={{width: 25}}></View>
             <View>
               <TextC
                 font={'Montserrat-Bold'}
@@ -164,13 +165,13 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
           <View style={styles.ProfileInfo}>
             <View style={styles.profileImageWrapper}>
               <View style={styles.ProfileImage}>
-                <Image
-                  style={styles.ProfileImageMain}
+                <FastImage
                   source={
                     GetUserProfileReducer?.data?.profile_picture_url == ''
                       ? require('../assets/icons/avatar.png')
-                      : { uri: GetUserProfileReducer?.data?.profile_picture_url }
+                      : {uri: GetUserProfileReducer?.data?.profile_picture_url, priority: FastImage.priority.high}
                   }
+                  style={styles.ProfileImageMain}
                 />
               </View>
             </View>
@@ -180,7 +181,7 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
                   text={GetUserProfileReducer?.data?.post_count || 0}
                   font={'Montserrat-SemiBold'}
                   size={ResponsiveSize(20)}
-                  style={{ color: '#69BE25' }}
+                  style={{color: '#69BE25'}}
                 />
                 <TextC
                   text={'Posts'}
@@ -190,12 +191,18 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
               </View>
 
               <View style={styles.ProfilePostInfoInnerCard}>
-                <TouchableOpacity style={{flexDirection:'column',alignItems:'center',justifyContent:'center'}} onPress={()=> navigation.navigate('Connection')}>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  onPress={() => navigation.navigate('Connection')}>
                   <TextC
                     text={GetUserProfileReducer?.data?.connection_count || 0}
                     font={'Montserrat-SemiBold'}
                     size={ResponsiveSize(20)}
-                    style={{ color: '#69BE25' }}
+                    style={{color: '#69BE25'}}
                   />
                   <TextC
                     text={'Connects'}
@@ -214,13 +221,13 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
                 <TextC
                   text={
                     GetUserProfileReducer?.data?.last_checkin ==
-                      'No last check-in available'
+                    'No last check-in available'
                       ? 'No Check-in'
                       : GetUserProfileReducer?.data?.last_checkin
                   }
                   font={'Montserrat-SemiBold'}
                   size={ResponsiveSize(12)}
-                  style={{ width: '100%', textAlign: 'center' }}
+                  style={{width: '100%', textAlign: 'center'}}
                   ellipsizeMode={'tail'}
                   numberOfLines={1}
                 />
@@ -267,24 +274,30 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={{ flexGrow: 1 }}>
+          <ScrollView style={{flexGrow: 1}}>
             <View style={styles.wrapper}>
               {GetUserProfileReducer?.data?.posts !== undefined &&
-                GetUserProfileReducer?.data?.posts !== null &&
-                GetUserProfileReducer?.data?.posts !== '' &&
-                GetUserProfileReducer?.data?.posts?.length > 0 ? (
+              GetUserProfileReducer?.data?.posts !== null &&
+              GetUserProfileReducer?.data?.posts !== '' &&
+              GetUserProfileReducer?.data?.posts?.length > 0 ? (
                 GetUserProfileReducer?.data?.posts.map(userPosts => (
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('MyPost', { user_id: GetUserProfileReducer?.data?.user_id })}
+                    onPress={() =>
+                      navigation.navigate('MyPost', {
+                        user_id: GetUserProfileReducer?.data?.user_id,
+                      })
+                    }
                     key={userPosts?.parent_id}
                     style={styles.box}>
-                    <Image
+                    <FastImage
                       style={{
                         resizeMode: 'cover',
                         height: '100%',
                         width: '100%',
                       }}
-                      source={{ uri: userPosts?.attachment_thumbnail_url }}
+                      source={{uri: userPosts?.attachment_thumbnail_url,
+                        priority: FastImage.priority.high,
+                      }}
                     />
                   </TouchableOpacity>
                 ))
@@ -319,7 +332,7 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
                       text={'Start Your First Post'}
                       font={'Montserrat-Medium'}
                       size={ResponsiveSize(11)}
-                      style={{ color: 'white' }}
+                      style={{color: 'white'}}
                     />
                   </TouchableOpacity>
                 </View>
@@ -332,7 +345,7 @@ const ProfileScreen = ({ GetUserProfileReducer }) => {
   );
 };
 
-function mapStateToProps({ GetUserProfileReducer }) {
-  return { GetUserProfileReducer };
+function mapStateToProps({GetUserProfileReducer}) {
+  return {GetUserProfileReducer};
 }
 export default connect(mapStateToProps, UserProfile)(ProfileScreen);
