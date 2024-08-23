@@ -111,44 +111,77 @@ const MessageList = () => {
     const [loader, setLoader] = useState(false)
 
 
+    // useEffect(() => {
+    //     if (focus == true) {
+    //         setLoader(true);
+    //         const TokenPromise = new Promise(async (myResolve, myReject) => {
+    //             const Token = await AsyncStorage.getItem('Token');
+    //             if (Token) {
+    //                 myResolve(Token);
+    //             } else {
+    //                 myReject('Token not found');
+    //             }
+    //         });
+    //         TokenPromise.then(token => {
+    //             const socket = io(`${baseUrl}/chat`, {
+    //                 transports: ['websocket'],
+    //                 extraHeaders: {
+    //                     'x-api-key': "TwillioAPI",
+    //                     'accesstoken': `Bearer ${token}`
+    //                 }
+    //             })
+    //             const loadRecentChats = () => {
+    //                 socket.on('connect', () => {
+    //                     socket.emit('getUserChatList');
+    //                 });
+    //                 socket.on('chatList', (chatsss) => {
+    //                     console.log(chatsss,'chat listing from')
+    //                     setRecentChats(chatsss);
+    //                     setLoader(false);
+    //                 });
+    //             };
+    //             loadRecentChats();
+    //             return () => {
+    //                 socket.disconnect();
+    //             };
+    //         }).catch(error => {
+    //             console.error(error);
+    //             setLoader(false);
+    //         });
+    //     }
+    // }, [focus]);
+
+    const loadRecentChats = async () => {
+        const Token = await AsyncStorage.getItem('Token');
+        const socket = io(`${baseUrl}/chat`, {
+            transports: ['websocket'],
+            extraHeaders: {
+                'x-api-key': "TwillioAPI",
+                'accesstoken': `Bearer ${Token}`
+            }
+        });
+        // socket.on('connect', () => {
+        //     socket.emit('getUserChatList');
+        // });
+        // socket.on('chatList', (chatsss) => {
+        //     setRecentChats(chatsss);
+        //     setLoader(false);
+        // });
+
+
+        socket.on('connect').emit('getUserChatList').on('chatList', (data) => {
+            console.log('chat list', data)
+            setLoader(false)
+            setRecentChats(data);
+        })
+    }
+
+
     useEffect(() => {
-        if (focus == true) {
-            setLoader(true);
-            const TokenPromise = new Promise(async (myResolve, myReject) => {
-                const Token = await AsyncStorage.getItem('Token');
-                if (Token) {
-                    myResolve(Token);
-                } else {
-                    myReject('Token not found');
-                }
-            });
-            TokenPromise.then(token => {
-                const socket = io(`${baseUrl}/chat`, {
-                    transports: ['websocket'],
-                    extraHeaders: {
-                        'x-api-key': "TwillioAPI",
-                        'accesstoken': `Bearer ${token}`
-                    }
-                })
-                const loadRecentChats = () => {
-                    socket.on('connect', () => {
-                        socket.emit('getUserChatList');
-                    });
-                    socket.on('chatList', (chatsss) => {
-                        setRecentChats(chatsss);
-                        setLoader(false);
-                    });
-                };
-                loadRecentChats();
-                return () => {
-                    socket.disconnect();
-                };
-            }).catch(error => {
-                console.error(error);
-                setLoader(false);
-            });
-        }
-    }, [focus]);
+        setLoader(true)
+        loadRecentChats()
+    }, []);
+
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -183,10 +216,10 @@ const MessageList = () => {
                         :
                         <View>
                             {recentChats !== undefined && recentChats !== "" && recentChats !== null && recentChats.length > 0 ? recentChats?.map(recentChats =>
-                                <TouchableOpacity onPress={() => navigation.navigate('Message', { 
+                                <TouchableOpacity onPress={() => navigation.navigate('Message', {
                                     receiverUserId: recentChats?.userDetails?.user_id,
                                     profile_picture_url: recentChats?.userDetails?.profile_picture_url,
-                                    user_name:recentChats?.userDetails?.user_name
+                                    user_name: recentChats?.userDetails?.user_name
                                 })} style={styles.PostHeader}>
                                     <View style={{ flexDirection: 'row' }}>
                                         <ImageBackground
@@ -207,15 +240,29 @@ const MessageList = () => {
                                                 size={ResponsiveSize(10)}
                                                 text={recentChats?.message}
                                                 font={'Montserrat-Medium'}
-                                                style={{ color: global.placeholderColor }}
+                                                style={{ color: global.placeholderColor, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1} 
                                             />
                                         </View>
                                     </View>
-                                    <View>
+                                    <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                         <TimeAgo
                                             style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(8) }}
                                             time={recentChats?.created_at}
                                         />
+                                        {recentChats?.unreadMessagesCount > 0 &&
+                                            <View style={{
+                                                backgroundColor: global.secondaryColor,
+                                                height: ResponsiveSize(15),
+                                                width: ResponsiveSize(15),
+                                                borderRadius: ResponsiveSize(15),
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                marginTop: ResponsiveSize(5)
+                                            }}>
+                                                <TextC font={'Montserrat-Medium'} size={ResponsiveSize(8)} text={recentChats?.unreadMessagesCount} style={{ color: global.white}}/>
+                                            </View>
+                                        }
                                     </View>
                                 </TouchableOpacity>
                             ) :

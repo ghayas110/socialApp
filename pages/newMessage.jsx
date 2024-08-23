@@ -151,13 +151,17 @@ const NewMessage = ({ getAllConnections, AllConnectionsReducer }) => {
                         :
                         <View>
                             {recentChats !== undefined && recentChats !== "" && recentChats !== null && recentChats.length > 0 ? recentChats?.map(recentChats =>
-                                <TouchableOpacity onPress={() => navigation.navigate('Message', { receiverUserId: recentChats?.user_id })} style={styles.PostHeader}>
+                                <TouchableOpacity onPress={() => navigation.navigate('Message', {
+                                    receiverUserId: recentChats?.user_id,
+                                    profile_picture_url: recentChats?.profile_picture_url,
+                                    user_name: recentChats?.user_name
+                                })} style={styles.PostHeader}>
                                     <View style={{ flexDirection: 'row' }}>
                                         <ImageBackground
                                             source={
                                                 recentChats?.userDetails?.profile_picture_url == ''
                                                     ? require('../assets/icons/avatar.png')
-                                                    : { uri: recentChats?.profile_picture_url}
+                                                    : { uri: recentChats?.profile_picture_url }
                                             }
                                             style={styles.PostProfileImage}
                                             resizeMode="cover"></ImageBackground>
