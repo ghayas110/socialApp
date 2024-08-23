@@ -110,47 +110,6 @@ const MessageList = () => {
     const [recentChats, setRecentChats] = useState([])
     const [loader, setLoader] = useState(false)
 
-
-    // useEffect(() => {
-    //     if (focus == true) {
-    //         setLoader(true);
-    //         const TokenPromise = new Promise(async (myResolve, myReject) => {
-    //             const Token = await AsyncStorage.getItem('Token');
-    //             if (Token) {
-    //                 myResolve(Token);
-    //             } else {
-    //                 myReject('Token not found');
-    //             }
-    //         });
-    //         TokenPromise.then(token => {
-    //             const socket = io(`${baseUrl}/chat`, {
-    //                 transports: ['websocket'],
-    //                 extraHeaders: {
-    //                     'x-api-key': "TwillioAPI",
-    //                     'accesstoken': `Bearer ${token}`
-    //                 }
-    //             })
-    //             const loadRecentChats = () => {
-    //                 socket.on('connect', () => {
-    //                     socket.emit('getUserChatList');
-    //                 });
-    //                 socket.on('chatList', (chatsss) => {
-    //                     console.log(chatsss,'chat listing from')
-    //                     setRecentChats(chatsss);
-    //                     setLoader(false);
-    //                 });
-    //             };
-    //             loadRecentChats();
-    //             return () => {
-    //                 socket.disconnect();
-    //             };
-    //         }).catch(error => {
-    //             console.error(error);
-    //             setLoader(false);
-    //         });
-    //     }
-    // }, [focus]);
-
     const loadRecentChats = async () => {
         const Token = await AsyncStorage.getItem('Token');
         const socket = io(`${baseUrl}/chat`, {
@@ -160,15 +119,6 @@ const MessageList = () => {
                 'accesstoken': `Bearer ${Token}`
             }
         });
-        // socket.on('connect', () => {
-        //     socket.emit('getUserChatList');
-        // });
-        // socket.on('chatList', (chatsss) => {
-        //     setRecentChats(chatsss);
-        //     setLoader(false);
-        // });
-
-
         socket.on('connect').emit('getUserChatList').on('chatList', (data) => {
             console.log('chat list', data)
             setLoader(false)

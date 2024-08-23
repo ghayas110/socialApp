@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   DarkTheme,
   Dimensions,
@@ -13,12 +13,12 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native';
-import {global, ResponsiveSize} from '../components/constant';
+import { global, ResponsiveSize } from '../components/constant';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import TextC from '../components/text/text';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import SearchCenter from '../components/searchBar';
-import {Image} from 'react-native-elements';
+import { Image } from 'react-native-elements';
 import baseUrl from '../store/config.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FastImage from 'react-native-fast-image';
@@ -34,7 +34,8 @@ const SearchUser = () => {
       justifyContent: 'center',
       width: windowWidth,
       paddingHorizontal: ResponsiveSize(15),
-      paddingVertical: ResponsiveSize(15),
+      paddingTop: ResponsiveSize(15),
+      paddingBottom: ResponsiveSize(10),
       backgroundColor: global.white,
     },
     logoSide1: {
@@ -56,7 +57,25 @@ const SearchUser = () => {
       width: '33.33%',
     },
     SearchCenter: {
-      padding: ResponsiveSize(15),
+      paddingHorizontal: ResponsiveSize(15),
+      paddingTop: ResponsiveSize(10)
+    },
+    SearchCenterInput: {
+      position: 'relative',
+      paddingHorizontal: ResponsiveSize(15),
+      paddingTop: ResponsiveSize(10)
+    },
+    FilterBtn: {
+      width: ResponsiveSize(60),
+      height: ResponsiveSize(45),
+      paddingVertical: ResponsiveSize(7),
+      borderRadius: ResponsiveSize(20),
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'absolute',
+      zIndex: 100,
+      right: ResponsiveSize(18),
+      bottom: ResponsiveSize(0),
     },
     SearchUserInput: {
       fontSize: ResponsiveSize(11),
@@ -78,14 +97,22 @@ const SearchUser = () => {
       justifyContent: 'space-between',
     },
     ProfileImage: {
-      height: ResponsiveSize(30),
-      width: ResponsiveSize(30),
-      borderRadius: ResponsiveSize(30),
-      marginRight: ResponsiveSize(5),
+      height: ResponsiveSize(40),
+      width: ResponsiveSize(40),
+      borderRadius: ResponsiveSize(40),
+      marginRight: ResponsiveSize(0),
       backgroundColor: global.description,
     },
     UpcomingContent: {
       paddingLeft: 10,
+    },
+    NextBtn: {
+      backgroundColor: global.secondaryColor,
+      width: ResponsiveSize(60),
+      paddingVertical: ResponsiveSize(7),
+      borderRadius: ResponsiveSize(20),
+      alignItems: 'center',
+      justifyContent: 'center',
     },
   });
   const navigation = useNavigation();
@@ -98,29 +125,37 @@ const SearchUser = () => {
     setUserId(U_id);
   };
   useEffect(() => {
-    SearchUsers();
+    // SearchUsers();
     LoadUserId();
   }, []);
+
+
+
 
   const SearchUsers = async (e = null) => {
     setLoading(true);
     const Token = await AsyncStorage.getItem('Token');
     const response = await fetch(
-      `${baseUrl.baseUrl}/users/get-users-for-connection-list?${
-        e == null ? '' : `search=${e}`
-      }`,
+      `${baseUrl.baseUrl}/users/get-all-users-filter`,
       {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': baseUrl.apiKey,
           accesstoken: `Bearer ${Token}`,
         },
+        // body: JSON.stringify({
+        //   airline_ids: [1, 4],
+        //   check_in_cities: [],
+        //   user_types: [],
+        //   time_left: [],
+        //   search: "Freeman"
+        // }),
       },
     );
     const result = await response.json();
     setSearchedUser(result);
-    console.log(result[2],'rejeact');
+    console.log(result, 'rejeact');
     setLoading(false);
   };
 
@@ -128,74 +163,10 @@ const SearchUser = () => {
     value: false,
     id: '',
   });
-  const ConnectUser = async e => {
-    setUserConnectLoading({
-      value: true,
-      id: e,
-    });
-    const Token = await AsyncStorage.getItem('Token');
-    const response = await fetch(
-      `${baseUrl.baseUrl}/connect/request-connection`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': baseUrl.apiKey,
-          accesstoken: `Bearer ${Token}`,
-        },
-        body: JSON.stringify({user_id: e}),
-      },
-    );
-    const result = await response.json();
-    console.log(result,'resultconnected')
-    if (result.statusCode === 200) {
-      SearchUsers();
-      setUserConnectLoading({
-        value: false,
-        id: '',
-      });
-    }
-    setUserConnectLoading({
-      value: false,
-      id: '',
-    });
-  };
 
-  const RejectRequest = async e => {
-    setUserConnectLoading({
-      value: true,
-      id: e,
-    });
-    const Token = await AsyncStorage.getItem('Token');
-    const response = await fetch(
-      `${baseUrl.baseUrl}/connect/reject-connection-request`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': baseUrl.apiKey,
-          accesstoken: `Bearer ${Token}`,
-        },
-        body: JSON.stringify({user_id: e}),
-      },
-    );
-    const result = await response.json();
-    console.log(result, e, 'cancelRequestResult');
-    if (result.statusCode === 200) {
-      SearchUsers();
-      setUserConnectLoading({
-        value: false,
-        id: '',
-      });
-    }
-    setUserConnectLoading({
-      value: false,
-      id: '',
-    });
-  };
   return (
     <>
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <StatusBar
           backgroundColor={
             scheme === 'dark' ? DarkTheme.colors.background : 'white'
@@ -219,34 +190,48 @@ const SearchUser = () => {
               text={'Search'}
             />
           </View>
-          <TouchableOpacity style={styles.logoSide3}></TouchableOpacity>
+          <View style={styles.logoSide3}>
+            <TouchableOpacity
+              // onPress={handleSubmit(onSubmit)}
+              style={styles.NextBtn}>
+              <TextC
+                size={ResponsiveSize(10)}
+                text={'Apply'}
+                font={'Montserrat-SemiBold'}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
             backgroundColor: global.white,
           }}>
-          <View style={styles.SearchCenter}>
+          <View style={styles.SearchCenterInput}>
             <TextInput
               style={styles.SearchUserInput}
               placeholder="Search Users"
-              onChangeText={e => SearchUsers(e)}
+            // onChangeText={e => SearchUsers(e)}
             />
+            <TouchableOpacity style={styles.FilterBtn}>
+              <AntDesign name='filter' color={global.primaryColor} size={ResponsiveSize(18)} />
+            </TouchableOpacity>
           </View>
-
           <View style={styles.SearchCenter}>
             {loading ? (
-              <ActivityIndicator size={'large'} color={global.primaryColor} />
+              <View style={{ paddingTop: ResponsiveSize(100) }}>
+                <ActivityIndicator size={'large'} color={global.primaryColor} />
+              </View>
             ) : (
               <>
                 {searchedUser !== undefined &&
-                searchedUser !== null &&
-                searchedUser !== '' &&
-                searchedUser?.length > 0 ? (
+                  searchedUser !== null &&
+                  searchedUser !== '' &&
+                  searchedUser?.length > 0 ? (
                   searchedUser.map(data => (
-                    <View style={styles.ListOfSearch}>
+                    <Pressable onPress={() => navigation.navigate('UserProfileScreen', { user_id: data?.user_id })} style={styles.ListOfSearch}>
                       <View
-                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                        style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <FastImage
                           style={styles.ProfileImage}
                           source={{
@@ -259,7 +244,7 @@ const SearchUser = () => {
                             text={data.user_name}
                             font={'Montserrat-Bold'}
                             size={ResponsiveSize(12)}
-                            style={{width: ResponsiveSize(160)}}
+                            style={{ width: ResponsiveSize(160) }}
                             ellipsizeMode={'tail'}
                             numberOfLines={1}
                           />
@@ -268,10 +253,10 @@ const SearchUser = () => {
                               data.user_type == 'PILOT'
                                 ? 'Pilot'
                                 : data.user_type == 'FLIGHT ATTENDANT'
-                                ? 'Flight attendent'
-                                : data?.user_type == 'TECHNICIAN'
-                                ? 'Technician'
-                                : ''
+                                  ? 'Flight attendent'
+                                  : data?.user_type == 'TECHNICIAN'
+                                    ? 'Technician'
+                                    : ''
                             }
                             style={{
                               color: global.placeholderColor,
@@ -282,7 +267,14 @@ const SearchUser = () => {
                           />
                         </View>
                       </View>
-                      {data?.connectionsStatus == null ? (
+
+                      {/* <TextC
+                        size={ResponsiveSize(10)}
+                        font={'Montserrat-Medium'}
+                        text={'Connect'}
+                        style={{ color: 'red' }}
+                      /> */}
+                      {/* {data?.connectionsStatus == null ? (
                         <TouchableOpacity
                           disabled={userConnectLoading.value}
                           style={{
@@ -427,8 +419,8 @@ const SearchUser = () => {
                         </Pressable>
                       ) : (
                         ''
-                      )}
-                    </View>
+                      )} */}
+                    </Pressable>
                   ))
                 ) : (
                   <>
