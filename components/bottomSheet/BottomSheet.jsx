@@ -30,10 +30,22 @@ export const BottomSheetProvider = ({ children }) => {
     openBottomSheet,
     closeBottomSheet,
     onClose
-  }), [openBottomSheet, closeBottomSheet,onClose]);
+  }), [openBottomSheet, closeBottomSheet, onClose]);
 
+  const styles = StyleSheet.create({
+    bottomSheetBackground: {
+      backgroundColor: "white",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5, 
+    },
+  });
 
-  
 
   return (
     <BottomSheetContext.Provider value={contextValue}>
@@ -42,11 +54,11 @@ export const BottomSheetProvider = ({ children }) => {
         handleStyle={{ height: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15, backgroundColor: scheme == "dark" ? DarkTheme.colors.background : "white" }}
         handleIndicatorStyle={{ backgroundColor: scheme == "dark" ? DefaultTheme.colors.background : global.primaryColor }}
         ref={bottomSheetRef}
-        backgroundStyle={{ backgroundColor: scheme == "dark" ? DarkTheme.colors.background : "white" }}
+        backgroundStyle={[styles.bottomSheetBackground]}
         index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose={true}
-        onClose={() => {onClose(null)}}
+        onClose={() => { onClose(null) }}
       >
         <>
           {content}

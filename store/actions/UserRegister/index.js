@@ -134,5 +134,55 @@ export const DeleteAccountAction = (body) => async (dispatch) => {
     }
 }
 
+export const getAllCountries = (body) => async (dispatch) => {
+    try {
+        const response = await fetch(`${baseUrl.CountryBaseUrl}/api/v0.1/countries/iso`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const res = await response.json()
+        return res?.data
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
+export const getAllStates = (body) => async () => {
+    try {
+        const response = await fetch(`${baseUrl.CountryBaseUrl}/api/v0.1/countries/states`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body)
+        });
+        const res = await response.json()
+        return res?.data?.states
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
+export const getAllCities = (body) => async (dispatch) => {
+    try {
+        const response = await fetch(`${baseUrl.CountryBaseUrl}/api/v0.1/countries/state/cities`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body)
+        });
+        const res = await response.json()
+        return res?.data
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
 
 
