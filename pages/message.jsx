@@ -223,6 +223,7 @@ const Message = ({ route }) => {
         socket.on('connect').emit('oldMessages', {
             "receiverUserId": route?.params?.receiverUserId,
         }).emit('readMessage', { receiverUserId: route?.params?.receiverUserId }).on('message', (data) => {
+            console.log(data,'message Data')
             if (data?.message.length > 0) {
                 setLoader(false)
                 setRecentChats(data?.message);

@@ -119,7 +119,7 @@ const MessageList = () => {
                 'accesstoken': `Bearer ${Token}`
             }
         });
-        socket.on('connect').emit('getUserChatList').on('chatList', (data) => {
+        socket.on('connect').on('chatList', (data) => {
             console.log('chat list', data)
             setLoader(false)
             setRecentChats(data);
@@ -190,7 +190,7 @@ const MessageList = () => {
                                                 size={ResponsiveSize(10)}
                                                 text={recentChats?.message}
                                                 font={'Montserrat-Medium'}
-                                                style={{ color: global.placeholderColor, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1} 
+                                                style={{ color: global.placeholderColor, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1}
                                             />
                                         </View>
                                     </View>
@@ -210,7 +210,7 @@ const MessageList = () => {
                                                 justifyContent: 'center',
                                                 marginTop: ResponsiveSize(5)
                                             }}>
-                                                <TextC font={'Montserrat-Medium'} size={ResponsiveSize(8)} text={recentChats?.unreadMessagesCount} style={{ color: global.white}}/>
+                                                <TextC font={'Montserrat-Medium'} size={ResponsiveSize(8)} text={recentChats?.unreadMessagesCount} style={{ color: global.white }} />
                                             </View>
                                         }
                                     </View>

@@ -52,6 +52,7 @@ const CreatePostTwo = ({
   const ref = React.useRef(null);
   const [privacy, setPrivacy] = useState('Public');
   const [caption, setCaption] = useState('');
+  const [postLoading, setPostLoading] = useState(false);
   const styles = StyleSheet.create({
     wrapper: {
       flexDirection: 'row',
@@ -229,6 +230,7 @@ const CreatePostTwo = ({
   };
 
   const CreatePostFinalStep = async () => {
+    setPostLoading(true);
     const Tags = PostCreationReducer?.searchConnectionData?.map(
       item => item.user_id,
     );
@@ -342,6 +344,7 @@ const CreatePostTwo = ({
               </View>
               <View style={styles.logoSide3}>
                 <TouchableOpacity
+                  disabled={postLoading}
                   onPress={() => CreatePostFinalStep()}
                   style={styles.NextBtn}>
                   <TextC

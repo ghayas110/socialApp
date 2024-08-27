@@ -189,8 +189,6 @@ const HomeScreen = ({
       );
     }
   };
-
-  console.log(route,'asdhasjdjashj')
   useEffect(() => {
     GetProfileData();
     if (PostCreationReducer?.uploadLoading == false) {

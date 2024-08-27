@@ -30,7 +30,7 @@ import * as UserRegisterAction from "../store/actions/UserRegister/index";
 import { connect } from "react-redux";
 
 
-const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
+const SearchUser = ({ getAllAirline, getAllCountries, getAllStates, getAllCities }) => {
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
 
@@ -173,7 +173,7 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
       justifyContent: 'center',
       marginHorizontal: ResponsiveSize(2),
       position: 'relative',
-      width: windowWidth - ResponsiveSize(65) * 3.7
+      width: windowWidth - ResponsiveSize(65) * 3.6
     },
     container: {
       flex: 1,
@@ -270,6 +270,8 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
       justifyContent: 'center'
     }
   });
+
+
   const navigation = useNavigation();
   const [searchedUser, setSearchedUser] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -280,11 +282,33 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
     setUserId(U_id);
   };
   useEffect(() => {
-    SearchUsers();
+    SearchUsers()
     LoadUserId();
   }, []);
 
+
+  const [position, setPosition] = useState([])
+  const [airLine, setAirline] = useState([])
+  const [stayTime, setStayTime] = useState([])
+  const [country, setCountry] = useState([])
+  const [state, setState] = useState([])
+  const [city, setCity] = useState([])
+
+
+
+
+
+
   const SearchUsers = async () => {
+    console.log({
+      airline_ids: airLine,
+      check_in_cities: city,
+      user_types: position,
+      time_left: stayTime,
+      search: searchText,
+      countries: country,
+      states: state
+    }, 'dadasda')
     setLoading(true);
     const Token = await AsyncStorage.getItem('Token');
     const response = await fetch(
@@ -297,11 +321,13 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
           accesstoken: `Bearer ${Token}`,
         },
         body: JSON.stringify({
-          airline_ids: [],
-          check_in_cities: [],
-          user_types: [],
-          time_left: [],
-          search: searchText
+          airline_ids: airLine,
+          check_in_cities: city,
+          user_types: position,
+          time_left: stayTime,
+          search: searchText,
+          countries: country,
+          states: state
         }),
       },
     );
@@ -337,11 +363,58 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
 
 
 
-  const [position, setPosition] = useState([])
-  const [airLine, setAirline] = useState([])
-  const [stayTime, setStayTime] = useState("")
-  const [country, setCountry] = useState("")
-  const [state, setState] = useState("")
+
+
+
+  const [SearchCountry, setSearchCountry] = useState("");
+  const [SearchState, setSearchState] = useState("");
+  const [SearchCity, setSearchCity] = useState("");
+
+
+  const [isPositionVisible, setPositionVisible] = useState(false);
+  const [isAirLineVisible, setAirLineVisible] = useState(false);
+  const [isCountryVisible, setCountryVisible] = useState(false);
+  const [isStateVisible, setStateVisible] = useState(false);
+  const [isCityVisible, setCityVisible] = useState(false);
+  const [isTimeVisible, setTimeVisible] = useState(false);
+
+  const ClearPosition = () => {
+    setPosition([])
+    setPositionVisible(false)
+  }
+  const ClearAirline = () => {
+    setAirline([])
+    setAirLineVisible(false)
+  }
+  const ClearCountry = () => {
+    setCountry("")
+    setState("")
+    setCity("")
+    setStayTime("")
+    setSearchCountry("")
+    setSearchState("")
+    setCountryVisible(false)
+    setSearchCity("")
+  }
+  const ClearState = () => {
+    setState("")
+    setCity("")
+    setStayTime("")
+    setSearchState("")
+    setSearchCity("")
+    setStateVisible(false)
+  }
+  const ClearCity = () => {
+    setCity("")
+    setStayTime("")
+    setSearchCity("")
+    setCityVisible(false)
+  }
+  const ClearTime = () => {
+    setStayTime("")
+    setTimeVisible(false)
+  }
+
 
   const AddPositions = (e) => {
     setPosition(prevItems => {
@@ -362,20 +435,26 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
     });
   }
   const AddTime = (e) => {
-    setStayTime(e);
+    setStayTime([e]);
   }
   const AddCountry = async (e) => {
-    setCountry(e);
+    setCountry([e]);
     const loadAllStateDetail = await getAllStates({
       country: e,
     });
     setAllStateData(loadAllStateDetail);
   }
   const AddState = async (e) => {
-    setState(e);
-    
+    setState([e]);
+    const loadAllCityDetail = await getAllCities({
+      country: country[0],
+      state: e,
+    });
+    setAllCityData(loadAllCityDetail);
   }
-
+  const AddCity = async (e) => {
+    setCity([e]);
+  }
 
   // airLine Data
   const [allAirLine, setAllAirLine] = useState()
@@ -384,6 +463,7 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
     LoadCountry();
   }, [])
 
+
   const LoadAirLine = async () => {
     const loadAllAirLineDetail = await getAllAirline()
     setAllAirLine(loadAllAirLineDetail?.data)
@@ -391,11 +471,10 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
   // airLine Data
 
   const PositionData = [
-    { key: 1, label: 'Pilot' },
-    { key: 2, label: 'Fligh Attendent' },
-    { key: 3, label: 'Technician' },
+    { key: 1, label: 'Pilot', data: 'PILOT' },
+    { key: 2, label: 'Fligh Attendant', data: 'FLIGHT ATTENDANT' },
+    { key: 3, label: 'Technician', data: 'TECHNICIAN' },
   ];
-
 
   // Country Data
   const [allCountriesData, setAllCountriesData] = useState();
@@ -405,27 +484,15 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
   };
   // Country Data
 
-
-  const [allStateData, setAllStateData] = useState();
+  const [allCityData, setAllCityData] = useState([]);
+  const [allStateData, setAllStateData] = useState([]);
 
   const TimeData = [
-    { key: 1, label: 'None' },
-    { key: 2, label: 'More then 3 hours' },
-    { key: 3, label: 'More then 6 hours' },
-    { key: 4, label: 'More then 9 hours' },
-    { key: 5, label: '10+ hours' },
+    { key: 3, label: 'Less then 3 hours' },
+    { key: 6, label: 'Less then 6 hours' },
+    { key: 9, label: 'Less then 9 hours' },
+    { key: 1000000, label: '10+ hours' },
   ];
-
-  const [isPositionVisible, setPositionVisible] = useState(false);
-  const [isAirLineVisible, setAirLineVisible] = useState(false);
-  const [isCountryVisible, setCountryVisible] = useState(false);
-  const [isStateVisible, setStateVisible] = useState(false);
-  const [isTimeVisible, setTimeVisible] = useState(false);
-  const [SearchCountry, setSearchCountry] = useState("");
-  const [SearchState, setSearchState] = useState("");
-
-
-
 
   return (
     <>
@@ -487,7 +554,9 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
             </View>
             <View style={styles.DropdownSeeker}>
               <TextC text={"Sort by"} font={'Montserrat-Bold'} />
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: ResponsiveSize(10) }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(10) }}>
+
+
                 <TouchableOpacity onPress={() => setPositionVisible(true)} style={styles.filterTab}>
                   <TextC text={"Position"} style={{ color: global.white }} size={ResponsiveSize(10)} font={'Montserrat-SemiBold'} />
                   {position.length > 0 &&
@@ -505,7 +574,7 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
 
                 <TouchableOpacity onPress={() => setCountryVisible(true)} style={styles.filterTab}>
                   <TextC text={"Country"} style={{ color: global.white }} size={ResponsiveSize(10)} font={'Montserrat-SemiBold'} />
-                  {country !== "" && country !== 1 &&
+                  {country.length > 0 &&
                     <View style={styles.IndicatorDot}></View>
                   }
                 </TouchableOpacity>
@@ -513,24 +582,41 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
 
 
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: ResponsiveSize(10) }}>
-                {country !== "" &&
-                  <TouchableOpacity onPress={() => setStateVisible(true)} style={styles.filterTab}>
-                    <TextC text={"State"} style={{ color: global.white }} size={ResponsiveSize(10)} font={'Montserrat-SemiBold'} />
-                    {state !== "" && state !== 1 &&
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(10) }}>
+                {country.length > 0 &&
+                  <TouchableOpacity disabled={!allStateData?.length > 0} onPress={() => setStateVisible(true)} style={styles.filterTab}>
+                    {allStateData?.length > 0 ?
+                      <TextC text={"State"} style={{ color: global.white }} size={ResponsiveSize(10)} font={'Montserrat-SemiBold'} />
+                      :
+                      <ActivityIndicator size={ResponsiveSize(12)} color={global.white} />
+                    }
+                    {state.length > 0 &&
                       <View style={styles.IndicatorDot}></View>
                     }
                   </TouchableOpacity>
                 }
 
-                {/* {country !== "" &&
-                  <TouchableOpacity onPress={() => setTimeVisible(true)} style={styles.filterTab}>
-                    <TextC text={"Time"} style={{ color: global.white }} size={ResponsiveSize(10)} font={'Montserrat-SemiBold'} />
-                    {stayTime !== "" && stayTime !== 1 &&
+                {state.length > 0 &&
+                  <TouchableOpacity disabled={!allCityData?.length > 0} onPress={() => setCityVisible(true)} style={styles.filterTab}>
+                    {allCityData?.length > 0 ?
+                      <TextC text={"City"} style={{ color: global.white }} size={ResponsiveSize(10)} font={'Montserrat-SemiBold'} />
+                      :
+                      <ActivityIndicator size={ResponsiveSize(12)} color={global.white} />
+                    }
+                    {city.length > 0 &&
                       <View style={styles.IndicatorDot}></View>
                     }
                   </TouchableOpacity>
-                } */}
+                }
+
+                {city.length > 0 &&
+                  <TouchableOpacity onPress={() => setTimeVisible(true)} style={styles.filterTab}>
+                    <TextC text={"Time"} style={{ color: global.white }} size={ResponsiveSize(10)} font={'Montserrat-SemiBold'} />
+                    {stayTime.length > 0 &&
+                      <View style={styles.IndicatorDot}></View>
+                    }
+                  </TouchableOpacity>
+                }
               </View>
 
             </View>
@@ -772,18 +858,24 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
         onBackdropPress={() => setPositionVisible(false)}
         statusBarTranslucent={false}>
         <View style={styles.modalTopLayer}>
-          <TextC text={"Position"} font={"Montserrat-Bold"} style={{ paddingBottom: ResponsiveSize(15) }} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: ResponsiveSize(15), width: '100%' }}>
+            <TextC text={"Position"} font={"Montserrat-Bold"} size={ResponsiveSize(15)} />
+            <TouchableOpacity onPress={() => ClearPosition()} style={{ padding: ResponsiveSize(5) }}>
+              <TextC text={"Clear"} font={"Montserrat-Bold"} style={{ color: global.red }} size={ResponsiveSize(11)} />
+            </TouchableOpacity>
+          </View>
+
           {PositionData.map(positions =>
-            <TouchableOpacity onPress={() => AddPositions(positions?.key)} style={styles.SelectOptions}>
+            <TouchableOpacity onPress={() => AddPositions(positions?.data)} style={styles.SelectOptions}>
               <TextC
-                key={positions?.key}
+                key={positions?.data}
                 size={ResponsiveSize(12)}
                 font={'Montserrat-Regular'}
                 text={positions?.label}
                 style={{ color: global.black }}
               />
 
-              {position.includes(positions?.key) && (
+              {position.includes(positions?.data) && (
                 <AntDesign name='checkcircleo' color='green' size={ResponsiveSize(16)} />
               )}
             </TouchableOpacity>
@@ -791,7 +883,6 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
         </View>
       </Modal>
       {/* Position */}
-
 
       {/* AirLine */}
       <Modal
@@ -802,7 +893,12 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
         onBackdropPress={() => setAirLineVisible(false)}
         statusBarTranslucent={false}>
         <View style={styles.AirlineLayer}>
-          <TextC text={"Airline"} font={"Montserrat-Bold"} style={{ paddingBottom: ResponsiveSize(15) }} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: ResponsiveSize(10), width: '100%' }}>
+            <TextC text={"Airline"} font={"Montserrat-Bold"} size={ResponsiveSize(15)} />
+            <TouchableOpacity onPress={() => ClearAirline()} style={{ padding: ResponsiveSize(5) }}>
+              <TextC text={"Clear"} font={"Montserrat-Bold"} style={{ color: global.red }} size={ResponsiveSize(11)} />
+            </TouchableOpacity>
+          </View>
           <ScrollView style={styles.AirlineBoundries} showsVerticalScrollIndicator={false}>
             {allAirLine?.map(AirLine =>
               <TouchableOpacity onPress={() => AddAirLine(AirLine?.airline_id)} style={styles.SelectOptions}>
@@ -824,8 +920,6 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
       </Modal>
       {/* AirLine */}
 
-
-
       {/* Country */}
       <Modal
         isVisible={isCountryVisible}
@@ -835,7 +929,13 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
         onBackdropPress={() => setCountryVisible(false)}
         statusBarTranslucent={false}>
         <View style={styles.CountryModalLayers}>
-          <TextC text={"Country"} font={"Montserrat-Bold"} style={{ paddingBottom: ResponsiveSize(15) }} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: ResponsiveSize(10), width: '100%' }}>
+            <TextC text={"Country"} font={"Montserrat-Bold"} size={ResponsiveSize(15)} />
+            <TouchableOpacity onPress={() => ClearCountry()} style={{ padding: ResponsiveSize(5) }}>
+              <TextC text={"Clear"} font={"Montserrat-Bold"} style={{ color: global.red }} size={ResponsiveSize(11)} />
+            </TouchableOpacity>
+          </View>
+
           <TextInput value={SearchCountry} onChangeText={(e) => setSearchCountry(e)} placeholder='Search Country' style={styles.ModalSearchBar} />
           <ScrollView style={styles.AirlineBoundries} showsVerticalScrollIndicator={false}>
             {allCountriesData?.filter(item => item?.name.toLowerCase().includes(SearchCountry.toLowerCase())).map(AirLine =>
@@ -858,7 +958,6 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
       </Modal>
       {/* Country */}
 
-
       {/* State */}
       <Modal
         isVisible={isStateVisible}
@@ -868,8 +967,14 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
         onBackdropPress={() => setStateVisible(false)}
         statusBarTranslucent={false}>
         <View style={styles.CountryModalLayers}>
-          <TextC text={"State"} font={"Montserrat-Bold"} style={{ paddingBottom: ResponsiveSize(15) }} />
-          <TextInput value={SearchCountry} onChangeText={(e) => setSearchState(e)} placeholder='Search State' style={styles.ModalSearchBar} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: ResponsiveSize(10), width: '100%' }}>
+            <TextC text={"State"} font={"Montserrat-Bold"} size={ResponsiveSize(15)} />
+            <TouchableOpacity onPress={() => ClearState()} style={{ padding: ResponsiveSize(5) }}>
+              <TextC text={"Clear"} font={"Montserrat-Bold"} style={{ color: global.red }} size={ResponsiveSize(11)} />
+            </TouchableOpacity>
+          </View>
+
+          <TextInput value={SearchState} onChangeText={(e) => setSearchState(e)} placeholder='Search State' style={styles.ModalSearchBar} />
           <ScrollView style={styles.AirlineBoundries} showsVerticalScrollIndicator={false}>
             {allStateData?.filter(item => item?.name.toLowerCase().includes(SearchState.toLowerCase())).map(AirLine =>
               <TouchableOpacity onPress={() => AddState(AirLine?.name)} style={styles.SelectOptions}>
@@ -881,7 +986,7 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
                   style={{ color: global.black }}
                 />
 
-                {country == AirLine?.name && (
+                {state == AirLine?.name && (
                   <AntDesign name='checkcircleo' color='green' size={ResponsiveSize(16)} />
                 )}
               </TouchableOpacity>
@@ -890,6 +995,43 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
         </View>
       </Modal>
       {/* State */}
+
+      {/* City */}
+      <Modal
+        isVisible={isCityVisible}
+        style={{ margin: 0, paddingHorizontal: windowWidth * 0.05 }}
+        animationIn={'bounceInUp'}
+        avoidKeyboard={true}
+        onBackdropPress={() => setCityVisible(false)}
+        statusBarTranslucent={false}>
+        <View style={styles.CountryModalLayers}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: ResponsiveSize(10), width: '100%' }}>
+            <TextC text={"City"} font={"Montserrat-Bold"} size={ResponsiveSize(15)} />
+            <TouchableOpacity onPress={() => ClearCity()} style={{ padding: ResponsiveSize(5) }}>
+              <TextC text={"Clear"} font={"Montserrat-Bold"} style={{ color: global.red }} size={ResponsiveSize(11)} />
+            </TouchableOpacity>
+          </View>
+          <TextInput value={SearchCity} onChangeText={(e) => setSearchCity(e)} placeholder='Search City' style={styles.ModalSearchBar} />
+          <ScrollView style={styles.AirlineBoundries} showsVerticalScrollIndicator={false}>
+            {allCityData?.filter(item => item?.toLowerCase().includes(SearchCity.toLowerCase())).map(AirLine =>
+              <TouchableOpacity onPress={() => AddCity(AirLine)} style={styles.SelectOptions}>
+                <TextC
+                  key={AirLine}
+                  size={ResponsiveSize(12)}
+                  font={'Montserrat-Regular'}
+                  text={AirLine}
+                  style={{ color: global.black }}
+                />
+
+                {city == AirLine && (
+                  <AntDesign name='checkcircleo' color='green' size={ResponsiveSize(16)} />
+                )}
+              </TouchableOpacity>
+            )}
+          </ScrollView>
+        </View>
+      </Modal>
+      {/* City */}
 
       {/* Time */}
       <Modal
@@ -900,7 +1042,12 @@ const SearchUser = ({ getAllAirline, getAllCountries,getAllStates}) => {
         onBackdropPress={() => setTimeVisible(false)}
         statusBarTranslucent={false}>
         <View style={styles.modalTopLayer}>
-          <TextC text={"Time"} font={"Montserrat-Bold"} style={{ paddingBottom: ResponsiveSize(15) }} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: ResponsiveSize(10), width: '100%' }}>
+            <TextC text={"Time"} font={"Montserrat-Bold"} size={ResponsiveSize(15)} />
+            <TouchableOpacity onPress={() => ClearTime()} style={{ padding: ResponsiveSize(5) }}>
+              <TextC text={"Clear"} font={"Montserrat-Bold"} style={{ color: global.red }} size={ResponsiveSize(11)} />
+            </TouchableOpacity>
+          </View>
           {TimeData.map(positions =>
             <TouchableOpacity onPress={() => AddTime(positions?.key)} style={styles.SelectOptions}>
               <TextC
