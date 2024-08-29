@@ -128,8 +128,10 @@ const NewGroupScreen = ({ getAllConnections, AllConnectionsReducer }) => {
     const allEventDataLoader = async () => {
         const loadAllevent = await getAllConnections({ page: 1 })
         setRecentChats(loadAllevent)
+        setLoader(false)
     }
     useEffect(() => {
+        setLoader(true)
         allEventDataLoader({ refreshing: false })
     }, []);
 

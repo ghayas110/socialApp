@@ -138,7 +138,7 @@ const MessageList = () => {
         loadRecentChats()
     }, [focus]);
 
-
+    console.log(recentChats, 'recent')
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <StatusBar
@@ -157,7 +157,7 @@ const MessageList = () => {
                         <TextC size={ResponsiveSize(16)} font={'Montserrat-Bold'} text={"Message"} />
                     </View>
                     <View style={styles.logoSide3}>
-                        <TouchableOpacity onPress={() => navigation.navigate("newGroup")} style={{marginRight:ResponsiveSize(6)}}>
+                        <TouchableOpacity onPress={() => navigation.navigate("newGroup")} style={{ marginRight: ResponsiveSize(6) }}>
                             <Feather name='users' color={global.primaryColor} size={ResponsiveSize(20)} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => navigation.navigate("NewMessage")} >
@@ -176,56 +176,110 @@ const MessageList = () => {
                         </View>
                         :
                         <View>
-                            {recentChats !== undefined && recentChats !== "" && recentChats !== null && recentChats.length > 0 ? recentChats?.map(recentChats =>
-                                <TouchableOpacity onPress={() => navigation.navigate('Message', {
-                                    receiverUserId: recentChats?.userDetails?.user_id,
-                                    profile_picture_url: recentChats?.userDetails?.profile_picture_url,
-                                    user_name: recentChats?.userDetails?.user_name
-                                })} style={styles.PostHeader}>
-                                    <View style={{ flexDirection: 'row' }}>
-                                        <ImageBackground
-                                            source={
-                                                recentChats?.userDetails?.profile_picture_url == ''
-                                                    ? require('../assets/icons/avatar.png')
-                                                    : { uri: recentChats?.userDetails?.profile_picture_url }
-                                            }
-                                            style={styles.PostProfileImage}
-                                            resizeMode="cover"></ImageBackground>
-                                        <View style={styles.PostProfileImageBox}>
-                                            <TextC
-                                                size={ResponsiveSize(12)}
-                                                text={recentChats?.userDetails?.user_name}
-                                                font={'Montserrat-Bold'}
-                                            />
-                                            <TextC
-                                                size={ResponsiveSize(10)}
-                                                text={recentChats?.message}
-                                                font={'Montserrat-Medium'}
-                                                style={{ color: global.placeholderColor, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1}
-                                            />
-                                        </View>
-                                    </View>
-                                    <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                        <TimeAgo
-                                            style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(8) }}
-                                            time={recentChats?.created_at}
-                                        />
-                                        {recentChats?.unreadMessagesCount > 0 &&
-                                            <View style={{
-                                                backgroundColor: global.secondaryColor,
-                                                height: ResponsiveSize(15),
-                                                width: ResponsiveSize(15),
-                                                borderRadius: ResponsiveSize(15),
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                marginTop: ResponsiveSize(5)
-                                            }}>
-                                                <TextC font={'Montserrat-Medium'} size={ResponsiveSize(8)} text={recentChats?.unreadMessagesCount} style={{ color: global.white }} />
+                            {recentChats !== undefined && recentChats !== "" && recentChats !== null && recentChats.length > 0 ? recentChats?.map(recentChats => {
+                                return (
+                                    recentChats.type == 'direct' ?
+                                        <TouchableOpacity onPress={() => navigation.navigate('Message', {
+                                            receiverUserId: recentChats?.userDetails?.user_id,
+                                            profile_picture_url: recentChats?.userDetails?.profile_picture_url,
+                                            user_name: recentChats?.userDetails?.user_name
+                                        })} style={styles.PostHeader}>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <ImageBackground
+                                                    source={
+                                                        recentChats?.userDetails?.profile_picture_url == ''
+                                                            ? require('../assets/icons/avatar.png')
+                                                            : { uri: recentChats?.userDetails?.profile_picture_url }
+                                                    }
+                                                    style={styles.PostProfileImage}
+                                                    resizeMode="cover"></ImageBackground>
+                                                <View style={styles.PostProfileImageBox}>
+                                                    <TextC
+                                                        size={ResponsiveSize(12)}
+                                                        text={recentChats?.userDetails?.user_name}
+                                                        font={'Montserrat-Bold'}
+                                                    />
+                                                    <TextC
+                                                        size={ResponsiveSize(10)}
+                                                        text={recentChats?.message}
+                                                        font={'Montserrat-Medium'}
+                                                        style={{ color: global.placeholderColor, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1}
+                                                    />
+                                                </View>
                                             </View>
-                                        }
-                                    </View>
-                                </TouchableOpacity>
+                                            <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                                <TimeAgo
+                                                    style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(8) }}
+                                                    time={recentChats?.created_at}
+                                                />
+                                                {recentChats?.unreadMessagesCount > 0 &&
+                                                    <View style={{
+                                                        backgroundColor: global.secondaryColor,
+                                                        height: ResponsiveSize(15),
+                                                        width: ResponsiveSize(15),
+                                                        borderRadius: ResponsiveSize(15),
+                                                        flexDirection: 'row',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        marginTop: ResponsiveSize(5)
+                                                    }}>
+                                                        <TextC font={'Montserrat-Medium'} size={ResponsiveSize(8)} text={recentChats?.unreadMessagesCount} style={{ color: global.white }} />
+                                                    </View>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
+                                        :
+                                        <TouchableOpacity onPress={() => navigation.navigate('Message', {
+                                            receiverUserId: recentChats?.userDetails?.user_id,
+                                            profile_picture_url: recentChats?.userDetails?.profile_picture_url,
+                                            user_name: recentChats?.userDetails?.user_name
+                                        })} style={styles.PostHeader}>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <ImageBackground
+                                                    source={
+                                                        recentChats?.group?.profile_picture_url == ''
+                                                            ? require('../assets/icons/avatar.png')
+                                                            : { uri: recentChats?.group?.group_image}
+                                                    }
+                                                    style={styles.PostProfileImage}
+                                                    resizeMode="cover"></ImageBackground>
+                                                <View style={styles.PostProfileImageBox}>
+                                                    <TextC
+                                                        size={ResponsiveSize(12)}
+                                                        text={recentChats?.group?.group_name}
+                                                        font={'Montserrat-Bold'}
+                                                    />
+                                                    <TextC
+                                                        size={ResponsiveSize(10)}
+                                                        text={recentChats?.message}
+                                                        font={'Montserrat-Medium'}
+                                                        style={{ color: global.placeholderColor, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1}
+                                                    />
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                                <TimeAgo
+                                                    style={{ fontFamily: "Montserrat-Medium", fontSize: ResponsiveSize(8) }}
+                                                    time={recentChats?.group?.created_at}
+                                                />
+                                                {recentChats?.unreadMessagesCount > 0 &&
+                                                    <View style={{
+                                                        backgroundColor: global.secondaryColor,
+                                                        height: ResponsiveSize(15),
+                                                        width: ResponsiveSize(15),
+                                                        borderRadius: ResponsiveSize(15),
+                                                        flexDirection: 'row',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        marginTop: ResponsiveSize(5)
+                                                    }}>
+                                                        <TextC font={'Montserrat-Medium'} size={ResponsiveSize(8)} text={recentChats?.unreadMessagesCount} style={{ color: global.white }} />
+                                                    </View>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
+                                )
+                            }
                             ) :
                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(50) }}>
                                     <TextC text={'No chats found'} font={'Montserrat-Medium'} size={ResponsiveSize(11)} />

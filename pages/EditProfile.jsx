@@ -59,7 +59,6 @@ const EditProfile = ({
   ];
 
   useEffect(() => {
-    console.log();
     if (GetUserProfileReducer?.data) {
       reset({
         name: GetUserProfileReducer?.data?.user_name,
