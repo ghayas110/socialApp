@@ -223,8 +223,8 @@ const Message = ({ route }) => {
         socket.on('connect').emit('oldMessages', {
             "receiverUserId": route?.params?.receiverUserId,
         }).emit('readMessage', { receiverUserId: route?.params?.receiverUserId }).on('message', (data) => {
-            console.log(data,'message Data')
             if (data?.message.length > 0) {
+                socket.emit('readMessage', { receiverUserId: route?.params?.receiverUserId })
                 setLoader(false)
                 setRecentChats(data?.message);
             }
@@ -274,28 +274,12 @@ const Message = ({ route }) => {
                 "message": newMessage,
                 "receiverUserId": route?.params?.receiverUserId,
             }).on('message', (data) => {
+                socket.emit('readMessage', { receiverUserId: route?.params?.receiverUserId })
                 setNewMessage("")
                 setRecentChats(data?.message);
             })
         }
     }
-
-    const translateX = new Animated.Value(0);
-    const onGestureEvent = Animated.event(
-        [{ nativeEvent: { translationX: translateX } }],
-        { useNativeDriver: true }
-    );
-    const onHandlerStateChange = (itemId) => ({ nativeEvent }) => {
-        if (nativeEvent?.state === State.END) {
-            if (nativeEvent.translationX < -50) {
-                console.log(`Swiped left on item with ID: ${itemId}`);
-            }
-            Animated.spring(translateX, {
-                toValue: 0,
-                useNativeDriver: true,
-            }).start();
-        }
-    };
 
     const renderItem = useCallback((items) => {
         const date = new Date(items.item.created_at);
@@ -319,7 +303,7 @@ const Message = ({ route }) => {
                                             {items?.item?.read_status == "N" ?
                                                 < AntDesign name="check" />
                                                 :
-                                                <FontAwesome6 name="check-double"/>
+                                                <FontAwesome6 name="check-double" />
                                             }
                                         </>
                                     }

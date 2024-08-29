@@ -27,6 +27,10 @@ import MessageList from '../pages/messageList';
 import Message from '../pages/message';
 import NewMessage from '../pages/newMessage.jsx';
 import SearchUser from '../pages/SearchUser.jsx';
+import NewGroupScreen from '../pages/newGroup.jsx';
+import NewGroupSecondScreen from '../pages/newGroupSecond.jsx';
+
+
 
 const EventStackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -85,6 +89,12 @@ const HomeStackNavigation = () => {
       <Stack.Screen options={{
         headerShown: false, navigationBarHidden: true,
       }} name="NewMessage" component={NewMessage} />
+      <Stack.Screen options={{
+        headerShown: false, navigationBarHidden: true,
+      }} name="newGroup" component={NewGroupScreen} />
+      <Stack.Screen options={{
+        headerShown: false, navigationBarHidden: true,
+      }} name="NewGroupSecondScreen" component={NewGroupSecondScreen} />
     </Stack.Navigator>
   )
 }

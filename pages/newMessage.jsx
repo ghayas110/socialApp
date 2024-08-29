@@ -182,7 +182,7 @@ const NewMessage = ({ getAllConnections, AllConnectionsReducer }) => {
                                 </TouchableOpacity>
                             ) :
                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(50) }}>
-                                    <TextC text={'No chat found'} font={'Montserrat-Medium'} size={ResponsiveSize(11)} />
+                                    <TextC text={'No Connections found'} font={'Montserrat-Medium'} size={ResponsiveSize(11)} />
                                 </View>
                             }
                         </View>

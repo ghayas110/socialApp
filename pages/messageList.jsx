@@ -22,6 +22,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import TimeAgo from '@manu_omg/react-native-timeago';
 import { baseUrl } from '../store/config.json'
 import { useNavigation, useIsFocused } from "@react-navigation/native";
+import Feather from 'react-native-vector-icons/Feather'
+import Entypo from 'react-native-vector-icons/Entypo'
+
+
 
 const MessageList = () => {
     const focus = useIsFocused();
@@ -111,26 +115,28 @@ const MessageList = () => {
     const [loader, setLoader] = useState(false)
 
     const loadRecentChats = async () => {
-        const Token = await AsyncStorage.getItem('Token');
-        const socket = io(`${baseUrl}/chat`, {
-            transports: ['websocket'],
-            extraHeaders: {
-                'x-api-key': "TwillioAPI",
-                'accesstoken': `Bearer ${Token}`
-            }
-        });
-        socket.on('connect').on('chatList', (data) => {
-            console.log('chat list', data)
-            setLoader(false)
-            setRecentChats(data);
-        })
+        if (focus == true) {
+            const Token = await AsyncStorage.getItem('Token');
+            const socket = io(`${baseUrl}/chat`, {
+                transports: ['websocket'],
+                extraHeaders: {
+                    'x-api-key': "TwillioAPI",
+                    'accesstoken': `Bearer ${Token}`
+                }
+            });
+            socket.on('connect').on('chatList', (data) => {
+                console.log('chat list', data)
+                setLoader(false)
+                setRecentChats(data);
+            })
+        }
     }
 
 
     useEffect(() => {
         setLoader(true)
         loadRecentChats()
-    }, []);
+    }, [focus]);
 
 
     return (
@@ -150,9 +156,14 @@ const MessageList = () => {
                     <View style={styles.logoSide2}>
                         <TextC size={ResponsiveSize(16)} font={'Montserrat-Bold'} text={"Message"} />
                     </View>
-                    <TouchableOpacity onPress={() => navigation.navigate("NewMessage")} style={styles.logoSide3}>
-                        <AntDesign name='plus' color={global.primaryColor} size={ResponsiveSize(22)} />
-                    </TouchableOpacity>
+                    <View style={styles.logoSide3}>
+                        <TouchableOpacity onPress={() => navigation.navigate("newGroup")} style={{marginRight:ResponsiveSize(6)}}>
+                            <Feather name='users' color={global.primaryColor} size={ResponsiveSize(20)} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("NewMessage")} >
+                            <Entypo name='plus' color={global.primaryColor} size={ResponsiveSize(22)} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View style={styles.bodyWrapper}>
                     <View style={styles.SearchInputWrapper}>
@@ -217,7 +228,7 @@ const MessageList = () => {
                                 </TouchableOpacity>
                             ) :
                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(50) }}>
-                                    <TextC text={'No chat found'} font={'Montserrat-Medium'} size={ResponsiveSize(11)} />
+                                    <TextC text={'No chats found'} font={'Montserrat-Medium'} size={ResponsiveSize(11)} />
                                 </View>
                             }
                         </View>
