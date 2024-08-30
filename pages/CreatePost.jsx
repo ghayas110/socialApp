@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   Platform,
   View,
@@ -11,31 +11,30 @@ import {
   ActivityIndicator,
   NativeEventEmitter,
   NativeModules,
+  Linking,
 } from 'react-native';
-import { showEditor } from 'react-native-video-trim';
-import { request, PERMISSIONS } from 'react-native-permissions';
+import {showEditor} from 'react-native-video-trim';
+import {request, PERMISSIONS} from 'react-native-permissions';
 import RNFS from 'react-native-fs';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import TextC from '../components/text/text';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { color } from '@rneui/base';
-import { global, ResponsiveSize } from '../components/constant';
+import {color} from '@rneui/base';
+import {global, ResponsiveSize} from '../components/constant';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import CreatePostHeader from '../components/mainHeader/createPostHeader';
 import Carousel from 'react-native-reanimated-carousel';
-import Video, { VideoRef } from 'react-native-video';
+import Video, {VideoRef} from 'react-native-video';
 import PhotoEditor from '@baronha/react-native-photo-editor';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
+import {useBottomSheet} from '../components/bottomSheet/BottomSheet';
 import ButtonC from '../components/button';
-import { createThumbnail } from 'react-native-create-thumbnail';
+import {createThumbnail} from 'react-native-create-thumbnail';
 import FastImage from 'react-native-fast-image';
-import { FlashList } from "@shopify/flash-list";
-import { ImageZoom } from '@likashefqet/react-native-image-zoom';
-
-
+import {FlashList} from '@shopify/flash-list';
+import {ImageZoom} from '@likashefqet/react-native-image-zoom';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -55,7 +54,7 @@ const CreatePost = () => {
   });
   const [selectMulti, setSelectMulti] = useState(false);
   const [multiContent, setMultiContent] = useState([]);
-  const { openBottomSheet, closeBottomSheet } = useBottomSheet();
+  const {openBottomSheet, closeBottomSheet} = useBottomSheet();
   const [temp, setTemp] = useState();
   const [multiVideoId, isMultiVideoId] = useState();
   const [paused, setPause] = useState(paused);
@@ -79,7 +78,7 @@ const CreatePost = () => {
       borderBottomWidth: 1,
       borderBottomColor: global.description,
       overflow: 'hidden',
-      backgroundColor: '#f7f7f7'
+      backgroundColor: '#f7f7f7',
     },
     uploadControls: {
       height: 60,
@@ -108,7 +107,7 @@ const CreatePost = () => {
       width: '100%',
       height: windowHeight * 0.43,
       resizeMode: imageResize,
-      position: 'relative'
+      position: 'relative',
     },
     box: {
       height: ResponsiveSize(90),
@@ -207,10 +206,9 @@ const CreatePost = () => {
       top: ResponsiveSize(20),
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center'
-    }
+      justifyContent: 'center',
+    },
   });
-
 
   const handleOpenSheet = (id, content, type, originalPath, isEdited) => {
     openBottomSheet(
@@ -226,21 +224,23 @@ const CreatePost = () => {
               font={'Montserrat-Bold'}
               text={`Change ${isEditAvailable?.content}?`}
               size={ResponsiveSize(16)}
-              style={{ color: global.black }}
+              style={{color: global.black}}
             />
             <TextC
               font={'Montserrat-Medium'}
-              text={`if you change this ${isEditAvailable?.content == 'Video' ? 'video' : 'image'
-                } now, you will lost edited ${isEditAvailable?.content == 'Video' ? 'video' : 'image'
-                }.`}
+              text={`if you change this ${
+                isEditAvailable?.content == 'Video' ? 'video' : 'image'
+              } now, you will lost edited ${
+                isEditAvailable?.content == 'Video' ? 'video' : 'image'
+              }.`}
               size={ResponsiveSize(11)}
-              style={{ color: global.placeholderColor }}
+              style={{color: global.placeholderColor}}
             />
           </View>
 
-          <View style={{ paddingTop: ResponsiveSize(20) }}>
+          <View style={{paddingTop: ResponsiveSize(20)}}>
             <TouchableOpacity
-              style={{ paddingVertical: ResponsiveSize(10) }}
+              style={{paddingVertical: ResponsiveSize(10)}}
               onPress={() => {
                 closeBottomSheet();
               }}>
@@ -248,21 +248,26 @@ const CreatePost = () => {
                 font={'Montserrat-Medium'}
                 text={'keep editing'}
                 size={ResponsiveSize(14)}
-                style={{ color: global.black }}
+                style={{color: global.black}}
               />
             </TouchableOpacity>
             <TouchableOpacity
-              style={{ paddingVertical: ResponsiveSize(10) }}
+              style={{paddingVertical: ResponsiveSize(10)}}
               onPress={() => {
                 if (selectMulti == true) {
-                  MultListAdderSecond(id, content, type, originalPath, isEdited)
+                  MultListAdderSecond(
+                    id,
+                    content,
+                    type,
+                    originalPath,
+                    isEdited,
+                  );
                   setIsEditAvailable({
                     value: false,
                     content: 'Image',
                   });
                   closeBottomSheet();
-                }
-                else {
+                } else {
                   setCurrentPreview(temp);
                   setIsEditAvailable({
                     value: false,
@@ -273,10 +278,11 @@ const CreatePost = () => {
               }}>
               <TextC
                 font={'Montserrat-Medium'}
-                text={`change ${isEditAvailable?.content == 'Video' ? 'video' : 'image'
-                  }`}
+                text={`change ${
+                  isEditAvailable?.content == 'Video' ? 'video' : 'image'
+                }`}
                 size={ResponsiveSize(14)}
-                style={{ color: global.red }}
+                style={{color: global.red}}
               />
             </TouchableOpacity>
           </View>
@@ -286,16 +292,30 @@ const CreatePost = () => {
     );
   };
 
+  const [isBlocked, setIsBlocked] = useState('');
+
+  const LoadPermission = async () => {
+    Linking.openSettings();
+  };
+
   useEffect(() => {
     if (Platform.OS === 'android') {
       request(PERMISSIONS.ANDROID.READ_MEDIA_VIDEO).then(result => {
         request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES).then(result => {
-          loadImages();
+          if (result == 'blocked') {
+            setIsBlocked('blocked');
+          } else {
+            loadImages();
+          }
         });
       });
     } else if (Platform.OS === 'ios') {
       request(PERMISSIONS.IOS.PHOTO_LIBRARY).then(result => {
-        loadImages();
+        if (result == 'blocked') {
+          setIsBlocked('blocked');
+        } else {
+          loadImages();
+        }
       });
     }
     return () => {
@@ -305,13 +325,13 @@ const CreatePost = () => {
 
   const ImageEditorContain = async path => {
     const result = await PhotoEditor.open({
-      path:` file://${path?.content}`,
+      path: ` file://${path?.content}`,
     });
     setCurrentPreview(prev => ({
       ...prev,
       content: result?.split('file://')[1],
     }));
-    setIsEditAvailable({ value: true, content: 'Image' });
+    setIsEditAvailable({value: true, content: 'Image'});
   };
   const ImageEditorContainMulti = async (path, id) => {
     const result = await PhotoEditor.open({
@@ -319,10 +339,12 @@ const CreatePost = () => {
     });
     setMultiContent(prev =>
       prev?.map(item =>
-        item.id == id ? { ...item, content: result?.split('file://')[1], isEdited: true } : item,
+        item.id == id
+          ? {...item, content: result?.split('file://')[1], isEdited: true}
+          : item,
       ),
     );
-    setIsEditAvailable({ value: true, content: 'Image' });
+    setIsEditAvailable({value: true, content: 'Image'});
   };
   const [hasMoreContent, setHasMoreContent] = useState(true);
   const loadImages = async () => {
@@ -333,17 +355,16 @@ const CreatePost = () => {
       let imageFiles = [];
       if (Platform.OS === 'android') {
         imageFiles = await RNFS.readDir(
-          RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera'
+          RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera',
         );
       } else if (Platform.OS === 'ios') {
-        imageFiles = await RNFS.readDir(
-          '/var/mobile/Media/DCIM/100APPLE'
-        );
+        imageFiles = await RNFS.readDir('/var/mobile/Media/DCIM/100APPLE');
       }
 
+      console.log(imageFiles, 'imageFiles');
       const imageBatch = imageFiles.slice(
         page * PAGE_SIZE,
-        (page + 1) * PAGE_SIZE
+        (page + 1) * PAGE_SIZE,
       );
 
       if (imageBatch.length === 0) {
@@ -353,10 +374,13 @@ const CreatePost = () => {
       }
 
       const videoContentPromises = imageBatch.map(async item => {
-        const isVideo = item.name.endsWith('.mp4') || item.name.endsWith('.mov') || item.name.endsWith('.MP4');
+        const isVideo =
+          item.name.endsWith('.mp4') ||
+          item.name.endsWith('.mov') ||
+          item.name.endsWith('.MP4');
         if (isVideo) {
           if (Platform.OS === 'ios') {
-            const thumbnail = await createThumbnail({ url: item.path });
+            const thumbnail = await createThumbnail({url: item.path});
             return {
               id: item.name,
               content: thumbnail?.path,
@@ -395,12 +419,11 @@ const CreatePost = () => {
 
   const [mediaChangeLoader, setMediaChangeLoader] = useState(false);
 
-
   const MultListAdderSecond = (id, content, type, originalPath, isEdited) => {
     setMultiContent(prevMultiContent => {
       const exists = prevMultiContent.some(item => item.id === id);
       const indexToDelete = prevMultiContent.findIndex(item => item.id === id);
-      const existedArray = prevMultiContent?.find(data => data.id == id)
+      const existedArray = prevMultiContent?.find(data => data.id == id);
       const updatedMultiContent = [...prevMultiContent];
       if (!exists) {
         updatedMultiContent.push({
@@ -408,7 +431,7 @@ const CreatePost = () => {
           content: content,
           type: type,
           originalPath: originalPath,
-          isEdited: isEdited
+          isEdited: isEdited,
         });
       } else {
         updatedMultiContent.splice(indexToDelete, 1);
@@ -420,7 +443,7 @@ const CreatePost = () => {
     setMultiContent(prevMultiContent => {
       const exists = prevMultiContent.some(item => item.id === id);
       const indexToDelete = prevMultiContent.findIndex(item => item.id === id);
-      const existedArray = prevMultiContent?.find(data => data.id == id)
+      const existedArray = prevMultiContent?.find(data => data.id == id);
       const updatedMultiContent = [...prevMultiContent];
       if (!exists) {
         updatedMultiContent.push({
@@ -428,13 +451,12 @@ const CreatePost = () => {
           content: content,
           type: type,
           originalPath: originalPath,
-          isEdited: isEdited
+          isEdited: isEdited,
         });
       } else {
         if (existedArray.isEdited) {
-          handleOpenSheet(id, content, type, originalPath, isEdited)
-        }
-        else {
+          handleOpenSheet(id, content, type, originalPath, isEdited);
+        } else {
           updatedMultiContent.splice(indexToDelete, 1);
         }
       }
@@ -450,7 +472,7 @@ const CreatePost = () => {
           setMultiContent(prev =>
             prev?.map(item =>
               item.id == multiVideoId
-                ? { ...item, originalPath: event?.outputPath, isEdited: true }
+                ? {...item, originalPath: event?.outputPath, isEdited: true}
                 : item,
             ),
           );
@@ -458,7 +480,7 @@ const CreatePost = () => {
             ...prev,
             originalPath: event?.outputPath,
           }));
-          setIsEditAvailable({ value: true, content: 'Video' });
+          setIsEditAvailable({value: true, content: 'Video'});
           setPause(true);
           break;
         }
@@ -470,96 +492,89 @@ const CreatePost = () => {
   }, [multiVideoId]);
 
   const VideoEditorMultiple = async (path, id) => {
-    console.log(path,id)
+    console.log(path, id);
     isMultiVideoId(id);
     showEditor(path, {
       saveToPhoto: true,
     });
   };
-  const renderItem = useCallback(({ item, index }) => {
-    const inde = index + 1;
-    return (
-      <TouchableOpacity
-        key={inde}
-        onLongPress={() => {
-          setSelectMulti(!selectMulti);
-          setMultiContent([]);
-        }}
-        onPress={() => {
-          if (selectMulti == true) {
-            MultListAdder(
-              inde,
-              item?.content,
-              item?.type,
-              item?.originalPath,
-              false
-            );
-          }
-          else {
-            if (isEditAvailable.value == true) {
-              setTemp(item);
-              handleOpenSheet();
-            } else {
-              setCurrentPreview(item)
-            }
-          }
-          setPause(true)
-        }}
-        style={styles.box}>
-        <FastImage
-          style={{ width: windowWidth * 0.25, height: ResponsiveSize(90) }}
-          source={{
-            uri: 'file://' + item?.content,
-            priority: FastImage.priority.high,
+  const renderItem = useCallback(
+    ({item, index}) => {
+      const inde = index + 1;
+      return (
+        <TouchableOpacity
+          key={inde}
+          onLongPress={() => {
+            setSelectMulti(!selectMulti);
+            setMultiContent([]);
           }}
-          resizeMode={FastImage.resizeMode.cover}
-        />
-        {selectMulti && (
-          <>
-            <TouchableOpacity style={styles.MultiIndicator}>
-              {multiContent.length > 0
-                ? multiContent
-                  .filter(cont => cont.id == inde)
-                  .map((item, index) => (
-                    <TextC
-                      key={index}
-                      style={{ color: 'white' }}
-                      size={11}
-                      text={
-                        multiContent.findIndex(
-                          item => item.id === inde,
-                        ) + 1
-                      }
-                      font={'Montserrat-Regular'}
-                    />
-                  ))
-                : ''}
-            </TouchableOpacity>
-          </>
-        )}
-        {item?.type == 'video' ? (
-          <View style={styles.videoIndicator}>
-            <Entypo
-              name="controller-play"
-              color={global.white}
-              size={22}
-            />
-          </View>
-        ) : (
-          ''
-        )}
-      </TouchableOpacity>
-    );
-  }, [currentPreview, selectMulti, multiContent, isEditAvailable.value, temp]);
-
+          onPress={() => {
+            if (selectMulti == true) {
+              MultListAdder(
+                inde,
+                item?.content,
+                item?.type,
+                item?.originalPath,
+                false,
+              );
+            } else {
+              if (isEditAvailable.value == true) {
+                setTemp(item);
+                handleOpenSheet();
+              } else {
+                setCurrentPreview(item);
+              }
+            }
+            setPause(true);
+          }}
+          style={styles.box}>
+          <FastImage
+            style={{width: windowWidth * 0.25, height: ResponsiveSize(90)}}
+            source={{
+              uri: 'file://' + item?.content,
+              priority: FastImage.priority.high,
+            }}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+          {selectMulti && (
+            <>
+              <TouchableOpacity style={styles.MultiIndicator}>
+                {multiContent.length > 0
+                  ? multiContent
+                      .filter(cont => cont.id == inde)
+                      .map((item, index) => (
+                        <TextC
+                          key={index}
+                          style={{color: 'white'}}
+                          size={11}
+                          text={
+                            multiContent.findIndex(item => item.id === inde) + 1
+                          }
+                          font={'Montserrat-Regular'}
+                        />
+                      ))
+                  : ''}
+              </TouchableOpacity>
+            </>
+          )}
+          {item?.type == 'video' ? (
+            <View style={styles.videoIndicator}>
+              <Entypo name="controller-play" color={global.white} size={22} />
+            </View>
+          ) : (
+            ''
+          )}
+        </TouchableOpacity>
+      );
+    },
+    [currentPreview, selectMulti, multiContent, isEditAvailable.value, temp],
+  );
 
   const handleEndReached = () => {
     if (!loading && hasMoreContent) {
       loadImages();
     }
   };
-
-  console.log(currentPreview?.originalPath)
 
   return (
     <>
@@ -570,28 +585,33 @@ const CreatePost = () => {
           post={selectMulti ? multiContent : currentPreview}
         />
         <View style={styles.FirstImagePreview}>
-          {multiContent.length >= 1 ?
+          {multiContent.length >= 1 ? (
             <View style={styles.carouselCounter}>
               <TextC
                 size={ResponsiveSize(12)}
                 text={`${currentCarouselIndex}`}
                 font={'Montserrat-Regular'}
-                style={{ color: global.white }}
+                style={{color: global.white}}
               />
               <TextC
                 size={ResponsiveSize(12)}
                 text={'/'}
                 font={'Montserrat-Regular'}
-                style={{ color: global.white, paddingHorizontal: ResponsiveSize(2) }}
+                style={{
+                  color: global.white,
+                  paddingHorizontal: ResponsiveSize(2),
+                }}
               />
               <TextC
                 size={ResponsiveSize(12)}
                 text={`${multiContent.length}`}
                 font={'Montserrat-Regular'}
-                style={{ color: global.white }}
+                style={{color: global.white}}
               />
             </View>
-            : ""}
+          ) : (
+            ''
+          )}
           <>
             {multiContent.length >= 1 ? (
               <>
@@ -602,17 +622,19 @@ const CreatePost = () => {
                   autoPlay={false}
                   data={multiContent}
                   scrollAnimationDuration={1000}
-                  onSnapToItem={(index) => setCurrentCarouselIndex(index + 1)}
-                  renderItem={(items) => {
+                  onSnapToItem={index => setCurrentCarouselIndex(index + 1)}
+                  renderItem={items => {
                     return (
                       <View style={styles.FirstImage}>
                         {items?.item.type == 'video' ? (
                           <>
                             <Pressable
                               onPress={() => setPause(!paused)}
-                              style={{ position: 'relative' }}>
+                              style={{position: 'relative'}}>
                               <Video
-                                source={{ uri: 'file://' + items?.item?.originalPath }}
+                                source={{
+                                  uri: 'file://' + items?.item?.originalPath,
+                                }}
                                 ref={videoRef1}
                                 style={styles.FirstImage}
                                 paused={paused}
@@ -632,15 +654,20 @@ const CreatePost = () => {
                           </>
                         ) : (
                           <>
-                            <ImageZoom resizeMode={imageResize} ref={CurrentIndex} key={'1'} style={styles.FirstImage} uri={'file://' + items?.item?.content} />
-
+                            <ImageZoom
+                              resizeMode={imageResize}
+                              ref={CurrentIndex}
+                              key={'1'}
+                              style={styles.FirstImage}
+                              uri={'file://' + items?.item?.content}
+                            />
                           </>
                         )}
                       </View>
                     );
                   }}
                 />
-                {multiContent[currentCarouselIndex - 1]?.type == 'video' ?
+                {multiContent[currentCarouselIndex - 1]?.type == 'video' ? (
                   <View style={styles.uploadControls}>
                     <TouchableOpacity
                       onPress={() => {
@@ -661,35 +688,27 @@ const CreatePost = () => {
                     <TouchableOpacity
                       onPress={() =>
                         setImageResize(
-                          imageResize == 'cover'
-                            ? 'contain'
-                            : 'cover',
+                          imageResize == 'cover' ? 'contain' : 'cover',
                         )
                       }
                       style={styles.ImageResizeBtn}>
-                      <Ionicons
-                        name="resize"
-                        color={'white'}
-                        size={15}
-                      />
+                      <Ionicons name="resize" color={'white'} size={15} />
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       onPress={() => {
-                          VideoEditorMultiple(
-                            `file://${multiContent[currentCarouselIndex - 1]?.originalPath}`,
-                            multiContent[currentCarouselIndex - 1]?.id,
-                          )
+                        VideoEditorMultiple(
+                          `file://${
+                            multiContent[currentCarouselIndex - 1]?.originalPath
+                          }`,
+                          multiContent[currentCarouselIndex - 1]?.id,
+                        );
                       }}
                       style={styles.ImageResizeBtn}>
-                      <AntDesign
-                        name="edit"
-                        color={'white'}
-                        size={15}
-                      />
+                      <AntDesign name="edit" color={'white'} size={15} />
                     </TouchableOpacity>
                   </View>
-                  :
+                ) : (
                   <View style={styles.uploadControls}>
                     <TouchableOpacity
                       onPress={() => {
@@ -715,28 +734,22 @@ const CreatePost = () => {
                         )
                       }
                       style={styles.ImageResizeBtn}>
-                      <Ionicons
-                        name="resize"
-                        color={'white'}
-                        size={15}
-                      />
+                      <Ionicons name="resize" color={'white'} size={15} />
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
                         ImageEditorContainMulti(
-                          `file://${multiContent[currentCarouselIndex - 1]?.content}`,
+                          `file://${
+                            multiContent[currentCarouselIndex - 1]?.content
+                          }`,
                           multiContent[currentCarouselIndex - 1]?.id,
                         );
                       }}
                       style={styles.ImageResizeBtn}>
-                      <AntDesign
-                        name="edit"
-                        color={'white'}
-                        size={15}
-                      />
+                      <AntDesign name="edit" color={'white'} size={15} />
                     </TouchableOpacity>
                   </View>
-                  }
+                )}
               </>
             ) : (
               <>
@@ -744,11 +757,11 @@ const CreatePost = () => {
                   <>
                     <Pressable
                       onPress={() => setPause(!paused)}
-                      style={{ position: 'relative' }}>
+                      style={{position: 'relative'}}>
                       <Video
                         repeat={true}
                         source={{
-                          uri: 'file://' + currentPreview?.originalPath
+                          uri: 'file://' + currentPreview?.originalPath,
                         }}
                         ref={videoRef2}
                         style={styles.FirstImage}
@@ -806,13 +819,19 @@ const CreatePost = () => {
                   </>
                 ) : (
                   <>
-                    <ImageZoom resizeMode={imageResize} ref={CurrentIndex} key={'1'} style={styles.FirstImage} uri={'file://' + currentPreview?.content} />
+                    <ImageZoom
+                      resizeMode={imageResize}
+                      ref={CurrentIndex}
+                      key={'1'}
+                      style={styles.FirstImage}
+                      uri={'file://' + currentPreview?.content}
+                    />
                     <View style={styles.uploadControls}>
                       <TouchableOpacity
                         onPress={() => {
                           setSelectMulti(!selectMulti);
                           setMultiContent([]);
-                          setIsEditAvailable({ value: false, content: 'Image' });
+                          setIsEditAvailable({value: false, content: 'Image'});
                         }}
                         style={styles.ImageResizeBtn}>
                         <MaterialCommunityIcons
@@ -843,35 +862,73 @@ const CreatePost = () => {
               </>
             )}
           </>
-        </View >
-        {
-          mediaChangeLoader ? (
-            <View
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingTop: ResponsiveSize(80),
-              }}>
-              <ActivityIndicator size="small" color={global.primaryColor} />
-            </View >
-          ) : (
-            <FlatList
-              data={content}
-              numColumns={4}
-              refreshing={loading}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-              onEndReached={handleEndReached}
-              onEndReachedThreshold={0.5}
-              ListFooterComponent={
-                loading ? (
-                  <ActivityIndicator size={'small'} color={global.primaryColor} />
-                ) : null
-              }
-            />
-          )}
-      </SafeAreaView >
+        </View>
+        {mediaChangeLoader ? (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingTop: ResponsiveSize(80),
+            }}>
+            <ActivityIndicator size="small" color={global.primaryColor} />
+          </View>
+        ) : (
+          <>
+            {isBlocked == 'blocked' ? (
+              <>
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <TextC
+                    size={ResponsiveSize(11)}
+                    font={'Montserrat-Medium'}
+                    text={"You don't have access to media library"}
+                    style={{color: global.primaryColor}}
+                  />
+                  <TouchableOpacity
+                    onPress={LoadPermission}
+                    style={{
+                      marginTop: ResponsiveSize(10),
+                      borderWidth: ResponsiveSize(1),
+                      paddingHorizontal: ResponsiveSize(10),
+                      paddingVertical: ResponsiveSize(8),
+                      borderRadius: ResponsiveSize(5),
+                    }}>
+                    <TextC
+                      size={ResponsiveSize(11)}
+                      font={'Montserrat-Medium'}
+                      text={'Go to setting'}
+                      style={{color: global.black}}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              <FlatList
+                data={content}
+                numColumns={4}
+                refreshing={loading}
+                renderItem={renderItem}
+                keyExtractor={item => item.id}
+                onEndReached={handleEndReached}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={
+                  loading ? (
+                    <ActivityIndicator
+                      size={'small'}
+                      color={global.primaryColor}
+                    />
+                  ) : null
+                }
+              />
+            )}
+          </>
+        )}
+      </SafeAreaView>
     </>
   );
 };
