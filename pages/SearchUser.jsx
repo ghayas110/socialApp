@@ -300,15 +300,6 @@ const SearchUser = ({ getAllAirline, getAllCountries, getAllStates, getAllCities
 
 
   const SearchUsers = async () => {
-    console.log({
-      airline_ids: airLine,
-      check_in_cities: city,
-      user_types: position,
-      time_left: stayTime,
-      search: searchText,
-      countries: country,
-      states: state
-    }, 'dadasda')
     setLoading(true);
     const Token = await AsyncStorage.getItem('Token');
     const response = await fetch(
@@ -555,8 +546,6 @@ const SearchUser = ({ getAllAirline, getAllCountries, getAllStates, getAllCities
             <View style={styles.DropdownSeeker}>
               <TextC text={"Sort by"} font={'Montserrat-Bold'} />
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(10) }}>
-
-
                 <TouchableOpacity onPress={() => setPositionVisible(true)} style={styles.filterTab}>
                   <TextC text={"Position"} style={{ color: global.white }} size={ResponsiveSize(10)} font={'Montserrat-SemiBold'} />
                   {position.length > 0 &&
@@ -648,182 +637,62 @@ const SearchUser = ({ getAllAirline, getAllCountries, getAllStates, getAllCities
                             text={data.user_name}
                             font={'Montserrat-Bold'}
                             size={ResponsiveSize(12)}
-                            style={{ width: ResponsiveSize(160) }}
+                            style={{ width: ResponsiveSize(80) }}
                             ellipsizeMode={'tail'}
                             numberOfLines={1}
-                          />
-                          <TextC
-                            text={
-                              data.user_type == 'PILOT'
-                                ? 'Pilot'
-                                : data.user_type == 'FLIGHT ATTENDANT'
-                                  ? 'Flight attendent'
-                                  : data?.user_type == 'TECHNICIAN'
-                                    ? 'Technician'
-                                    : ''
-                            }
-                            style={{
-                              color: global.placeholderColor,
-                              paddingVertical: ResponsiveSize(2),
-                            }}
-                            font={'Montserrat-Medium'}
-                            size={ResponsiveSize(11)}
                           />
                         </View>
                       </View>
 
-                      {/* <TextC
-                        size={ResponsiveSize(10)}
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <TextC
+                          text={data.airline_abbreviation}
+                          style={{
+                            color: global.placeholderColor,
+                            paddingVertical: ResponsiveSize(2),
+                          }}
+                          font={'Montserrat-Medium'}
+                          size={ResponsiveSize(11)}
+                        />
+                        <TextC
+                          text={"|"}
+                          style={{
+                            color: global.placeholderColor,
+                            paddingHorizontal: ResponsiveSize(2),
+                            paddingBottom: ResponsiveSize(2),
+                          }}
+                          font={'Montserrat-Medium'}
+                          size={ResponsiveSize(11)}
+                        />
+                        <TextC
+                          text={
+                            data.user_type == 'PILOT'
+                              ? 'P'
+                              : data.user_type == 'FLIGHT ATTENDANT'
+                                ? 'FA'
+                                : data?.user_type == 'TECHNICIAN'
+                                  ? 'TE'
+                                  : ''
+                          }
+                          style={{
+                            color: global.placeholderColor,
+                            paddingVertical: ResponsiveSize(2),
+                          }}
+                          font={'Montserrat-Medium'}
+                          size={ResponsiveSize(11)}
+                        />
+                      </View>
+
+
+                      <TextC
+                        text={`${data.checkin_remaining_time}h`}
+                        style={{
+                          color: global.placeholderColor,
+                          paddingVertical: ResponsiveSize(2),
+                        }}
                         font={'Montserrat-Medium'}
-                        text={'Connect'}
-                        style={{ color: 'red' }}
-                      /> */}
-                      {/* {data?.connectionsStatus == null ? (
-                        <TouchableOpacity
-                          disabled={userConnectLoading.value}
-                          style={{
-                            color: global.white,
-                            backgroundColor: global.secondaryColor,
-                            paddingHorizontal: ResponsiveSize(15),
-                            paddingVertical: ResponsiveSize(3),
-                            borderRadius: ResponsiveSize(10),
-                            overflow: 'hidden',
-                          }}
-                          onPress={() => ConnectUser(data?.user_id)}>
-                          {userConnectLoading.value == true &&
-                          userConnectLoading.id == data?.user_id ? (
-                            <ActivityIndicator
-                              size={'small'}
-                              color={global.white}
-                            />
-                          ) : (
-                            <TextC
-                              size={ResponsiveSize(10)}
-                              font={'Montserrat-Medium'}
-                              text={'Connect'}
-                              style={{color: 'white'}}
-                            />
-                          )}
-                        </TouchableOpacity>
-                      ) : data?.connectionsStatus?.status == 'REJECTED' ? (
-                        <Pressable
-                          disabled={userConnectLoading.value}
-                          style={{
-                            color: global.white,
-                            backgroundColor: global.secondaryColor,
-                            paddingHorizontal: ResponsiveSize(15),
-                            paddingVertical: ResponsiveSize(3),
-                            borderRadius: ResponsiveSize(10),
-                            overflow: 'hidden',
-                          }}
-                          >
-                          {userConnectLoading.value == true &&
-                          userConnectLoading.id == data?.user_id ? (
-                            <ActivityIndicator
-                              size={'small'}
-                              color={global.primaryColor}
-                            />
-                          ) : (
-                            <TextC
-                              size={ResponsiveSize(10)}
-                              font={'Montserrat-Medium'}
-                              text={'Connect'}
-                              style={{color: 'white'}}
-                            />
-                          )}
-                        </Pressable>
-                      ) : data?.connectionsStatus?.status == 'PENDING' &&
-                        data?.connectionsStatus?.sender == userId ? (
-                        <Pressable
-                          disabled={userConnectLoading.value}
-                          style={{
-                            color: global.white,
-                            backgroundColor: global.red,
-                            paddingHorizontal: ResponsiveSize(15),
-                            paddingVertical: ResponsiveSize(3),
-                            borderRadius: ResponsiveSize(10),
-                            overflow: 'hidden',
-                          }}
-                          >
-                          {userConnectLoading.value == true &&
-                          userConnectLoading.id == data?.user_id ? (
-                            <ActivityIndicator
-                              size={'small'}
-                              color={global.white}
-                            />
-                          ) : (
-                            <TextC
-                              size={ResponsiveSize(10)}
-                              font={'Montserrat-Medium'}
-                              text={'Pending'}
-                              style={{
-                                color: global.white,
-                              }}
-                            />
-                          )}
-                        </Pressable>
-                      ) : data?.connectionsStatus?.status == 'PENDING' &&
-                        data?.connectionsStatus?.receiver_id == userId ? (
-                        <Pressable
-                          disabled={userConnectLoading.value}
-                          style={{
-                            color: global.white,
-                            backgroundColor: global.red,
-                            paddingHorizontal: ResponsiveSize(15),
-                            paddingVertical: ResponsiveSize(3),
-                            borderRadius: ResponsiveSize(10),
-                            overflow: 'hidden',
-                          }}
-                          >
-                          {userConnectLoading.value == true &&
-                          userConnectLoading.id == data?.user_id ? (
-                            <ActivityIndicator
-                              size={'small'}
-                              color={global.white}
-                            />
-                          ) : (
-                            <TextC
-                              size={ResponsiveSize(10)}
-                              font={'Montserrat-Medium'}
-                              text={'Pending'}
-                              style={{
-                                color: global.white,
-                              }}
-                            />
-                          )}
-                        </Pressable>
-                      ) : data?.connectionsStatus?.status == 'ACCEPTED' ? (
-                        <Pressable
-                          disabled={userConnectLoading.value}
-                          style={{
-                            color: global.white,
-                            backgroundColor: global.red,
-                            paddingHorizontal: ResponsiveSize(15),
-                            paddingVertical: ResponsiveSize(3),
-                            borderRadius: ResponsiveSize(10),
-                            overflow: 'hidden',
-                          }}
-                          >
-                          {userConnectLoading.value == true &&
-                          userConnectLoading.id == data?.user_id ? (
-                            <ActivityIndicator
-                              size={'small'}
-                              color={global.white}
-                            />
-                          ) : (
-                            <TextC
-                              size={ResponsiveSize(10)}
-                              font={'Montserrat-Medium'}
-                              text={'Disconnect'}
-                              style={{
-                                color: global.white,
-                              }}
-                            />
-                          )}
-                        </Pressable>
-                      ) : (
-                        ''
-                      )} */}
+                        size={ResponsiveSize(11)}
+                      />
                     </Pressable>
                   ))
                 ) : (

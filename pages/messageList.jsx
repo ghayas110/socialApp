@@ -229,10 +229,10 @@ const MessageList = () => {
                                             </View>
                                         </TouchableOpacity>
                                         :
-                                        <TouchableOpacity onPress={() => navigation.navigate('Message', {
-                                            receiverUserId: recentChats?.userDetails?.user_id,
-                                            profile_picture_url: recentChats?.userDetails?.profile_picture_url,
-                                            user_name: recentChats?.userDetails?.user_name
+                                        <TouchableOpacity onPress={() => navigation.navigate('GroupMessage', {
+                                            group_id: recentChats?.group?.group_id,
+                                            profile_picture_url: recentChats?.group?.group_image,
+                                            user_name: recentChats?.group?.group_name
                                         })} style={styles.PostHeader}>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <ImageBackground
@@ -251,7 +251,7 @@ const MessageList = () => {
                                                     />
                                                     <TextC
                                                         size={ResponsiveSize(10)}
-                                                        text={recentChats?.message}
+                                                        text={recentChats?.group?.lastMessage}
                                                         font={'Montserrat-Medium'}
                                                         style={{ color: global.placeholderColor, width: ResponsiveSize(140) }} ellipsizeMode={"tail"} numberOfLines={1}
                                                     />

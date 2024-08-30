@@ -29,6 +29,7 @@ import NewMessage from '../pages/newMessage.jsx';
 import SearchUser from '../pages/SearchUser.jsx';
 import NewGroupScreen from '../pages/newGroup.jsx';
 import NewGroupSecondScreen from '../pages/newGroupSecond.jsx';
+import GroupMessage from '../pages/groupChat.jsx';
 
 
 
@@ -77,7 +78,7 @@ const ProfileStackNavigation = ({ onLogin }) => {
 const HomeStackNavigation = () => {
   const Stack = createNativeStackNavigator();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName='Home'>
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Home" component={HomeScreen} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="PostDetail" component={PostDetail} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Notification" component={Notification} />
@@ -95,6 +96,9 @@ const HomeStackNavigation = () => {
       <Stack.Screen options={{
         headerShown: false, navigationBarHidden: true,
       }} name="NewGroupSecondScreen" component={NewGroupSecondScreen} />
+       <Stack.Screen options={{
+        headerShown: false, navigationBarHidden: true,
+      }} name="GroupMessage" component={GroupMessage} />
     </Stack.Navigator>
   )
 }

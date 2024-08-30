@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import TextC from '../components/text/text';
@@ -22,6 +23,8 @@ import ReadMore from '@fawazahmed/react-native-read-more';
 import * as UserProfile from '../store/actions/UserProfile/index';
 import { connect } from 'react-redux';
 import FastImage from 'react-native-fast-image';
+import baseUrl from '../store/config.json';
+
 
 const UserProfileScreen = ({ GetUserProfileReducer, route, LoadUserProfile }) => {
   console.log(route?.params?.user_id)
@@ -29,6 +32,7 @@ const UserProfileScreen = ({ GetUserProfileReducer, route, LoadUserProfile }) =>
   const windowHeight = Dimensions.get('window').height;
   const navigation = useNavigation();
   const [loading, setLoading] = useState(null);
+  const [connectLoading, setConnectLoading] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const styles = StyleSheet.create({
     container: {
@@ -102,17 +106,35 @@ const UserProfileScreen = ({ GetUserProfileReducer, route, LoadUserProfile }) =>
     },
     SetttingBtn: {
       backgroundColor: '#05348E',
-      width: '32%',
+      width: "100%",
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      paddingVertical: 8,
-      borderRadius: 20,
+      paddingVertical: ResponsiveSize(8),
+      borderRadius: ResponsiveSize(20),
+    },
+    SetttingBtn1: {
+      backgroundColor: '#05348E',
+      width: "50%",
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: ResponsiveSize(8),
+      borderRadius: ResponsiveSize(20),
+    },
+    SetttingBtnDisconnect: {
+      backgroundColor: global.red,
+      width: "48%",
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: ResponsiveSize(8),
+      borderRadius: ResponsiveSize(20),
     },
     SetttingBtnText: {
       color: 'white',
       fontFamily: 'Montserrat-Medium',
-      fontSize: 12,
+      fontSize: ResponsiveSize(12),
     },
     CollapseSlider: {
       flexDirection: 'row',
@@ -153,6 +175,57 @@ const UserProfileScreen = ({ GetUserProfileReducer, route, LoadUserProfile }) =>
     LoadProfile()
   }, [])
 
+
+  const ConnectUser = async (e) => {
+    setConnectLoading(true)
+    const Token = await AsyncStorage.getItem('Token');
+    const response = await fetch(
+      `${baseUrl.baseUrl}/connect/request-connection`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': baseUrl.apiKey,
+          accesstoken: `Bearer ${Token}`,
+        },
+        body: JSON.stringify({ user_id: e }),
+      },
+    );
+    const result = await response.json();
+    if (result.statusCode === 200) {
+      setConnectLoading(false)
+      navigation.navigate('Home')
+    };
+  }
+
+  const RemoveConnectUser = async (e) => {
+    setConnectLoading(true)
+    const Token = await AsyncStorage.getItem('Token');
+    const response = await fetch(
+      `${baseUrl.baseUrl}/connect/remove-connection/${e}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': baseUrl.apiKey,
+          accesstoken: `Bearer ${Token}`,
+        },
+      },
+    );
+    const result = await response.json();
+    if (result.statusCode === 200) {
+      setConnectLoading(false)
+      navigation.navigate('Home')
+    };
+  }
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    LoadProfile();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={'white'} barStyle={'dark-content'} />
@@ -161,7 +234,9 @@ const UserProfileScreen = ({ GetUserProfileReducer, route, LoadUserProfile }) =>
           <ActivityIndicator size="large" color={global.primaryColor} />
         </View>
       ) : (
-        <ScrollView style={{ flexGrow: 1 }}>
+        <ScrollView refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        } style={{ flexGrow: 1 }}>
           <View style={styles.ProfileHeader}>
             <View style={{ width: 25 }}></View>
             <View>
@@ -265,22 +340,42 @@ const UserProfileScreen = ({ GetUserProfileReducer, route, LoadUserProfile }) =>
               </ReadMore>
             )}
           </View>
+          {userProfile?.myConnection ?
+            <View style={styles.ProfileSettingBtn}>
+              <TouchableOpacity
+                onPress={() => RemoveConnectUser(route?.params?.user_id)}
+                style={styles.SetttingBtnDisconnect}>
+                {connectLoading ?
+                  <ActivityIndicator size="small" color={global.white} />
+                  :
+                  <Text style={styles.SetttingBtnText}>Connect</Text>
+                }
+              </TouchableOpacity>
 
-          {/* <View style={styles.ProfileSettingBtn}>
-            <TouchableOpacity
-              style={styles.SetttingBtn}
-              onPress={() => navigation.navigate('EditProfile')}>
-              <Text style={styles.SetttingBtnText}>Edit Profile</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.SetttingBtn}>
-              <Text style={styles.SetttingBtnText}>Search</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Setting')}
-              style={styles.SetttingBtn}>
-              <Text style={styles.SetttingBtnText}>Setting</Text>
-            </TouchableOpacity>
-          </View> */}
+              <TouchableOpacity
+                style={styles.SetttingBtn1}
+                onPress={() => navigation.navigate('Message', {
+                  receiverUserId: route?.params?.user_id,
+                  profile_picture_url: userProfile?.profile_picture_url,
+                  user_name: userProfile?.user_name
+                })}
+              >
+                <Text style={styles.SetttingBtnText}>Message</Text>
+              </TouchableOpacity>
+            </View>
+            :
+            <View style={styles.ProfileSettingBtn}>
+              <TouchableOpacity
+                style={styles.SetttingBtn}
+                onPress={() => ConnectUser(route?.params?.user_id)}>
+                {connectLoading ?
+                  <ActivityIndicator size="small" color={global.white} />
+                  :
+                  <Text style={styles.SetttingBtnText}>Connect</Text>
+                }
+              </TouchableOpacity>
+            </View>
+          }
 
           <ScrollView style={{ flexGrow: 1 }}>
             <View style={styles.wrapper}>

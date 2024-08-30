@@ -1,16 +1,16 @@
 import { combineReducers, compose, createStore, applyMiddleware } from "redux";
-import {thunk} from "redux-thunk";
+import { thunk } from "redux-thunk";
 import RegisterUserReducer from "./reducers/UserRegister/index";
 import OtpVerificationReducer from "./reducers/OptVerification";
 import LoginReducer from "./reducers/UserLogin";
 import ForgotPasswordReducer from "./reducers/ForgotPassword";
-import { CheckInReducer, CityReducer,CountryReducer,StatesReducer} from "./reducers/Country";
+import { CheckInReducer, CityReducer, CountryReducer, StatesReducer } from "./reducers/Country";
 import ReApplyDocReducer from "./reducers/ReApplyDoc";
 import { AllEventReducer, JoinedEventReducer, MyEventReducer } from "./reducers/Events";
 import { GetUserProfileReducer } from "./reducers/UserProfile";
 import AuthReducerGlobal from "./reducers/Auth";
 import PostCreationReducer from "./reducers/PostCreation";
-import {AllConnectionsReducer,PendingConnectionsReducer} from "./reducers/Connections";
+import { AllConnectionsReducer, PendingConnectionsReducer } from "./reducers/Connections";
 
 
 const reducers = combineReducers({

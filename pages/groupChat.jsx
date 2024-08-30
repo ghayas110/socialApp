@@ -35,7 +35,7 @@ import { PanGestureHandler, State } from "react-native-gesture-handler";
 
 
 
-const Message = ({ route }) => {
+const GroupMessage = ({ route }) => {
     const focus = useIsFocused();
     const scheme = useColorScheme();
     const windowWidth = Dimensions.get('window').width;
@@ -160,7 +160,7 @@ const Message = ({ route }) => {
             flex: 1,
         },
         message: {
-            fontSize: ResponsiveSize(12),
+            fontSize: ResponsiveSize(11),
             color: global.black,
             fontFamily: 'Montserrat-Regular',
         },
@@ -201,6 +201,12 @@ const Message = ({ route }) => {
             paddingVertical: ResponsiveSize(5),
             maxWidth: windowWidth * 0.7
         },
+        messageOwner: {
+            fontFamily: 'Montserrat-Bold',
+            fontSize: ResponsiveSize(9),
+            marginBottom: ResponsiveSize(5),
+            color: global.black,
+        }
     });
 
     const [newMessage, setNewMessage] = useState("")
@@ -209,10 +215,8 @@ const Message = ({ route }) => {
     const [loader, setLoader] = useState(false)
     const scrollViewRef = useRef();
 
-
     const loadRecentChats = async () => {
-        setLoader(true)
-        const Token = await AsyncStorage.getItem('Token');
+        const Token = await AsyncStorage.getItem('Token'); U_id
         const U_id = await AsyncStorage.getItem('U_id');
         setUserId(U_id)
         const socket = io(`${baseUrl}/chat`, {
@@ -222,18 +226,17 @@ const Message = ({ route }) => {
                 'accesstoken': `Bearer ${Token}`
             }
         });
-        socket.on('connect').emit('oldMessages', {
-            "receiverUserId": route?.params?.receiverUserId,
-        }).emit('readMessage', { receiverUserId: route?.params?.receiverUserId }).on('message', (data) => {
+        socket.on('connect').emit('oldGroupMessages', { group_id: route?.params?.group_id }).on('groupMessages', (data) => {
             if (data?.message.length > 0) {
                 setLoader(false)
                 setRecentChats(data?.message);
             }
             setLoader(false)
-        }).emit('readMessage', { receiverUserId: route?.params?.receiverUserId })
+        })
     }
 
     useEffect(() => {
+        setLoader(true)
         loadRecentChats()
         navigation.getParent()?.setOptions({
             tabBarStyle: { display: 'none' },
@@ -269,17 +272,21 @@ const Message = ({ route }) => {
                     'accesstoken': `Bearer ${Token}`
                 }
             });
-            socket.on('connect').emit('createDirectMessage', {
+            socket.on('connect').emit('createGroupMessage', {
                 "message": newMessage,
-                "receiverUserId": route?.params?.receiverUserId,
-            }).emit('readMessage', { receiverUserId: route?.params?.receiverUserId }).on('message', (data) => {
-                setNewMessage("")
-                setRecentChats(data?.message);
+                "group_id": route?.params?.group_id,
+            }).emit('oldGroupMessages', { group_id: route?.params?.group_id }).on('groupMessages', (data) => {
+                if (data?.message.length > 0) {
+                    setNewMessage("")
+                    setRecentChats(data);
+                }
+                setLoader(false)
             })
         }
     }
 
     const renderItem = useCallback((items) => {
+        console.log(items?.item, 'item render item render')
         const date = new Date(items.item.created_at);
         const hours = date.getHours();
         const minutes = date.getMinutes();
@@ -298,33 +305,25 @@ const Message = ({ route }) => {
                                         <AntDesign name="clockcircleo" />
                                         :
                                         <>
-                                            {items?.item?.read_status == "N" ?
-                                                < AntDesign name="check" />
-                                                :
-                                                <FontAwesome6 name="check-double" />
-                                            }
+                                            < AntDesign name="check" />
                                         </>
                                     }
                                 </View>
                             </View>
                         </View>
                         :
-                        // <PanGestureHandler
-                        //     onGestureEvent={onGestureEvent}
-                        //     onHandlerStateChange={onHandlerStateChange(items.item.message_id)}
-                        // >
-                        //     <Animated.View style={[styles.box, { transform: [{ translateX }] }]}>
                         <View style={styles.messageContainer1}>
                             <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                                 <ImageBackground
                                     source={
-                                        route?.params?.profile_picture_url == ''
+                                        items?.item?.userDetails?.profile_picture_url == ''
                                             ? require('../assets/icons/avatar.png')
-                                            : { uri: route?.params?.profile_picture_url }
+                                            : { uri: items?.item?.userDetails?.profile_picture_url }
                                     }
                                     style={styles.PostProfileImage2}
                                     resizeMode="cover" />
                                 <View style={styles.thisUserText}>
+                                    <Text style={styles.messageOwner}>{items?.item?.userDetails?.user_name}</Text>
                                     <Text style={styles.message}>{items.item.message}</Text>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Text style={styles.TimeAgo}>{formattedTime}</Text>
@@ -333,15 +332,11 @@ const Message = ({ route }) => {
                             </View>
                             <View style={styles.empty}></View>
                         </View>
-                        //     </Animated.View>
-                        // </PanGestureHandler>
                     }
                 </View>
             </>
         );
     }, [recentChats]);
-
-    console.log(recentChats)
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -402,4 +397,4 @@ const Message = ({ route }) => {
         </KeyboardAvoidingView>
     )
 }
-export default Message;
+export default GroupMessage;
