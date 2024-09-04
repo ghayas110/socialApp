@@ -12,7 +12,7 @@ import ChangePassword from '../pages/changePassword';
 import ChangeAirline from '../pages/ChangeAirline';
 import DeleteAccount from '../pages/DeleteAccount';
 import HomeScreen from '../pages/HomeScreen';
-import ReelScreen from '../pages/ReelScreen';
+import ReelScreen from '../pages/Announcement.jsx';
 import CreatePost from '../pages/CreatePost';
 import CreatePostTwo from '../pages/CreatePostStepTwo';
 import TagPeople from '../pages/PostTagPeople';
@@ -30,6 +30,9 @@ import SearchUser from '../pages/SearchUser.jsx';
 import NewGroupScreen from '../pages/newGroup.jsx';
 import NewGroupSecondScreen from '../pages/newGroupSecond.jsx';
 import GroupMessage from '../pages/groupChat.jsx';
+import MessageMedia from '../pages/messageMedia.jsx';
+import Announcement from '../pages/Announcement.jsx';
+import CreateAnnouncement from '../pages/CreateAnnouncement.jsx';
 
 
 
@@ -96,9 +99,12 @@ const HomeStackNavigation = () => {
       <Stack.Screen options={{
         headerShown: false, navigationBarHidden: true,
       }} name="NewGroupSecondScreen" component={NewGroupSecondScreen} />
-       <Stack.Screen options={{
+      <Stack.Screen options={{
         headerShown: false, navigationBarHidden: true,
       }} name="GroupMessage" component={GroupMessage} />
+      <Stack.Screen options={{
+        headerShown: false, navigationBarHidden: true,
+      }} name="messageMedia" component={MessageMedia} />
     </Stack.Navigator>
   )
 }
@@ -117,7 +123,8 @@ const GroupStackNavigation = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator>
-      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="Reel" component={ReelScreen} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="announcement" component={Announcement} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="createAnnouncement" component={CreateAnnouncement} />
     </Stack.Navigator>
   )
 }

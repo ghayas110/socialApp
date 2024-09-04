@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeScreen from '../pages/HomeScreen';
 import EventScreen from '../pages/EventScreen';
 import CreatePost from '../pages/CreatePost';
-import ReelScreen from '../pages/ReelScreen';
+import ReelScreen from '../pages/Announcement';
 import ProfileScreen from '../pages/ProfileScreen';
 import SignUp from '../pages/SignUp';
 import Otp from '../pages/Otp';
@@ -161,7 +161,6 @@ const MainNavigation = ({GetUserProfileReducer}) => {
               tabBarStyle: {display: 'none'},
               headerShown: false,
               tabBarShowLabel: false,
-              headerTitle: () => <MainHeader />,
               headerStyle: {
                 ...(scheme === 'dark'
                   ? {backgroundColor: DarkTheme.colors.background}
@@ -188,7 +187,7 @@ const MainNavigation = ({GetUserProfileReducer}) => {
                 />
               ),
               tabBarShowLabel: false,
-              headerTitle: () => <MainHeader />,
+              headerShown: false,
               headerStyle: {
                 ...(scheme === 'dark'
                   ? {backgroundColor: DarkTheme.colors.background}

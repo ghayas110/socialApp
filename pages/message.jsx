@@ -29,9 +29,12 @@ import io from "socket.io-client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { baseUrl } from '../store/config.json'
 import { Animated } from "react-native";
-
-import LinearGradient from "react-native-linear-gradient";
-import { PanGestureHandler, State } from "react-native-gesture-handler";
+import { Swipeable } from 'react-native-gesture-handler';
+import Octicons from 'react-native-vector-icons/Octicons'
+import FastImage from "react-native-fast-image";
+import { useBottomSheet } from '../components/bottomSheet/BottomSheet';
+import ButtonC from "../components/button";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
 
 
@@ -39,6 +42,7 @@ const Message = ({ route }) => {
     const focus = useIsFocused();
     const scheme = useColorScheme();
     const windowWidth = Dimensions.get('window').width;
+    const windowHeight = Dimensions.get('window').height;
     const navigation = useNavigation();
     const headerHeight = useHeaderHeight();
     const styles = StyleSheet.create({
@@ -146,6 +150,18 @@ const Message = ({ route }) => {
             alignItems: 'center',
             flexDirection: 'row'
         },
+        CameraBtn: {
+            position: 'absolute',
+            height: ResponsiveSize(40),
+            width: ResponsiveSize(40),
+            backgroundColor: global.secondaryColor,
+            right: ResponsiveSize(58),
+            top: ResponsiveSize(8),
+            borderRadius: ResponsiveSize(15),
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'row'
+        },
         messageWrapper: {
             paddingHorizontal: ResponsiveSize(15),
             paddingVertical: ResponsiveSize(5)
@@ -167,6 +183,13 @@ const Message = ({ route }) => {
         TimeAgo: {
             fontSize: ResponsiveSize(8),
             color: global.black,
+            fontFamily: 'Montserrat-Regular',
+            marginTop: ResponsiveSize(3),
+            marginRight: ResponsiveSize(3)
+        },
+        TimeAgoWhite: {
+            fontSize: ResponsiveSize(8),
+            color: global.white,
             fontFamily: 'Montserrat-Regular',
             marginTop: ResponsiveSize(3),
             marginRight: ResponsiveSize(3)
@@ -201,14 +224,144 @@ const Message = ({ route }) => {
             paddingVertical: ResponsiveSize(5),
             maxWidth: windowWidth * 0.7
         },
-    });
+        ImageMessage: {
+            backgroundColor: global.secondaryColor,
+            borderTopLeftRadius: ResponsiveSize(10),
+            borderBottomLeftRadius: ResponsiveSize(10),
+            borderBottomRightRadius: ResponsiveSize(10),
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: ResponsiveSize(10),
+            paddingVertical: ResponsiveSize(5),
+            width: windowWidth * 0.7
+        },
+        messageText: {
+            fontSize: 16,
+        },
+        leftAction: {
+            justifyContent: 'center',
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: ResponsiveSize(10),
+        },
+        actionText: {
+            color: 'white',
+            fontWeight: 'bold',
+        },
+        otherMedia: {
+            backgroundColor: global.secondaryColor,
+            borderRadius: ResponsiveSize(10),
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: windowWidth * 0.7,
+            paddingVertical: ResponsiveSize(6),
+            position: 'relative'
+        },
+        otherMedia2: {
+            backgroundColor: global.description,
+            borderRadius: ResponsiveSize(10),
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: windowWidth * 0.7,
+            paddingVertical: ResponsiveSize(6),
+            position: 'relative'
+        },
 
+        ImageMessage2: {
+            backgroundColor: global.description,
+            borderTopLeftRadius: ResponsiveSize(10),
+            borderBottomLeftRadius: ResponsiveSize(10),
+            borderBottomRightRadius: ResponsiveSize(10),
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: ResponsiveSize(10),
+            paddingVertical: ResponsiveSize(5),
+            width: windowWidth * 0.7
+        },
+        otherMediaThumbnail: {
+            borderRadius: ResponsiveSize(10),
+            width: windowWidth * 0.67,
+            height: windowWidth * 0.67
+        },
+        BottomInfoBar: {
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: ResponsiveSize(10),
+            width: windowWidth * 0.7
+        }
+    });
     const [newMessage, setNewMessage] = useState("")
     const [recentChats, setRecentChats] = useState([])
     const [user_id, setUserId] = useState()
     const [loader, setLoader] = useState(false)
     const scrollViewRef = useRef();
 
+    const { openBottomSheet, closeBottomSheet } = useBottomSheet();
+
+    const handleOpenSheet = () => {
+        openBottomSheet(
+            <>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        height: '100%',
+                        paddingHorizontal: ResponsiveSize(15),
+                    }}>
+                    <ButtonC
+                        onPress={openMobileCamera}
+                        BtnStyle={{ width: windowWidth * 0.45 }}
+                        TextStyle={{ color: global.white }}
+                        bgColor={global.primaryColor}
+                        style={styles.openCamera}
+                        title={'Open camera'}></ButtonC>
+                    <ButtonC
+                        onPress={openPhotoLibrary}
+                        BtnStyle={{ width: windowWidth * 0.45 }}
+                        TextStyle={{ color: global.white }}
+                        bgColor={global.primaryColor}
+                        style={styles.openLibrary}
+                        title={'Open library'}></ButtonC>
+                </View>
+            </>,
+            ['15%'],
+        );
+    };
+
+    const openPhotoLibrary = async () => {
+        const result = await launchImageLibrary();
+        if (result?.assets.length > 0) {
+            closeBottomSheet();
+            navigation.navigate('messageMedia', {
+                media_url: result?.assets,
+                receiverUserId: route?.params?.receiverUserId,
+                profile_picture_url: route?.params?.profile_picture_url,
+                user_name: route?.params?.user_name
+            })
+        }
+    };
+    const openMobileCamera = async () => {
+        const result = await launchCamera();
+        if (result?.assets.length > 0) {
+            closeBottomSheet();
+            navigation.navigate('messageMedia', {
+                media_url: result?.assets,
+                receiverUserId: route?.params?.receiverUserId,
+                profile_picture_url: route?.params?.profile_picture_url,
+                user_name: route?.params?.user_name
+
+            })
+        }
+    };
 
     const loadRecentChats = async () => {
         setLoader(true)
@@ -239,6 +392,7 @@ const Message = ({ route }) => {
             tabBarStyle: { display: 'none' },
         });
         return () => {
+            closeBottomSheet();
             navigation.getParent()?.setOptions({
                 tabBarStyle: {
                     display: 'flex',
@@ -279,6 +433,31 @@ const Message = ({ route }) => {
         }
     }
 
+    const swipeableRef = useRef(null);
+
+    const renderLeftActions = (progress, dragX) => {
+        const scale = dragX.interpolate({
+            inputRange: [0, 100],
+            outputRange: [0.7, 1],
+            extrapolate: 'clamp',
+        });
+
+        return (
+            <Animated.View style={[styles.leftAction, { transform: [{ scale }] }]}>
+                <Octicons name="reply" size={20} color="#000" />
+            </Animated.View>
+        );
+    };
+
+
+    const handleSwipeableWillOpen = (ref) => {
+        if (swipeableRef.current && swipeableRef.current !== ref.current) {
+            swipeableRef.current.close();
+        }
+        swipeableRef.current = ref.current;
+    };
+
+
     const renderItem = useCallback((items) => {
         const date = new Date(items.item.created_at);
         const hours = date.getHours();
@@ -290,58 +469,142 @@ const Message = ({ route }) => {
                     {items?.item?.senderUserId == user_id ?
                         <View style={styles.messageContainer2}>
                             <View style={styles.empty}></View>
-                            <View style={styles.otherUserText}>
-                                <Text style={styles.messageUser}>{items.item.message}</Text>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text style={styles.TimeAgo}>{formattedTime}</Text>
-                                    {items?.item?.isSend == false ?
-                                        <AntDesign name="clockcircleo" />
+                            {items?.item?.is_media == "Y" ?
+                                <View style={styles.otherMedia}>
+                                    <FastImage
+                                        source={
+                                            items?.item?.media_url == ''
+                                                ? require('../assets/icons/avatar.png')
+                                                : { uri: items?.item?.media_url, priority: FastImage.priority.high }
+                                        }
+                                        style={styles.otherMediaThumbnail}
+                                        resizeMode="cover"
+                                    />
+                                    {items?.item?.message !== "" ?
+                                        <View style={styles.ImageMessage}>
+                                            <Text style={styles.messageUser}>{items.item.message}</Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Text style={styles.TimeAgo}>{formattedTime}</Text>
+                                                {items?.item?.isSend == false ?
+                                                    <AntDesign name="clockcircleo" />
+                                                    :
+                                                    <>
+                                                        {items?.item?.read_status == "N" ?
+                                                            < AntDesign name="check" />
+                                                            :
+                                                            <FontAwesome6 name="check-double" />
+                                                        }
+                                                    </>
+                                                }
+                                            </View>
+                                        </View>
                                         :
-                                        <>
-                                            {items?.item?.read_status == "N" ?
-                                                < AntDesign name="check" />
+                                        <View style={styles.BottomInfoBar}>
+                                            <Text style={styles.TimeAgoWhite}>{formattedTime}</Text>
+                                            {items?.item?.isSend == false ?
+                                                <AntDesign name="clockcircleo" color={global.white} />
                                                 :
-                                                <FontAwesome6 name="check-double" />
+                                                <>
+                                                    {items?.item?.read_status == "N" ?
+                                                        <AntDesign name="check" color={global.white} />
+                                                        :
+                                                        <FontAwesome6 name="check-double" color={global.white} />
+                                                    }
+                                                </>
                                             }
-                                        </>
+                                        </View>
                                     }
                                 </View>
-                            </View>
-                        </View>
-                        :
-                        // <PanGestureHandler
-                        //     onGestureEvent={onGestureEvent}
-                        //     onHandlerStateChange={onHandlerStateChange(items.item.message_id)}
-                        // >
-                        //     <Animated.View style={[styles.box, { transform: [{ translateX }] }]}>
-                        <View style={styles.messageContainer1}>
-                            <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                                <ImageBackground
-                                    source={
-                                        route?.params?.profile_picture_url == ''
-                                            ? require('../assets/icons/avatar.png')
-                                            : { uri: route?.params?.profile_picture_url }
-                                    }
-                                    style={styles.PostProfileImage2}
-                                    resizeMode="cover" />
-                                <View style={styles.thisUserText}>
-                                    <Text style={styles.message}>{items.item.message}</Text>
+                                :
+                                <View style={styles.otherUserText}>
+                                    <Text style={styles.messageUser}>{items.item.message}</Text>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Text style={styles.TimeAgo}>{formattedTime}</Text>
+                                        {items?.item?.isSend == false ?
+                                            <AntDesign name="clockcircleo" />
+                                            :
+                                            <>
+                                                {items?.item?.read_status == "N" ?
+                                                    < AntDesign name="check" />
+                                                    :
+                                                    <FontAwesome6 name="check-double" />
+                                                }
+                                            </>
+                                        }
                                     </View>
                                 </View>
-                            </View>
-                            <View style={styles.empty}></View>
+                            }
                         </View>
-                        //     </Animated.View>
-                        // </PanGestureHandler>
+                        :
+                        <Swipeable
+                            ref={swipeableRef}
+                            renderLeftActions={renderLeftActions}
+                            onSwipeableWillOpen={() => handleSwipeableWillOpen(swipeableRef)}
+                        >
+                            <View style={styles.messageContainer1}>
+                                {items?.item?.is_media == "Y" ?
+                                    <View style={styles.otherMedia2}>
+                                        <FastImage
+                                            source={
+                                                items?.item?.media_url == ''
+                                                    ? require('../assets/icons/avatar.png')
+                                                    : { uri: items?.item?.media_url, priority: FastImage.priority.high }
+                                            }
+                                            style={styles.otherMediaThumbnail}
+                                            resizeMode="cover"
+                                        />
+                                        {items?.item?.message !== "" ?
+                                            <View style={styles.ImageMessage2}>
+                                                <Text style={styles.message}>{items.item.message}</Text>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Text style={styles.TimeAgo}>{formattedTime}</Text>
+                                                    {items?.item?.isSend == false ?
+                                                        <AntDesign name="clockcircleo" />
+                                                        :
+                                                        < AntDesign name="check" />
+                                                    }
+                                                </View>
+                                            </View>
+                                            :
+                                            <View style={styles.BottomInfoBar}>
+                                                <Text style={styles.TimeAgoWhite}>{formattedTime}</Text>
+                                                {items?.item?.isSend == false ?
+                                                    <AntDesign name="clockcircleo" color={global.white} />
+                                                    :
+                                                    <AntDesign name="check" color={global.white} />
+                                                }
+                                            </View>
+                                        }
+                                    </View>
+                                    :
+                                    <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                                        <ImageBackground
+                                            source={
+                                                route?.params?.profile_picture_url == ''
+                                                    ? require('../assets/icons/avatar.png')
+                                                    : { uri: route?.params?.profile_picture_url }
+                                            }
+                                            style={styles.PostProfileImage2}
+                                            resizeMode="cover" />
+                                        <View style={styles.thisUserText}>
+                                            <Text style={styles.message}>{items.item.message}</Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Text style={styles.TimeAgo}>{formattedTime}</Text>
+                                            </View>
+                                        </View>
+                                    </View>}
+                                <View style={styles.empty}></View>
+                            </View>
+                        </Swipeable>
                     }
                 </View>
             </>
         );
     }, [recentChats]);
 
-    console.log(recentChats)
+
+
+
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -396,6 +659,10 @@ const Message = ({ route }) => {
                     } onChangeText={(e) => setNewMessage(e)} />
                     <TouchableOpacity onPress={sendMessage} style={styles.SentBtn}>
                         <Feather name="send" color={global.white} size={ResponsiveSize(16)} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={handleOpenSheet} style={styles.CameraBtn}>
+                        <Feather name="camera" color={global.white} size={ResponsiveSize(16)} />
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>

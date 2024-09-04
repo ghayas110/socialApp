@@ -324,8 +324,9 @@ const CreatePost = () => {
   }, []);
 
   const ImageEditorContain = async path => {
+    console.log('Loading', path);
     const result = await PhotoEditor.open({
-      path: ` file://${path?.content}`,
+      path: `file://${currentPreview?.content}`,
     });
     setCurrentPreview(prev => ({
       ...prev,
@@ -361,7 +362,6 @@ const CreatePost = () => {
         imageFiles = await RNFS.readDir('/var/mobile/Media/DCIM/100APPLE');
       }
 
-      console.log(imageFiles, 'imageFiles');
       const imageBatch = imageFiles.slice(
         page * PAGE_SIZE,
         (page + 1) * PAGE_SIZE,
@@ -492,7 +492,6 @@ const CreatePost = () => {
   }, [multiVideoId]);
 
   const VideoEditorMultiple = async (path, id) => {
-    console.log(path, id);
     isMultiVideoId(id);
     showEditor(path, {
       saveToPhoto: true,

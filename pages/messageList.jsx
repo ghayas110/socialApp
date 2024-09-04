@@ -3,6 +3,7 @@ import {
     ActivityIndicator,
     DarkTheme,
     Dimensions,
+    Image,
     ImageBackground,
     Pressable,
     SafeAreaView,
@@ -113,7 +114,7 @@ const MessageList = () => {
     const navigation = useNavigation();
     const [recentChats, setRecentChats] = useState([])
     const [loader, setLoader] = useState(false)
-
+    
     const loadRecentChats = async () => {
         if (focus == true) {
             const Token = await AsyncStorage.getItem('Token');
@@ -133,12 +134,13 @@ const MessageList = () => {
     }
 
 
+    
+
     useEffect(() => {
         setLoader(true)
         loadRecentChats()
     }, [focus]);
 
-    console.log(recentChats, 'recent')
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <StatusBar
@@ -239,7 +241,7 @@ const MessageList = () => {
                                                     source={
                                                         recentChats?.group?.profile_picture_url == ''
                                                             ? require('../assets/icons/avatar.png')
-                                                            : { uri: recentChats?.group?.group_image}
+                                                            : { uri: recentChats?.group?.group_image }
                                                     }
                                                     style={styles.PostProfileImage}
                                                     resizeMode="cover"></ImageBackground>
