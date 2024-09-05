@@ -33,6 +33,7 @@ import GroupMessage from '../pages/groupChat.jsx';
 import MessageMedia from '../pages/messageMedia.jsx';
 import Announcement from '../pages/Announcement.jsx';
 import CreateAnnouncement from '../pages/CreateAnnouncement.jsx';
+import AnnouncementDetail from '../pages/AnnouncementDetail.jsx';
 
 
 
@@ -125,6 +126,7 @@ const GroupStackNavigation = () => {
     <Stack.Navigator>
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="announcement" component={Announcement} />
       <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="createAnnouncement" component={CreateAnnouncement} />
+      <Stack.Screen options={{ headerShown: false, navigationBarHidden: true }} name="announcementDetail" component={AnnouncementDetail} />
     </Stack.Navigator>
   )
 }

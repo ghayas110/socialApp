@@ -1,4 +1,4 @@
-import { Platform, StatusBar, StyleSheet, Dimensions, SafeAreaView, KeyboardAvoidingView, View, useColorScheme, ScrollView, TouchableOpacity, TextInput, RefreshControl, Easing } from 'react-native'
+import { Platform, StatusBar, StyleSheet, Dimensions, SafeAreaView, KeyboardAvoidingView, View, useColorScheme, ScrollView, TouchableOpacity, TextInput, RefreshControl, Easing, Pressable, Image, ActivityIndicator } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHeaderHeight } from "@react-navigation/elements";
 import { DarkTheme, useNavigation, CommonActions, useIsFocused } from '@react-navigation/native';
@@ -9,7 +9,7 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import FastImage from 'react-native-fast-image';
 import TextC from '../components/text/text';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { baseUrl } from '../store/config.json'
+import { baseUrl, apiKey } from '../store/config.json'
 import io from "socket.io-client";
 import { FlashList } from '@shopify/flash-list';
 import { Animated } from 'react-native';
@@ -31,6 +31,7 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
       alignItems: 'flex-start',
       justifyContent: 'center',
       position: 'relative',
+      marginBottom: ResponsiveSize(10),
     },
     ProfileWrapper: {
       width: windowWidth * 0.25 - ResponsiveSize(15),
@@ -134,28 +135,30 @@ const SkeletonPlaceholder = ({ style, refreshing }) => {
 };
 
 
-const Announcement = () => {
+const AnnouncementDetail = ({ route }) => {
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const scheme = useColorScheme();
   const navigation = useNavigation();
   const [announcement, SetAnnouncement] = useState([])
-  const [userName, setUserName] = useState([])
-  const [profilePicture, setProfilePicture] = useState()
+  const [page, setPage] = useState(1)
   const headerHeight = useHeaderHeight();
   const [refreshing, setRefreshing] = React.useState(false);
   const focus = useIsFocused();
 
 
   const styles = StyleSheet.create({
+    BottomSpacer: {
+      paddingBottom: ResponsiveSize(30),
+    },
     ContainerHeader: {
-      paddingHorizontal: ResponsiveSize(15),
-      paddingVertical: ResponsiveSize(15),
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: global.white,
       borderBottomColor: '#eeeeee',
       borderBottomWidth: ResponsiveSize(1),
+      padding: ResponsiveSize(15)
+
     },
     HeaderLeft: {
       width: windowWidth * 0.8 - ResponsiveSize(15),
@@ -187,21 +190,50 @@ const Announcement = () => {
       borderBottomColor: "#EEEEEE",
       borderBottomWidth: ResponsiveSize(1),
     },
+    SinglePost2: {
+      paddingHorizontal: ResponsiveSize(15),
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      paddingHorizontal: ResponsiveSize(15),
+      borderBottomColor: "#EEEEEE",
+      borderBottomWidth: ResponsiveSize(1),
+    },
     ProfileSide: {
       width: windowWidth * 0.22 - ResponsiveSize(15),
       paddingVertical: ResponsiveSize(10),
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-start',
+      position: 'relative'
+    },
+    ProfileSide2: {
+      width: windowWidth * 0.22 - ResponsiveSize(15),
+      paddingVertical: ResponsiveSize(10),
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      position: 'relative',
     },
     TextSide: {
       width: windowWidth * 0.78 - ResponsiveSize(15),
       paddingVertical: ResponsiveSize(10),
     },
+    TextSide2: {
+      width: windowWidth * 0.78 - ResponsiveSize(15),
+      paddingVertical: ResponsiveSize(10),
+      paddingLeft: ResponsiveSize(10),
+    },
     PostProfileImage2: {
       height: ResponsiveSize(45),
       width: ResponsiveSize(45),
       borderRadius: ResponsiveSize(40),
+      backgroundColor: global.description,
+      overflow: 'hidden',
+    },
+    PostProfileImage3: {
+      height: ResponsiveSize(35),
+      width: ResponsiveSize(35),
+      borderRadius: ResponsiveSize(35),
       backgroundColor: global.description,
       overflow: 'hidden',
     },
@@ -228,6 +260,37 @@ const Announcement = () => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    CommentBanner: {
+      top: ResponsiveSize(60),
+      left: windowWidth * 0.11 - ResponsiveSize(12),
+      width: ResponsiveSize(2),
+      flex: 1,
+      backgroundColor: global.primaryColor,
+    },
+    wrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: windowWidth,
+      paddingHorizontal: ResponsiveSize(15),
+      paddingVertical: ResponsiveSize(15),
+      backgroundColor:
+        scheme === 'dark' ? DarkTheme.colors.background : global.white,
+    },
+    logoSide1: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+    },
+    LoadMore: {
+      backgroundColor: global.primaryColor,
+      height: ResponsiveSize(40),
+      width: ResponsiveSize(100),
+      borderRadius: ResponsiveSize(50),
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
     }
   })
 
@@ -240,28 +303,57 @@ const Announcement = () => {
     if (focus == true) {
       setRefreshing(true);
       const Token = await AsyncStorage.getItem('Token');
-      const Picture = await AsyncStorage.getItem('Picture');
-      const Name = await AsyncStorage.getItem('Name');
-      const socket = io(`${baseUrl}/chat`, {
-        transports: ['websocket'],
-        extraHeaders: {
-          'x-api-key': "TwillioAPI",
+      const CommentResult = await fetch(`${baseUrl}/announcements/get-announcement-comments/${route?.params?.details?.announcement_id}/${page}/10`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
           'accesstoken': `Bearer ${Token}`
         }
-      });
-      socket.on('connect').on('announcement', (data) => {
-        SetAnnouncement(data)
-        setRefreshing(false);
-        setProfilePicture(Picture)
-        setUserName(Name)
       })
+      const Result = await CommentResult.json()
+      SetAnnouncement(Result?.comments)
+      setRefreshing(false);
     }
   }
 
+
+  const [moreLoader, setModeLoader] = useState(false)
+  const [isMore, setIsMore] = useState(true)
+  const loadMoreComments = async (page_Number) => {
+    setPage(page_Number)
+    setModeLoader(true);
+    const Token = await AsyncStorage.getItem('Token');
+    const CommentResult = await fetch(`${baseUrl}/announcements/get-announcement-comments/${route?.params?.details?.announcement_id}/${page_Number}/10`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'accesstoken': `Bearer ${Token}`
+      }
+    })
+    const Result = await CommentResult.json()
+    console.log(Result.comments.length)
+    if (Result.comments.length >= 10) {
+      SetAnnouncement(prev => [...prev, ...Result?.comments])
+      setModeLoader(false);
+    }
+    else {
+      SetAnnouncement(prev => [...prev, ...Result?.comments])
+      setIsMore(false)
+
+    }
+  }
+
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
+    setIsMore(true)
+    setModeLoader(false)
+    setPage(1)
     loadRecentChats();
   }, []);
+
 
   const GetLike = async (Like_id) => {
     const Token = await AsyncStorage.getItem('Token');
@@ -283,9 +375,9 @@ const Announcement = () => {
         'accesstoken': `Bearer ${Token}`
       }
     });
-    socket.on('connect').emit('likeAnnouncement', {
-      "announcement_id": Like_id,
-    }).on('announcement', (data) => {
+    socket.on('connect').emit('likeAnnouncementComment', {
+      "comment_id": Like_id,
+    }).on('announcement ', (data) => {
       SetAnnouncement(data)
     })
   }
@@ -309,17 +401,18 @@ const Announcement = () => {
         'accesstoken': `Bearer ${Token}`
       }
     });
-    socket.on('connect').emit('dislikeAnnouncement', {
-      "announcement_id": Like_id,
+    socket.on('connect').emit('dislikeAnnouncementComment', {
+      "comment_id": Like_id,
     }).on('announcement', (data) => {
       SetAnnouncement(data)
     })
   }
 
   const renderItem = useCallback(({ item }) => {
+    console.log(item)
     return (
-      <View style={styles.SinglePost}>
-        <View style={styles.ProfileSide}>
+      <View style={styles.SinglePost2}>
+        <View style={styles.ProfileSide2}>
           <FastImage
             source={
               item?.user_details?.profile_picture_url === ''
@@ -329,23 +422,19 @@ const Announcement = () => {
                   priority: FastImage.priority.high,
                 }
             }
-            style={styles.PostProfileImage2}
+            style={styles.PostProfileImage3}
             resizeMode="cover"
           />
         </View>
-        <View style={styles.TextSide}>
-          <TouchableOpacity onPress={() => navigation.navigate("announcementDetail",{details:item})}>
+        <View style={styles.TextSide2}>
+          <TouchableOpacity>
             <View style={styles.ProfileDetail}>
               <TextC text={`${item?.user_details?.user_name}`} font={'Montserrat-Bold'} size={ResponsiveSize(11)} />
             </View>
-            <TextC style={{ color: global.placeholderColor }} text={item?.message} font={'Montserrat-Regular'} size={ResponsiveSize(12)} />
+            <TextC style={{ color: global.placeholderColor }} text={item?.comment} font={'Montserrat-Regular'} size={ResponsiveSize(12)} />
           </TouchableOpacity>
           <View style={styles.PostSetting}>
-            <TouchableOpacity onPress={() => navigation.navigate('createAnnouncement', { Reply_user_name: item?.user_details?.user_name, user_Profile: profilePicture, isReply: true, announcement_id: item?.announcement_id })} style={styles.Comment}>
-              <Fontisto name='comment' size={ResponsiveSize(13)} />
-              <TextC text={item?.comments_count} font={'Montserrat-Bold'} size={ResponsiveSize(9)} style={{ paddingLeft: ResponsiveSize(3) }} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.Comment} onPress={() => !item?.self_liked ? GetLike(item?.announcement_id) : GetUnLike(item?.announcement_id)} >
+          <TouchableOpacity style={styles.Comment} onPress={() => !item?.self_liked ? GetLike(item?.comment_id) : GetUnLike(item?.comment_id)} >
               {item?.self_liked ?
                 <AntDesign color={global.red} name='heart' size={ResponsiveSize(14)} />
                 :
@@ -358,11 +447,12 @@ const Announcement = () => {
       </View>
     );
   },
-    [profilePicture, announcement],
+    [],
   );
 
 
 
+  
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -379,32 +469,90 @@ const Announcement = () => {
         />
 
         <View style={styles.ContainerHeader}>
-          <View style={styles.HeaderLeft}>
-            <TextInput style={styles.SearchHeader} placeholder='Search Announcement' />
-          </View>
-          <View style={styles.HeaderRight}>
-            <TouchableOpacity style={styles.ShareBtn} onPress={() => navigation.navigate('createAnnouncement', { user_name: userName, user_Profile: profilePicture })}>
-              <AntDesign name='plus' size={ResponsiveSize(22)} color={global.white} />
-            </TouchableOpacity>
-          </View>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            style={styles.logoSide1}>
+            <AntDesign
+              name="left"
+              color={'#05348E'}
+              size={ResponsiveSize(16)}
+            />
+            <TextC
+              size={ResponsiveSize(12)}
+              font={'Montserrat-Bold'}
+              text={'Announcements'}
+            />
+          </Pressable>
         </View>
         <ScrollView refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         } contentContainerStyle={{ flexGrow: 1, backgroundColor: global.white }}>
           <View style={styles.container}>
-            {refreshing ?
-              <>
-                <SkeletonPlaceholder />
-                <SkeletonPlaceholder />
-                <SkeletonPlaceholder />
-              </>
-              :
-              <FlashList
-                data={announcement}
-                renderItem={renderItem}
-                keyExtractor={item => item.announcement_id}
-              />
-            }
+            <View style={styles.SinglePost}>
+              <View style={styles.ProfileSide}>
+                <FastImage
+                  source={
+                    route.params.details?.user_details?.profile_picture_url === ''
+                      ? require('../assets/icons/avatar.png')
+                      : {
+                        uri: route.params.details?.user_details?.profile_picture_url,
+                        priority: FastImage.priority.high,
+                      }
+                  }
+                  style={styles.PostProfileImage2}
+                  resizeMode="cover"
+                />
+              </View>
+              <View style={styles.TextSide}>
+                <View style={styles.ProfileDetail}>
+                  <TextC text={route.params.details?.user_details?.user_name} font={'Montserrat-Bold'} size={ResponsiveSize(11)} />
+                </View>
+                <TextC style={{ color: global.placeholderColor }} text={route.params.details?.message} font={'Montserrat-Regular'} size={ResponsiveSize(12)} />
+                {/* <View style={styles.PostSetting}>
+                  <TouchableOpacity style={styles.Comment}>
+                    <Fontisto name='comment' size={ResponsiveSize(13)} />
+                    <TextC text={route.params.details?.comments_count} font={'Montserrat-Bold'} size={ResponsiveSize(9)} style={{ paddingLeft: ResponsiveSize(3) }} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.Comment} onPress={() => !route.params.details?.self_liked ? GetLike(route.params.details?.announcement_id) : GetUnLike(route.params.details?.announcement_id)}>
+                    {route.params.details?.self_liked ?
+                      <AntDesign color={global.red} name='heart' size={ResponsiveSize(14)} />
+                      :
+                      <AntDesign name='hearto' size={ResponsiveSize(14)} />
+                    }
+                    <TextC text={route.params.details?.likes_count} font={'Montserrat-Bold'} size={ResponsiveSize(9)} style={{ paddingLeft: ResponsiveSize(3) }} />
+                  </TouchableOpacity>
+                </View> */}
+              </View>
+            </View>
+
+            <View style={styles.BottomSpacer}>
+              {refreshing ?
+                <>
+                  <SkeletonPlaceholder />
+                  <SkeletonPlaceholder />
+                  <SkeletonPlaceholder />
+                </>
+                :
+                <>
+                  <FlashList
+                    data={announcement}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.comment_id}
+                  />
+                  {isMore &&
+                    <View style={{ width: windowWidth, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: ResponsiveSize(20) }}>
+                      <TouchableOpacity disabled={moreLoader} onPress={() => loadMoreComments(page + 1)} style={styles.LoadMore}>
+                        {moreLoader ?
+                          <ActivityIndicator size={ResponsiveSize(15)} color={global.white} />
+                          :
+                          <TextC text={"Load more"} font={'Montserrat-Medium'} style={{ color: global.white }} />
+                        }
+                      </TouchableOpacity>
+                    </View>
+                  }
+                </>
+              }
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -412,4 +560,4 @@ const Announcement = () => {
   )
 }
 
-export default Announcement
+export default AnnouncementDetail;
